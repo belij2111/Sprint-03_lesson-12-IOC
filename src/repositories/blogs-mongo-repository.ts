@@ -2,6 +2,7 @@ import {InputBlogType, OutputBlogType} from "../types/blog-types";
 import {BlogDBType} from "../db/blog-db-type";
 import {ObjectId} from "mongodb";
 import {blogCollection} from "../db/mongo-db";
+import {dateTimeIsoString} from "../helpers/date-time -iso-string";
 
 export const blogsMongoRepository = {
 
@@ -9,7 +10,7 @@ export const blogsMongoRepository = {
         const createNewBlog: BlogDBType = {
             ...inputBlog,
             _id: new ObjectId(),
-            createdAt: new Date().toISOString(),
+            createdAt: dateTimeIsoString(),
             isMembership: true
         }
         console.log(createNewBlog)
