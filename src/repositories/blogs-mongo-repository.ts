@@ -14,7 +14,7 @@ export const blogsMongoRepository = {
         }
         console.log(createNewBlog)
         const result = await blogCollection.insertOne(createNewBlog)
-        return {id: result.insertedId.toHexString()}
+        return {id: result.insertedId.toString()}
     },
 
     async getBlogById(id: string): Promise<OutputBlogType | null> {
@@ -29,7 +29,7 @@ export const blogsMongoRepository = {
 
     blogMapToOutput(blog: BlogDBType): OutputBlogType {
         return {
-            id: blog._id.toHexString(),
+            id: blog._id.toString(),
             name: blog.name,
             description: blog.description,
             websiteUrl: blog.websiteUrl,
