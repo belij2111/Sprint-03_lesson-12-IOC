@@ -1,6 +1,7 @@
 import {Router} from "express"
-import {createBlogController} from "../controllers/blogs-controller"
+import {createBlogController, getBlogsController} from "../controllers/blogs-controller"
 
 export const blogsRouter = Router()
 
 blogsRouter.post('/', createBlogController)
+blogsRouter.get('/', getBlogsController)

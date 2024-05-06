@@ -5,6 +5,10 @@ import {blogCollection} from "../db/mongo-db";
 import {dateTimeIsoString} from "../helpers/date-time -iso-string";
 
 export const blogsMongoRepository = {
+    async getBlogs(): Promise<OutputBlogType[]> {
+        const blogs = await blogCollection.find({}).toArray()
+        return blogs.map(this.blogMapToOutput)
+    },
 
     async createBlog(inputBlog: InputBlogType): Promise<{ id: string }> {
         const createNewBlog: BlogDBType = {
