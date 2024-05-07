@@ -48,3 +48,16 @@ export const updatePostController = async (req: Request<{ id: string }, {}, Inpu
         .status(204)
         .json({message: "successfully updated"})
 }
+
+export const deletePostByIdController = async (req: Request<{ id: string }>, res: Response) => {
+    const deletePost = await postsMongoRepository.deletePostById(req.params.id)
+    if (!deletePost) {
+        res
+            .status(404)
+            .json({message: 'Post not found'})
+        return
+    }
+    res
+        .status(204)
+        .json({message: 'Blog deleted successfully'})
+}

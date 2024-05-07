@@ -45,6 +45,13 @@ export const postsMongoRepository = {
         return true
     },
 
+    async deletePostById(id: string): Promise<boolean | null> {
+        const filterPost = await this.findById(new ObjectId(id))
+        if (!filterPost) return null
+        await postCollection.deleteOne(filterPost)
+        return true
+    },
+
     async findById(id: ObjectId): Promise<PostDbType | null> {
         return await postCollection.findOne({_id: id})
     },

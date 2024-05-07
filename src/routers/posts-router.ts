@@ -1,6 +1,6 @@
 import {Router} from "express";
 import {
-    createPostController,
+    createPostController, deletePostByIdController,
     getPostByIdController,
     getPostController,
     updatePostController
@@ -12,3 +12,4 @@ postsRouter.post('/', createPostController)
 postsRouter.get('/', getPostController)
 postsRouter.get('/:id', getPostByIdController)
 postsRouter.put('/:id', updatePostController)
+postsRouter.delete('/:id', deletePostByIdController)
