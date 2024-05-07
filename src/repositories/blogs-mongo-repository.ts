@@ -28,6 +28,20 @@ export const blogsMongoRepository = {
         return this.blogMapToOutput(blog)
     },
 
+    async updateBlogById(id: string, inputBlog: InputBlogType): Promise<boolean | null> {
+        const filterBlog = await this.findById(new ObjectId(id))
+        if (!filterBlog) return null
+        const updateBlog = {
+            $set: {
+                name: inputBlog.name,
+                description: inputBlog.description,
+                websiteUrl: inputBlog.websiteUrl
+            }
+        }
+        await blogCollection.updateOne(filterBlog, updateBlog)
+        return true
+    },
+
     async findById(id: ObjectId): Promise<BlogDBType | null> {
         return await blogCollection.findOne({_id: id})
     },

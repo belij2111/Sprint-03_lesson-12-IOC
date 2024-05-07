@@ -1,6 +1,6 @@
 import {Request, Response} from "express";
 import {blogsMongoRepository} from "../repositories/blogs-mongo-repository";
-import {OutputBlogType} from "../types/blog-types";
+import {InputBlogType, OutputBlogType} from "../types/blog-types";
 
 export const createBlogController = async (req: Request, res: Response) => {
     const createdInfo = await blogsMongoRepository.createBlog(req.body)
@@ -29,4 +29,17 @@ export const getBlogByIdController = async (req: Request, res: Response<OutputBl
     res
         .status(200)
         .json(blog)
+}
+
+export const updateBlogByIdController = async (req: Request<{ id: string }, {}, InputBlogType>, res: Response) => {
+    const updateBlog = await blogsMongoRepository.updateBlogById(req.params.id, req.body)
+    if (!updateBlog) {
+        res
+            .status(404)
+            .json({message: 'Blog not found'})
+        return
+    }
+    res
+        .status(204)
+        .json({message: "successfully updated"})
 }
