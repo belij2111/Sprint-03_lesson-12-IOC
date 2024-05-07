@@ -1,6 +1,6 @@
 import {Router} from "express"
 import {
-    createBlogController,
+    createBlogController, deleteBlogByIdController,
     getBlogByIdController,
     getBlogsController, updateBlogByIdController,
 } from "../controllers/blogs-controller"
@@ -11,3 +11,4 @@ blogsRouter.post('/', createBlogController)
 blogsRouter.get('/', getBlogsController)
 blogsRouter.get('/:id', getBlogByIdController)
 blogsRouter.put('/:id', updateBlogByIdController)
+blogsRouter.delete('/:id', deleteBlogByIdController)

@@ -43,3 +43,16 @@ export const updateBlogByIdController = async (req: Request<{ id: string }, {}, 
         .status(204)
         .json({message: "successfully updated"})
 }
+
+export const deleteBlogByIdController = async (req: Request<{ id: string }>, res: Response) => {
+    const deleteBlog = await blogsMongoRepository.deleteBlogById(req.params.id)
+    if (!deleteBlog) {
+        res
+            .status(404)
+            .json({message: 'Blog not found'})
+        return
+    }
+    res
+        .status(204)
+        .json({message: 'Blog deleted successfully'})
+}

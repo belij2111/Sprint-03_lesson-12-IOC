@@ -42,6 +42,13 @@ export const blogsMongoRepository = {
         return true
     },
 
+    async deleteBlogById(id: string): Promise<boolean | null> {
+        const filterBlog = await this.findById(new ObjectId(id))
+        if (!filterBlog) return null
+        await blogCollection.deleteOne(filterBlog)
+        return true
+    },
+
     async findById(id: ObjectId): Promise<BlogDBType | null> {
         return await blogCollection.findOne({_id: id})
     },
