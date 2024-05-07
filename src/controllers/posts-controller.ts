@@ -1,6 +1,6 @@
 import {postsMongoRepository} from "../repositories/posts-mongo-repository"
 import {Request, Response} from "express"
-import {OutputPostType} from "../types/post-types";
+import {InputPostType, OutputPostType} from "../types/post-types";
 
 export const createPostController = async (req: Request, res: Response) => {
     const createdInfo = await postsMongoRepository.createPost(req.body)
@@ -34,4 +34,17 @@ export const getPostByIdController = async (req: Request, res: Response<OutputPo
     res
         .status(200)
         .json(post)
+}
+
+export const updatePostController = async (req: Request<{ id: string }, {}, InputPostType>, res: Response) => {
+    const updatePost = await postsMongoRepository.updatePostById(req.params.id, req.body)
+    if (!updatePost) {
+        res
+            .status(404)
+            .json({message: 'Post not found'})
+        return
+    }
+    res
+        .status(204)
+        .json({message: "successfully updated"})
 }

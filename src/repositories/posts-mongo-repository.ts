@@ -31,6 +31,20 @@ export const postsMongoRepository = {
         return this.postMapToOutput(post)
     },
 
+    async updatePostById(id: string, inputPost: InputPostType): Promise<boolean | null> {
+        const filterPost = await this.findById(new ObjectId(id))
+        if (!filterPost) return null
+        const updatePost = {
+            $set: {
+                title: inputPost.title,
+                shortDescription: inputPost.shortDescription,
+                content: inputPost.content
+            }
+        }
+        await postCollection.updateOne(filterPost, updatePost)
+        return true
+    },
+
     async findById(id: ObjectId): Promise<PostDbType | null> {
         return await postCollection.findOne({_id: id})
     },
