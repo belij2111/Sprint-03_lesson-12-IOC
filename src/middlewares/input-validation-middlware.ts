@@ -7,7 +7,7 @@ export const inputValidationMiddleware = (req: Request, res: Response, next: Nex
         res
             .status(400)
             .json({
-                errorsMessages: (errors.array({onlyFirstError:true}) as FieldValidationError[]).map(error => ({
+                errorsMessages: (errors.array({onlyFirstError: true}) as FieldValidationError[]).map(error => ({
                     message: error.msg,
                     field: error.path
                 }))
