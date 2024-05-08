@@ -15,7 +15,7 @@ export const blogsMongoRepository = {
             ...inputBlog,
             _id: new ObjectId(),
             createdAt: dateTimeIsoString(),
-            isMembership: true
+            isMembership: false
         }
         const result = await blogCollection.insertOne(createNewBlog)
         return {id: result.insertedId.toString()}
