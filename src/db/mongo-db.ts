@@ -3,8 +3,6 @@ import {SETTINGS} from "../settings"
 import {BlogDBType} from "./blog-db-type";
 import {PostDbType} from "./post-db-type";
 
-// console.log(SETTINGS.MONGO_URL)
-
 let client = {} as MongoClient
 export let db = {} as Db
 

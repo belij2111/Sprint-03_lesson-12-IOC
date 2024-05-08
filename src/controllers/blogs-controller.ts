@@ -20,7 +20,6 @@ export const getBlogsController = async (req: Request, res: Response<OutputBlogT
 export const getBlogByIdController = async (req: Request, res: Response<OutputBlogType>) => {
     const blogId = req.params.id
     const blog = await blogsMongoRepository.getBlogById(blogId)
-    console.log(blog)
     if (!blog) {
         res
             .sendStatus(404)
