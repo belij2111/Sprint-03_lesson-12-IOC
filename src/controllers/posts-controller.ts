@@ -59,5 +59,5 @@ export const deletePostByIdController = async (req: Request<{ id: string }>, res
     }
     res
         .status(204)
-        .json({message: 'Blog deleted successfully'})
+        .json({message: 'Post deleted successfully'})
 }
