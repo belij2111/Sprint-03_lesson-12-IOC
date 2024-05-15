@@ -1,12 +1,12 @@
 import {body} from "express-validator";
-import {blogsMongoRepository} from "../repositories/blogs-mongo-repository";
+import {blogsMongoQueryRepository} from "../repositories/blogs-mongo-query-repository";
 
 const blogIdInputValidation = body('blogId')
     .trim()
     .isString()
     .withMessage("not string")
     .custom(async (value) => {
-        const blog = await blogsMongoRepository.getBlogById(value);
+        const blog = await blogsMongoQueryRepository.getBlogById(value);
         if (!blog) {
             throw new Error('Blog not found');
         }

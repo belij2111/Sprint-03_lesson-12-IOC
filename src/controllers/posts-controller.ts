@@ -1,6 +1,7 @@
 import {postsMongoRepository} from "../repositories/posts-mongo-repository"
 import {Request, Response} from "express"
 import {InputPostType, OutputPostType} from "../types/post-types";
+import {postsMongoQueryRepository} from "../repositories/posts-mongo-query-repository";
 
 export const createPostController = async (req: Request, res: Response) => {
     const createdInfo = await postsMongoRepository.createPost(req.body)
@@ -10,14 +11,14 @@ export const createPostController = async (req: Request, res: Response) => {
             .json({message: 'Blog not found'})
         return
     }
-    const newPost = await postsMongoRepository.getPostById(createdInfo.id)
+    const newPost = await postsMongoQueryRepository.getPostById(createdInfo.id)
     res
         .status(201)
         .json(newPost)
 }
 
 export const getPostController = async (req: Request, res: Response<OutputPostType[]>) => {
-    const allPosts = await postsMongoRepository.getPost()
+    const allPosts = await postsMongoQueryRepository.getPost()
     res
         .status(200)
         .json(allPosts)
@@ -25,7 +26,7 @@ export const getPostController = async (req: Request, res: Response<OutputPostTy
 
 export const getPostByIdController = async (req: Request, res: Response<OutputPostType>) => {
     const postId = req.params.id
-    const post = await postsMongoRepository.getPostById(postId)
+    const post = await postsMongoQueryRepository.getPostById(postId)
     if (!post) {
         res
             .sendStatus(404)

@@ -1,4 +1,4 @@
-import {InputPostType, OutputPostType} from "../types/post-types";
+import {InputPostType} from "../types/post-types";
 import {PostDbType} from "../db/post-db-type";
 import {blogCollection, postCollection} from "../db/mongo-db";
 import {BlogDBType} from "../db/blog-db-type";
@@ -18,17 +18,6 @@ export const postsMongoRepository = {
         }
         const result = await postCollection.insertOne(createNewPost)
         return {id: result.insertedId.toString()}
-    },
-
-    async getPost(): Promise<OutputPostType[]> {
-        const posts = await postCollection.find({}).toArray()
-        return posts.map(this.postMapToOutput)
-    },
-
-    async getPostById(id: string): Promise<OutputPostType | null> {
-        const post = await this.findById(new ObjectId(id))
-        if (!post) return null
-        return this.postMapToOutput(post)
     },
 
     async updatePostById(id: string, inputPost: InputPostType): Promise<boolean | null> {
@@ -58,17 +47,5 @@ export const postsMongoRepository = {
 
     async findBlogById(input: InputPostType): Promise<BlogDBType | null> {
         return await blogCollection.findOne({_id: new ObjectId(input.blogId)})
-    },
-
-    postMapToOutput(post: PostDbType): OutputPostType {
-        return {
-            id: post._id.toString(),
-            title: post.title,
-            shortDescription: post.shortDescription,
-            content: post.content,
-            blogId: post.blogId.toString(),
-            blogName: post.blogName,
-            createdAt: post.createdAt
-        }
     }
 }
