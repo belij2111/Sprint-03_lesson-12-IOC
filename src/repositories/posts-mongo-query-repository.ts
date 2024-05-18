@@ -1,4 +1,4 @@
-import {InputPostType, OutputPostType} from "../types/post-types";
+import {InputPostType, OutputPostType, Paginator} from "../types/post-types";
 import {PostDbType} from "../db/post-db-type";
 import {blogCollection, postCollection} from "../db/mongo-db";
 import {BlogDBType} from "../db/blog-db-type";
@@ -14,6 +14,24 @@ export const postsMongoQueryRepository = {
         const post = await this.findById(new ObjectId(id))
         if (!post) return null
         return this.postMapToOutput(post)
+    },
+
+    async getPostsByBlogId(blogId: string): Promise<Paginator<OutputPostType>> {
+        const byId = blogId ? {blogId: new ObjectId(blogId)} : {}
+        const filter = {
+            ...byId
+        }
+        const items = await postCollection
+            .find(filter)
+            .toArray()
+        console.log(items)
+        return {
+            // pagesCount: 1,
+            // page: 1,
+            // pageSize: items.length,
+            // totalCount: items.length,
+            items: items.map(this.postMapToOutput)
+        }
     },
 
     async findById(id: ObjectId): Promise<PostDbType | null> {

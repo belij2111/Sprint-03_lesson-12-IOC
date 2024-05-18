@@ -1,6 +1,6 @@
 import {postsMongoRepository} from "../repositories/posts-mongo-repository"
 import {Request, Response} from "express"
-import {InputPostType, OutputPostType} from "../types/post-types";
+import {InputPostType, OutputPostType, Paginator} from "../types/post-types";
 import {postsMongoQueryRepository} from "../repositories/posts-mongo-query-repository";
 
 export const createPostController = async (req: Request, res: Response) => {
@@ -27,6 +27,20 @@ export const getPostController = async (req: Request, res: Response<OutputPostTy
 export const getPostByIdController = async (req: Request, res: Response<OutputPostType>) => {
     const postId = req.params.id
     const post = await postsMongoQueryRepository.getPostById(postId)
+    if (!post) {
+        res
+            .sendStatus(404)
+        return
+    }
+    res
+        .status(200)
+        .json(post)
+}
+
+export const getPostsByBlogIdController = async (req: Request, res: Response<Paginator<OutputPostType>>) => {
+    const postBlogId = req.params.blogId
+    const post = await postsMongoQueryRepository.getPostsByBlogId(postBlogId)
+    console.log(post)
     if (!post) {
         res
             .sendStatus(404)
