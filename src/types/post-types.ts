@@ -1,4 +1,4 @@
-export type OutputPostType = {
+export interface OutputPostType {
     id: string,
     title: string,
     shortDescription: string,
@@ -7,7 +7,8 @@ export type OutputPostType = {
     blogName: string,
     createdAt: string
 }
-export type InputPostType = {
+
+export interface InputPostType {
     title: string,
     shortDescription: string,
     content: string,

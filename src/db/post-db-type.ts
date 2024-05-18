@@ -1,6 +1,6 @@
 import {ObjectId} from "mongodb";
 
-export type PostDbType = {
+export interface PostDbType {
     _id: ObjectId,
     title: string,
     shortDescription: string,

@@ -1,6 +1,6 @@
 import {ObjectId} from "mongodb";
 
-export type BlogDBType = {
+export interface BlogDBType {
     _id: ObjectId,
     name: string,
     description: string,

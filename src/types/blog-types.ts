@@ -1,6 +1,4 @@
-import {ObjectId} from "mongodb";
-
-export type OutputBlogType = {
+export interface OutputBlogType {
     id: string,
     name: string,
     description: string,
@@ -8,7 +6,8 @@ export type OutputBlogType = {
     createdAt: string,
     isMembership: boolean
 }
-export type InputBlogType = {
+
+export interface InputBlogType {
     name: string,
     description: string,
     websiteUrl: string
