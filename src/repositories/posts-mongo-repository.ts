@@ -7,7 +7,21 @@ import {dateTimeIsoString} from "../helpers/date-time -iso-string";
 
 export const postsMongoRepository = {
     async createPost(inputPost: InputPostType): Promise<{ id: string } | null> {
-        const blog = await this.findBlogById(inputPost)
+        const blog = await this.findBlogById(inputPost.blogId)
+        if (!blog) return null
+        const createNewPost: PostDbType = {
+            ...inputPost,
+            _id: new ObjectId(),
+            blogId: blog._id,
+            blogName: blog.name,
+            createdAt: dateTimeIsoString()
+        }
+        const result = await postCollection.insertOne(createNewPost)
+        return {id: result.insertedId.toString()}
+    },
+
+    async createPostByBlogId(blogId: string, inputPost: InputPostType): Promise<{ id: string } | null> {
+        const blog = await this.findBlogById(blogId)
         if (!blog) return null
         const createNewPost: PostDbType = {
             ...inputPost,
@@ -45,7 +59,7 @@ export const postsMongoRepository = {
         return await postCollection.findOne({_id: id})
     },
 
-    async findBlogById(input: InputPostType): Promise<BlogDBType | null> {
-        return await blogCollection.findOne({_id: new ObjectId(input.blogId)})
+    async findBlogById(blogId: string): Promise<BlogDBType | null> {
+        return await blogCollection.findOne({_id: new ObjectId(blogId)})
     }
 }

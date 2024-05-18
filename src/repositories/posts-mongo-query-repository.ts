@@ -16,7 +16,9 @@ export const postsMongoQueryRepository = {
         return this.postMapToOutput(post)
     },
 
-    async getPostsByBlogId(blogId: string): Promise<Paginator<OutputPostType>> {
+    async getPostsByBlogId(blogId: string): Promise<Paginator<OutputPostType> | null> {
+        const blog = await this.findBlogById(blogId)
+        if (!blog) return null
         const byId = blogId ? {blogId: new ObjectId(blogId)} : {}
         const filter = {
             ...byId
@@ -24,7 +26,6 @@ export const postsMongoQueryRepository = {
         const items = await postCollection
             .find(filter)
             .toArray()
-        console.log(items)
         return {
             // pagesCount: 1,
             // page: 1,
@@ -38,8 +39,8 @@ export const postsMongoQueryRepository = {
         return await postCollection.findOne({_id: id})
     },
 
-    async findBlogById(input: InputPostType): Promise<BlogDBType | null> {
-        return await blogCollection.findOne({_id: new ObjectId(input.blogId)})
+    async findBlogById(blogId: string): Promise<BlogDBType | null> {
+        return await blogCollection.findOne({_id: new ObjectId(blogId)})
     },
 
     postMapToOutput(post: PostDbType): OutputPostType {

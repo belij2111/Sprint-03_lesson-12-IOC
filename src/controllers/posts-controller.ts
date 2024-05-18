@@ -17,6 +17,21 @@ export const createPostController = async (req: Request, res: Response) => {
         .json(newPost)
 }
 
+export const createPostByBlogIdController = async (req: Request, res: Response) => {
+    const createdInfo = await postsMongoRepository.createPostByBlogId(req.params.blogId, req.body)
+    if (!createdInfo) {
+        res
+            .status(404)
+            .json({message: 'Blog not found'})
+        return
+    }
+    const newPost = await postsMongoQueryRepository.getPostById(createdInfo.id)
+    // console.log(newPost)
+    res
+        .status(201)
+        .json(newPost)
+}
+
 export const getPostController = async (req: Request, res: Response<OutputPostType[]>) => {
     const allPosts = await postsMongoQueryRepository.getPost()
     res
@@ -39,16 +54,15 @@ export const getPostByIdController = async (req: Request, res: Response<OutputPo
 
 export const getPostsByBlogIdController = async (req: Request, res: Response<Paginator<OutputPostType>>) => {
     const postBlogId = req.params.blogId
-    const post = await postsMongoQueryRepository.getPostsByBlogId(postBlogId)
-    console.log(post)
-    if (!post) {
+    const posts = await postsMongoQueryRepository.getPostsByBlogId(postBlogId)
+    if (!posts) {
         res
             .sendStatus(404)
         return
     }
     res
         .status(200)
-        .json(post)
+        .json(posts)
 }
 
 export const updatePostController = async (req: Request<{ id: string }, {}, InputPostType>, res: Response) => {
