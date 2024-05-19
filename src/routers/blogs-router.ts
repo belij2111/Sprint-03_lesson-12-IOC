@@ -11,12 +11,13 @@ import {
     createPostByBlogIdController,
     getPostsByBlogIdController
 } from "../controllers/posts-controller";
+import {postsInputValidationMiddleware} from "../middlewares/posts-input-validation-middleware";
 
 export const blogsRouter = Router()
 
 blogsRouter.post('/', authMiddleware, blogsInputValidationMiddleware, inputValidationMiddleware, createBlogController)
 blogsRouter.get('/', getBlogsController)
-blogsRouter.post('/:blogId/posts', authMiddleware, inputValidationMiddleware, createPostByBlogIdController)
+blogsRouter.post('/:blogId/posts', authMiddleware, postsInputValidationMiddleware, inputValidationMiddleware, createPostByBlogIdController)
 blogsRouter.get('/:blogId/posts', getPostsByBlogIdController)
 blogsRouter.get('/:id', getBlogByIdController)
 blogsRouter.put('/:id', authMiddleware, blogsInputValidationMiddleware, inputValidationMiddleware, updateBlogByIdController)
