@@ -52,7 +52,7 @@ export const getPostByIdController = async (req: Request, res: Response<OutputPo
         .json(post)
 }
 
-export const getPostsByBlogIdController = async (req: Request, res: Response<Paginator<OutputPostType>>) => {
+export const getPostsByBlogIdController = async (req: Request, res: Response<Paginator<OutputPostType[]>>) => {
     const postBlogId = req.params.blogId
     const posts = await postsMongoQueryRepository.getPostsByBlogId(postBlogId)
     if (!posts) {

@@ -16,7 +16,7 @@ export const postsMongoQueryRepository = {
         return this.postMapToOutput(post)
     },
 
-    async getPostsByBlogId(blogId: string): Promise<Paginator<OutputPostType> | null> {
+    async getPostsByBlogId(blogId: string): Promise<Paginator<OutputPostType[]> | null> {
         const blog = await this.findBlogById(blogId)
         if (!blog) return null
         const byId = blogId ? {blogId: new ObjectId(blogId)} : {}
