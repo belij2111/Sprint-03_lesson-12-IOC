@@ -14,11 +14,3 @@ export interface InputPostType {
     content: string,
     blogId: string
 }
-
-export interface Paginator<T> {
-    // pagesCount: number
-    // page: number
-    // pageSize: number
-    // totalCount: number
-    items: T
-}

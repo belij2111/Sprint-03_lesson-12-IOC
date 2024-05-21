@@ -1,6 +1,6 @@
 import {postsMongoRepository} from "../repositories/posts-mongo-repository"
 import {Request, Response} from "express"
-import {InputPostType, OutputPostType, Paginator} from "../types/post-types";
+import {InputPostType, OutputPostType} from "../types/post-types";
 import {postsMongoQueryRepository} from "../repositories/posts-mongo-query-repository";
 
 export const createPostController = async (req: Request, res: Response) => {

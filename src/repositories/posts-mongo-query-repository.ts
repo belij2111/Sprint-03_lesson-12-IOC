@@ -1,8 +1,9 @@
-import {InputPostType, OutputPostType, Paginator} from "../types/post-types";
+import {OutputPostType} from "../types/post-types";
 import {PostDbType} from "../db/post-db-type";
 import {blogCollection, postCollection} from "../db/mongo-db";
 import {BlogDBType} from "../db/blog-db-type";
 import {ObjectId} from "mongodb";
+import {Paginator} from "../types/paginator-types";
 
 export const postsMongoQueryRepository = {
     async getPost(): Promise<OutputPostType[]> {

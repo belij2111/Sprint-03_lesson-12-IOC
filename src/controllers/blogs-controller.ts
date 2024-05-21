@@ -2,9 +2,10 @@ import {Request, Response} from "express";
 import {blogsMongoRepository} from "../repositories/blogs-mongo-repository";
 import {InputBlogType, OutputBlogType} from "../types/blog-types";
 import {blogsMongoQueryRepository} from "../repositories/blogs-mongo-query-repository";
-import {OutputPostType, Paginator} from "../types/post-types";
+import {OutputPostType} from "../types/post-types";
 import {postsMongoQueryRepository} from "../repositories/posts-mongo-query-repository";
 import {postsMongoRepository} from "../repositories/posts-mongo-repository";
+import {Paginator} from "../types/paginator-types";
 
 export const createBlogController = async (req: Request, res: Response) => {
     const createdInfo = await blogsMongoRepository.createBlog(req.body)
