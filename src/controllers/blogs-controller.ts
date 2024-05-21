@@ -2,6 +2,9 @@ import {Request, Response} from "express";
 import {blogsMongoRepository} from "../repositories/blogs-mongo-repository";
 import {InputBlogType, OutputBlogType} from "../types/blog-types";
 import {blogsMongoQueryRepository} from "../repositories/blogs-mongo-query-repository";
+import {OutputPostType, Paginator} from "../types/post-types";
+import {postsMongoQueryRepository} from "../repositories/posts-mongo-query-repository";
+import {postsMongoRepository} from "../repositories/posts-mongo-repository";
 
 export const createBlogController = async (req: Request, res: Response) => {
     const createdInfo = await blogsMongoRepository.createBlog(req.body)
@@ -9,6 +12,21 @@ export const createBlogController = async (req: Request, res: Response) => {
     res
         .status(201)
         .json(newBlog)
+}
+
+export const createPostByBlogIdController = async (req: Request, res: Response) => {
+    const createdInfo = await postsMongoRepository.createPostByBlogId(req.params.blogId, req.body)
+    if (!createdInfo) {
+        res
+            .status(404)
+            .json({message: 'Blog not found'})
+        return
+    }
+    const newPost = await postsMongoQueryRepository.getPostById(createdInfo.id)
+    // console.log(newPost)
+    res
+        .status(201)
+        .json(newPost)
 }
 
 export const getBlogsController = async (req: Request, res: Response<OutputBlogType[]>) => {
@@ -29,6 +47,19 @@ export const getBlogByIdController = async (req: Request, res: Response<OutputBl
     res
         .status(200)
         .json(blog)
+}
+
+export const getPostsByBlogIdController = async (req: Request, res: Response<Paginator<OutputPostType[]>>) => {
+    const postBlogId = req.params.blogId
+    const posts = await postsMongoQueryRepository.getPostsByBlogId(postBlogId)
+    if (!posts) {
+        res
+            .sendStatus(404)
+        return
+    }
+    res
+        .status(200)
+        .json(posts)
 }
 
 export const updateBlogByIdController = async (req: Request<{ id: string }, {}, InputBlogType>, res: Response) => {
