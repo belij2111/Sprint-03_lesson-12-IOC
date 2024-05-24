@@ -1,4 +1,4 @@
-import {Request, Response} from "express";
+import {query, Request, Response} from "express";
 import {blogsMongoRepository} from "../repositories/blogs-mongo-repository";
 import {InputBlogType, OutputBlogType} from "../types/blog-types";
 import {blogsMongoQueryRepository} from "../repositories/blogs-mongo-query-repository";
@@ -6,6 +6,12 @@ import {OutputPostType} from "../types/post-types";
 import {postsMongoQueryRepository} from "../repositories/posts-mongo-query-repository";
 import {postsMongoRepository} from "../repositories/posts-mongo-repository";
 import {Paginator} from "../types/paginator-types";
+import {
+    SearchNameTermFieldsType,
+    searchNameTermUtil,
+    SortQueryFieldsType,
+    sortQueryFieldsUtil
+} from "../helpers/sort-query-fields-util";
 
 export const createBlogController = async (req: Request, res: Response) => {
     const createdInfo = await blogsMongoRepository.createBlog(req.body)
@@ -30,8 +36,12 @@ export const createPostByBlogIdController = async (req: Request, res: Response) 
         .json(newPost)
 }
 
-export const getBlogsController = async (req: Request, res: Response<OutputBlogType[]>) => {
-    const allBlogs = await blogsMongoQueryRepository.getBlogs()
+export const getBlogsController = async (req: Request<SortQueryFieldsType & SearchNameTermFieldsType>, res: Response<Paginator<OutputBlogType[]>>) => {
+    const inputQuery = {
+        ...sortQueryFieldsUtil(req.query),
+        ...searchNameTermUtil(req.query)
+    }
+    const allBlogs = await blogsMongoQueryRepository.getBlogs(inputQuery)
     res
         .status(200)
         .json(allBlogs)
@@ -52,7 +62,10 @@ export const getBlogByIdController = async (req: Request, res: Response<OutputBl
 
 export const getPostsByBlogIdController = async (req: Request, res: Response<Paginator<OutputPostType[]>>) => {
     const postBlogId = req.params.blogId
-    const posts = await postsMongoQueryRepository.getPostsByBlogId(postBlogId)
+    const inputQuery = {
+        ...sortQueryFieldsUtil(req.query)
+    }
+    const posts = await postsMongoQueryRepository.getPostsByBlogId(postBlogId, inputQuery)
     if (!posts) {
         res
             .sendStatus(404)

@@ -2,6 +2,8 @@ import {postsMongoRepository} from "../repositories/posts-mongo-repository"
 import {Request, Response} from "express"
 import {InputPostType, OutputPostType} from "../types/post-types";
 import {postsMongoQueryRepository} from "../repositories/posts-mongo-query-repository";
+import {Paginator} from "../types/paginator-types";
+import {SortQueryFieldsType, sortQueryFieldsUtil} from "../helpers/sort-query-fields-util";
 
 export const createPostController = async (req: Request, res: Response) => {
     const createdInfo = await postsMongoRepository.createPost(req.body)
@@ -17,8 +19,11 @@ export const createPostController = async (req: Request, res: Response) => {
         .json(newPost)
 }
 
-export const getPostController = async (req: Request, res: Response<OutputPostType[]>) => {
-    const allPosts = await postsMongoQueryRepository.getPost()
+export const getPostController = async (req: Request<{}, {}, {}, SortQueryFieldsType>, res: Response<Paginator<OutputPostType[]>>) => {
+    const inputQuery = {
+        ...sortQueryFieldsUtil(req.query)
+    }
+    const allPosts = await postsMongoQueryRepository.getPost(inputQuery)
     res
         .status(200)
         .json(allPosts)

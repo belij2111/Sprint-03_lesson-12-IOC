@@ -1,12 +1,31 @@
-import {OutputBlogType} from "../types/blog-types";
+import {OutputBlogType, QueryBlogFilterType} from "../types/blog-types";
 import {BlogDBType} from "../db/blog-db-type";
 import {ObjectId} from "mongodb";
-import {blogCollection} from "../db/mongo-db";
+import {blogCollection, postCollection} from "../db/mongo-db";
+import {Paginator} from "../types/paginator-types";
 
 export const blogsMongoQueryRepository = {
-    async getBlogs(): Promise<OutputBlogType[]> {
-        const blogs = await blogCollection.find({}).toArray()
-        return blogs.map(this.blogMapToOutput)
+    async getBlogs(inputQuery: QueryBlogFilterType): Promise<Paginator<OutputBlogType[]>> {
+        const search = inputQuery.searchNameTerm
+            ? {name: {$regex: inputQuery.searchNameTerm, $options: 'i'}}
+            : {}
+        const filter = {
+            ...search
+        }
+        const items = await blogCollection
+            .find(filter)
+            .sort(inputQuery.sortBy, inputQuery.sortDirection)
+            .skip((inputQuery.pageNumber - 1) * inputQuery.pageSize)
+            .limit(inputQuery.pageSize)
+            .toArray()
+        const totalCount = await postCollection.countDocuments(filter)
+        return {
+            pagesCount: Math.ceil(totalCount / inputQuery.pageSize),
+            page: inputQuery.pageNumber,
+            pageSize: inputQuery.pageSize,
+            totalCount,
+            items: items.map(this.blogMapToOutput)
+        }
     },
 
     async getBlogById(id: string): Promise<OutputBlogType | null> {

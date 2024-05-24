@@ -4,11 +4,25 @@ import {blogCollection, postCollection} from "../db/mongo-db";
 import {BlogDBType} from "../db/blog-db-type";
 import {ObjectId} from "mongodb";
 import {Paginator} from "../types/paginator-types";
+import {SortQueryFilterType} from "../helpers/sort-query-fields-util";
 
 export const postsMongoQueryRepository = {
-    async getPost(): Promise<OutputPostType[]> {
-        const posts = await postCollection.find({}).toArray()
-        return posts.map(this.postMapToOutput)
+    async getPost(inputQuery: SortQueryFilterType): Promise<Paginator<OutputPostType[]>> {
+        const filter = {}
+        const items = await postCollection
+            .find(filter)
+            .sort(inputQuery.sortBy, inputQuery.sortDirection)
+            .skip((inputQuery.pageNumber - 1) * inputQuery.pageSize)
+            .limit(inputQuery.pageSize)
+            .toArray()
+        const totalCount = await postCollection.countDocuments(filter)
+        return {
+            pagesCount: Math.ceil(totalCount / inputQuery.pageSize),
+            page: inputQuery.pageNumber,
+            pageSize: inputQuery.pageSize,
+            totalCount,
+            items: items.map(this.postMapToOutput)
+        }
     },
 
     async getPostById(id: string): Promise<OutputPostType | null> {
@@ -17,7 +31,7 @@ export const postsMongoQueryRepository = {
         return this.postMapToOutput(post)
     },
 
-    async getPostsByBlogId(blogId: string): Promise<Paginator<OutputPostType[]> | null> {
+    async getPostsByBlogId(blogId: string, inputQuery: SortQueryFilterType): Promise<Paginator<OutputPostType[]> | null> {
         const blog = await this.findBlogById(blogId)
         if (!blog) return null
         const byId = blogId ? {blogId: new ObjectId(blogId)} : {}
@@ -26,12 +40,16 @@ export const postsMongoQueryRepository = {
         }
         const items = await postCollection
             .find(filter)
+            .sort(inputQuery.sortBy, inputQuery.sortDirection)
+            .skip((inputQuery.pageNumber - 1) * inputQuery.pageSize)
+            .limit(inputQuery.pageSize)
             .toArray()
+        const totalCount = await postCollection.countDocuments(filter)
         return {
-            // pagesCount: 1,
-            // page: 1,
-            // pageSize: items.length,
-            // totalCount: items.length,
+            pagesCount: Math.ceil(totalCount / inputQuery.pageSize),
+            page: inputQuery.pageNumber,
+            pageSize: inputQuery.pageSize,
+            totalCount,
             items: items.map(this.postMapToOutput)
         }
     },
@@ -43,6 +61,8 @@ export const postsMongoQueryRepository = {
     async findBlogById(blogId: string): Promise<BlogDBType | null> {
         return await blogCollection.findOne({_id: new ObjectId(blogId)})
     },
+
+
 
     postMapToOutput(post: PostDbType): OutputPostType {
         return {

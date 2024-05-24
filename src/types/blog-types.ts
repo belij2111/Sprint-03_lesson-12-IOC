@@ -1,3 +1,5 @@
+import {SearchNameTermFilterType, SortQueryFilterType} from "../helpers/sort-query-fields-util";
+
 export interface OutputBlogType {
     id: string,
     name: string,
@@ -11,4 +13,7 @@ export interface InputBlogType {
     name: string,
     description: string,
     websiteUrl: string
+}
+
+export interface QueryBlogFilterType extends SortQueryFilterType, SearchNameTermFilterType {
 }
