@@ -1,7 +1,19 @@
-import {body} from "express-validator";
+import {body, param} from "express-validator";
 import {blogsMongoQueryRepository} from "../repositories/blogs-mongo-query-repository";
 
 const blogIdInputValidation = body('blogId')
+    .trim()
+    .isString()
+    .withMessage("not string")
+    .custom(async (value) => {
+        const blog = await blogsMongoQueryRepository.getBlogById(value);
+        if (!blog) {
+            throw new Error('Blog not found');
+        }
+        return true;
+    })
+
+export const paramsBlogIdInputValidation = param('blogId')
     .trim()
     .isString()
     .withMessage("not string")
@@ -39,5 +51,11 @@ export const postsInputValidationMiddleware = [
     shortDescriptionInputValidation,
     contentInputValidation,
     blogIdInputValidation
+]
+
+export const postForBlogInputValidationMiddleware = [
+    titleInputValidation,
+    shortDescriptionInputValidation,
+    contentInputValidation
 ]
 
