@@ -26,12 +26,14 @@ export const postsMongoQueryRepository = {
     },
 
     async getPostById(id: string): Promise<OutputPostType | null> {
+        if (!this.checkObjectId(id)) return null
         const post = await this.findById(new ObjectId(id))
         if (!post) return null
         return this.postMapToOutput(post)
     },
 
     async getPostsByBlogId(blogId: string, inputQuery: SortQueryFilterType): Promise<Paginator<OutputPostType[]> | null> {
+        if (!this.checkObjectId(blogId)) return null
         const blog = await this.findBlogById(blogId)
         if (!blog) return null
         const byId = blogId ? {blogId: new ObjectId(blogId)} : {}
@@ -63,7 +65,6 @@ export const postsMongoQueryRepository = {
     },
 
 
-
     postMapToOutput(post: PostDbType): OutputPostType {
         return {
             id: post._id.toString(),
@@ -74,5 +75,9 @@ export const postsMongoQueryRepository = {
             blogName: post.blogName,
             createdAt: post.createdAt
         }
+    },
+
+    checkObjectId(id: string): boolean {
+        return ObjectId.isValid(id)
     }
 }
