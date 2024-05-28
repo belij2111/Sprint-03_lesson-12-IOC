@@ -1,4 +1,4 @@
-import {query, Request, Response} from "express";
+import {Request, Response} from "express";
 import {blogsMongoRepository} from "../repositories/blogs-mongo-repository";
 import {InputBlogType, OutputBlogType} from "../types/blog-types";
 import {blogsMongoQueryRepository} from "../repositories/blogs-mongo-query-repository";
@@ -30,7 +30,6 @@ export const createPostByBlogIdController = async (req: Request, res: Response) 
         return
     }
     const newPost = await postsMongoQueryRepository.getPostById(createdInfo.id)
-    // console.log(newPost)
     res
         .status(201)
         .json(newPost)
