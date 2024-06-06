@@ -2,20 +2,18 @@ import {blogCollection, connectToDb} from "../../src/db/mongo-db";
 import {SETTINGS} from "../../src/settings";
 import {blogDto} from "../tests-dtos/blog-dto";
 import {blogsTestManager} from "./tests-managers/blogs-test-Manager";
-import {MongoMemoryServer} from "mongodb-memory-server";
+import {startMongoServer, stopMongoServer} from "../mongo-memory-setup";
 
 describe('/blogs', () => {
-    let mongoServer: MongoMemoryServer
     beforeAll(async () => {
-        mongoServer = await MongoMemoryServer.create()
-        await connectToDb(mongoServer.getUri())
+        await connectToDb(await startMongoServer())
         // await connectToDb(SETTINGS.MONGO_URL)
         await blogCollection.deleteMany()
     })
 
     afterAll(async () => {
-        // await blogCollection.deleteMany()
-        await mongoServer.stop()
+        await blogCollection.deleteMany()
+        await stopMongoServer()
     })
 
     it(`should create new blog : STATUS 201`, async () => {
