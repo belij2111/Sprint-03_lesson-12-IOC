@@ -2,19 +2,29 @@ import {blogCollection, connectToDb} from "../../src/db/mongo-db";
 import {SETTINGS} from "../../src/settings";
 import {blogDto} from "../tests-dtos/blog-dto";
 import {blogsTestManager} from "./tests-managers/blogs-test-Manager";
+import {MongoMemoryServer} from "mongodb-memory-server";
 
 describe('/blogs', () => {
+    let mongoServer: MongoMemoryServer
     beforeAll(async () => {
-        await connectToDb(SETTINGS.MONGO_URL)
-        await blogCollection.drop()
+        mongoServer = await MongoMemoryServer.create()
+        await connectToDb(mongoServer.getUri())
+        // await connectToDb(SETTINGS.MONGO_URL)
+        await blogCollection.deleteMany()
+    })
+
+    afterAll(async () => {
+        // await blogCollection.deleteMany()
+        await mongoServer.stop()
     })
 
     it(`should create new blog : STATUS 201`, async () => {
         const validBlog = blogDto.createValidBlogDto()
         const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
         const result = await blogsTestManager.createBlog(validBlog, authorizationHeader)
-        // console.log(result.body)
-        // console.log(result.status)
+        console.log(result.body)
+        console.log(result.status)
+
         expect(result.status).toBe(201)
         expect(result.body.name).toBe(validBlog.name)
         expect(result.body.description).toBe(validBlog.description)
@@ -25,8 +35,9 @@ describe('/blogs', () => {
         const invalidBlog = blogDto.createInvalidBlogDto()
         const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
         const result = await blogsTestManager.createBlog(invalidBlog, authorizationHeader)
-        // console.log(result.body)
-        // console.log(result.status)
+        console.log(result.body)
+        console.log(result.status)
+
         expect(result.status).toBe(400)
     })
 
@@ -34,8 +45,9 @@ describe('/blogs', () => {
         const validBlog = blogDto.createValidBlogDto()
         const invalidAuthorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', '');
         const result = await blogsTestManager.createBlog(validBlog, invalidAuthorizationHeader)
-        // console.log(result.body)
-        // console.log(result.status)
+        console.log(result.body)
+        console.log(result.status)
+
         expect(result.status).toBe(401)
     })
 })
