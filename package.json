@@ -15,8 +15,8 @@
   "scripts": {
     "watch": "tsc -w",
     "dev": "yarn nodemon --inspect dist/index.js",
-    "jest": "jest -i",
-    "jest:coverage": "jest -i --coverage"
+    "test:e2e": "jest -i --detectOpenHandles --forceExit",
+    "jest:coverage": "jest -i --coverage --detectOpenHandles"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
