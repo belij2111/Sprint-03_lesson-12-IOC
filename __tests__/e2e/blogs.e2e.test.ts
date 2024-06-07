@@ -18,6 +18,12 @@ describe('/blogs', () => {
         await stopMongoServer()
     })
 
+    it('should return version number', async () => {
+        await req
+            .get('/')
+            .expect({version: '1.0'})
+    })
+
     it(`should create new blog : STATUS 201`, async () => {
         const validBlog = blogDto.createValidBlogDto()
         const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
