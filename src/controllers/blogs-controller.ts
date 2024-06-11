@@ -12,9 +12,10 @@ import {
     SortQueryFieldsType,
     sortQueryFieldsUtil
 } from "../helpers/sort-query-fields-util";
+import {blogsService} from "../services/blogs-service";
 
 export const createBlogController = async (req: Request, res: Response) => {
-    const createdInfo = await blogsMongoRepository.createBlog(req.body)
+    const createdInfo = await blogsService.createBlog(req.body)
     const newBlog = await blogsMongoQueryRepository.getBlogById(createdInfo.id)
     res
         .status(201)
@@ -76,7 +77,7 @@ export const getPostsByBlogIdController = async (req: Request, res: Response<Pag
 }
 
 export const updateBlogByIdController = async (req: Request<{ id: string }, {}, InputBlogType>, res: Response) => {
-    const updateBlog = await blogsMongoRepository.updateBlogById(req.params.id, req.body)
+    const updateBlog = await blogsService.updateBlogById(req.params.id, req.body)
     if (!updateBlog) {
         res
             .status(404)
@@ -89,7 +90,7 @@ export const updateBlogByIdController = async (req: Request<{ id: string }, {}, 
 }
 
 export const deleteBlogByIdController = async (req: Request<{ id: string }>, res: Response) => {
-    const deleteBlog = await blogsMongoRepository.deleteBlogById(req.params.id)
+    const deleteBlog = await blogsService.deleteBlogById(req.params.id)
     if (!deleteBlog) {
         res
             .status(404)
