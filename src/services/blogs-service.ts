@@ -17,19 +17,19 @@ export const blogsService = {
     },
 
     async updateBlogById(id: string, inputBlog: InputBlogType): Promise<boolean | null> {
+        const findBlog = await blogsMongoRepository.findById(new ObjectId(id))
+        if (!findBlog) return null
         const updateBlog = {
             name: inputBlog.name,
             description: inputBlog.description,
             websiteUrl: inputBlog.websiteUrl
         }
-        return await blogsMongoRepository.updateById(id, updateBlog)
+        return await blogsMongoRepository.updateById(findBlog, updateBlog)
     },
 
     async deleteBlogById(id: string): Promise<boolean | null> {
-        return await blogsMongoRepository.deleteById(id)
+        const findBlog = await blogsMongoRepository.findById(new ObjectId(id))
+        if (!findBlog) return null
+        return await blogsMongoRepository.deleteById(findBlog)
     },
-
-    async findById(id: ObjectId): Promise<BlogDBType | null> {
-        return await blogCollection.findOne({_id: id})
-    }
 }

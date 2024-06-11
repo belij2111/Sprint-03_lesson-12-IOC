@@ -9,17 +9,13 @@ export const blogsMongoRepository = {
         return {id: result.insertedId.toString()}
     },
 
-    async updateById(id: string, inputBlog: InputBlogType): Promise<boolean | null> {
-        const filterBlog = await this.findById(new ObjectId(id))
-        if (!filterBlog) return null
-        await blogCollection.updateOne(filterBlog, {$set: inputBlog})
+    async updateById(findBlog: BlogDBType, inputBlog: InputBlogType): Promise<boolean | null> {
+        await blogCollection.updateOne(findBlog, {$set: inputBlog})
         return true
     },
 
-    async deleteById(id: string): Promise<boolean | null> {
-        const filterBlog = await this.findById(new ObjectId(id))
-        if (!filterBlog) return null
-        await blogCollection.deleteOne(filterBlog)
+    async deleteById(findBlog: BlogDBType): Promise<boolean | null> {
+        await blogCollection.deleteOne(findBlog)
         return true
     },
 
