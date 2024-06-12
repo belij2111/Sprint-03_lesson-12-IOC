@@ -1,12 +1,12 @@
-import {postsMongoRepository} from "../repositories/posts-mongo-repository"
 import {Request, Response} from "express"
 import {InputPostType, OutputPostType} from "../types/post-types";
 import {postsMongoQueryRepository} from "../repositories/posts-mongo-query-repository";
 import {Paginator} from "../types/paginator-types";
 import {SortQueryFieldsType, sortQueryFieldsUtil} from "../helpers/sort-query-fields-util";
+import {postsService} from "../services/posts-service";
 
 export const createPostController = async (req: Request, res: Response) => {
-    const createdInfo = await postsMongoRepository.createPost(req.body)
+    const createdInfo = await postsService.createPost(req.body)
     if (!createdInfo) {
         res
             .status(404)
@@ -43,7 +43,7 @@ export const getPostByIdController = async (req: Request, res: Response<OutputPo
 }
 
 export const updatePostController = async (req: Request<{ id: string }, {}, InputPostType>, res: Response) => {
-    const updatePost = await postsMongoRepository.updatePostById(req.params.id, req.body)
+    const updatePost = await postsService.updatePostById(req.params.id, req.body)
     if (!updatePost) {
         res
             .status(404)
@@ -56,7 +56,7 @@ export const updatePostController = async (req: Request<{ id: string }, {}, Inpu
 }
 
 export const deletePostByIdController = async (req: Request<{ id: string }>, res: Response) => {
-    const deletePost = await postsMongoRepository.deletePostById(req.params.id)
+    const deletePost = await postsService.deletePostById(req.params.id)
     if (!deletePost) {
         res
             .status(404)

@@ -1,10 +1,8 @@
 import {Request, Response} from "express";
-import {blogsMongoRepository} from "../repositories/blogs-mongo-repository";
 import {InputBlogType, OutputBlogType} from "../types/blog-types";
 import {blogsMongoQueryRepository} from "../repositories/blogs-mongo-query-repository";
 import {OutputPostType} from "../types/post-types";
 import {postsMongoQueryRepository} from "../repositories/posts-mongo-query-repository";
-import {postsMongoRepository} from "../repositories/posts-mongo-repository";
 import {Paginator} from "../types/paginator-types";
 import {
     SearchNameTermFieldsType,
@@ -13,6 +11,7 @@ import {
     sortQueryFieldsUtil
 } from "../helpers/sort-query-fields-util";
 import {blogsService} from "../services/blogs-service";
+import {postsService} from "../services/posts-service";
 
 export const createBlogController = async (req: Request, res: Response) => {
     const createdInfo = await blogsService.createBlog(req.body)
@@ -23,7 +22,7 @@ export const createBlogController = async (req: Request, res: Response) => {
 }
 
 export const createPostByBlogIdController = async (req: Request, res: Response) => {
-    const createdInfo = await postsMongoRepository.createPostByBlogId(req.params.blogId, req.body)
+    const createdInfo = await postsService.createPostByBlogId(req.params.blogId, req.body)
     if (!createdInfo) {
         res
             .status(404)
