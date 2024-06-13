@@ -1,3 +1,9 @@
+import {
+    SearchEmailTermFilterType,
+    SearchLoginTermFilterType,
+    SortQueryFilterType
+} from "../helpers/sort-query-fields-util";
+
 export interface OutputUserType {
     id: string,
     login: string,
@@ -9,4 +15,7 @@ export interface InputUserType {
     login: string,
     password: string,
     email: string
+}
+
+export interface QueryUserFilterType extends SortQueryFilterType, SearchLoginTermFilterType, SearchEmailTermFilterType {
 }

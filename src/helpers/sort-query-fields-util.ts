@@ -20,6 +20,22 @@ export interface SearchNameTermFilterType {
     searchNameTerm: string
 }
 
+export interface SearchLoginTermFilterType {
+    searchLoginTerm: string
+}
+
+export interface SearchLoginTermFieldsType {
+    searchLoginTerm?: string
+}
+
+export interface SearchEmailTermFilterType {
+    searchEmailTerm: string
+}
+
+export interface SearchEmailTermFieldsType {
+    searchEmailTerm?: string
+}
+
 export const sortQueryFieldsUtil = (query: SortQueryFieldsType): SortQueryFilterType => {
     const pageNumber = !isNaN(Number(query.pageNumber)) ? Number(query.pageNumber) : 1
     const pageSize = !isNaN(Number(query.pageSize)) ? Number(query.pageSize) : 10
@@ -39,5 +55,21 @@ export const searchNameTermUtil = (query: SearchNameTermFieldsType): SearchNameT
 
     return {
         searchNameTerm
+    }
+}
+
+export const searchLoginTermUtil = (query: SearchLoginTermFieldsType): SearchLoginTermFilterType => {
+    const searchLoginTerm = typeof query.searchLoginTerm === 'string' ? query.searchLoginTerm : ''
+
+    return {
+        searchLoginTerm
+    }
+}
+
+export const searchEmailTermUtil = (query: SearchEmailTermFieldsType): SearchEmailTermFilterType => {
+    const searchEmailTerm = typeof query.searchEmailTerm === 'string' ? query.searchEmailTerm : ''
+
+    return {
+        searchEmailTerm
     }
 }

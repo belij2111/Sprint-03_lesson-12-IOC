@@ -7,11 +7,13 @@ export const SETTINGS = {
     PATH: {
         BLOGS: '/blogs',
         POSTS: '/posts',
-        TESTING: '/testing/all-data',
+        USERS: '/users',
+        TESTING: '/testing/all-data'
     },
     ADMIN_AUTH: process.env.ADMIN_AUTH || '',
     MONGO_URL: process.env.MONGO_URL || '',
     DB_NAME: process.env.DB_NAME || '',
     BLOG_COLLECTION_NAME: process.env.BLOG_COLLECTION_NAME || '',
-    POST_COLLECTION_NAME: process.env.POST_COLLECTION_NAME || ''
+    POST_COLLECTION_NAME: process.env.POST_COLLECTION_NAME || '',
+    USER_COLLECTION_NAME: process.env.USER_COLLECTION_NAME || ''
 }
