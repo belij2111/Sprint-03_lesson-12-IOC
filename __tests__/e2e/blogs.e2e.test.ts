@@ -61,4 +61,10 @@ describe('/blogs', () => {
             .send(validBlog)
             .expect(401)
     })
+
+    it(`should return blogs with paging : STATUS 200`, async () => {
+        await req
+            .get(SETTINGS.PATH.BLOGS)
+            .expect(200)
+    });
 })
