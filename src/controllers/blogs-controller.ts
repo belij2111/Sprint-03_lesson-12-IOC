@@ -3,7 +3,7 @@ import {InputBlogType, OutputBlogType} from "../types/blog-types";
 import {blogsMongoQueryRepository} from "../repositories/blogs-mongo-query-repository";
 import {OutputPostType} from "../types/post-types";
 import {postsMongoQueryRepository} from "../repositories/posts-mongo-query-repository";
-import {Paginator} from "../types/paginator-types";
+import {Paginator} from "../common/types/paginator-types";
 import {
     SearchNameTermFieldsType,
     searchNameTermUtil,

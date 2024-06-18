@@ -3,7 +3,7 @@ import {PostDbType} from "../db/post-db-type";
 import {blogCollection, postCollection} from "../db/mongo-db";
 import {BlogDBType} from "../db/blog-db-type";
 import {ObjectId} from "mongodb";
-import {Paginator} from "../types/paginator-types";
+import {Paginator} from "../common/types/paginator-types";
 import {SortQueryFilterType} from "../common/helpers/sort-query-fields-util";
 
 export const postsMongoQueryRepository = {

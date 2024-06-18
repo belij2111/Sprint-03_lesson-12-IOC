@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import {Paginator} from "../types/paginator-types";
+import {Paginator} from "../common/types/paginator-types";
 import {
     SearchEmailTermFieldsType,
     searchEmailTermUtil,

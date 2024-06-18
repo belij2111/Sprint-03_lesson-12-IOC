@@ -1,6 +1,6 @@
 import {ObjectId} from "mongodb";
 import {userCollection} from "../db/mongo-db";
-import {Paginator} from "../types/paginator-types";
+import {Paginator} from "../common/types/paginator-types";
 import {OutputUserType, QueryUserFilterType} from "../types/user-types";
 import {UserDbType} from "../db/user-db-type";
 

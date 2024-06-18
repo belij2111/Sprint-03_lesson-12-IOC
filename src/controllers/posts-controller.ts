@@ -1,7 +1,7 @@
 import {Request, Response} from "express"
 import {InputPostType, OutputPostType} from "../types/post-types";
 import {postsMongoQueryRepository} from "../repositories/posts-mongo-query-repository";
-import {Paginator} from "../types/paginator-types";
+import {Paginator} from "../common/types/paginator-types";
 import {SortQueryFieldsType, sortQueryFieldsUtil} from "../common/helpers/sort-query-fields-util";
 import {postsService} from "../services/posts-service";
 

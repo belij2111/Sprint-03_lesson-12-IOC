@@ -2,7 +2,7 @@ import {OutputBlogType, QueryBlogFilterType} from "../types/blog-types";
 import {BlogDBType} from "../db/blog-db-type";
 import {ObjectId} from "mongodb";
 import {blogCollection} from "../db/mongo-db";
-import {Paginator} from "../types/paginator-types";
+import {Paginator} from "../common/types/paginator-types";
 
 export const blogsMongoQueryRepository = {
     async getBlogs(inputQuery: QueryBlogFilterType): Promise<Paginator<OutputBlogType[]>> {
