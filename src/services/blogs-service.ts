@@ -2,7 +2,7 @@ import {InputBlogType} from "../types/blog-types";
 import {BlogDBType} from "../db/blog-db-type";
 import {ObjectId} from "mongodb";
 import {blogCollection} from "../db/mongo-db";
-import {dateTimeIsoString} from "../common/helpers/date-time -iso-string";
+import {dateTimeIsoString} from "../common/helpers/date-time-iso-string";
 import {blogsMongoRepository} from "../repositories/blogs-mongo-repository";
 
 export const blogsService = {
