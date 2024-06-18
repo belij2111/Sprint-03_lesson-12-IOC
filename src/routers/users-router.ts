@@ -1,7 +1,7 @@
 import {Router} from "express"
 import {usersController} from "../controllers/users-controller";
-import {authMiddleware} from "../validators/auth-middleware";
-import {inputValidationMiddleware} from "../validators/input-validation-middlware";
+import {authMiddleware} from "../common/middlewares/auth-middleware";
+import {inputValidationMiddleware} from "../common/middlewares/input-validation-middlware";
 import {usersInputValidationMiddleware} from "../validators/users-input-validation-middleware";
 
 export const usersRouter = Router()

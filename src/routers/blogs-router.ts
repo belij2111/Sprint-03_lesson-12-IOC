@@ -4,8 +4,8 @@ import {
     getBlogByIdController,
     getBlogsController, getPostsByBlogIdController, updateBlogByIdController,
 } from "../controllers/blogs-controller"
-import {authMiddleware} from "../validators/auth-middleware";
-import {inputValidationMiddleware, notFoundValidationMiddleware} from "../validators/input-validation-middlware";
+import {authMiddleware} from "../common/middlewares/auth-middleware";
+import {inputValidationMiddleware, notFoundValidationMiddleware} from "../common/middlewares/input-validation-middlware";
 import {blogsInputValidationMiddleware} from "../validators/blogs-input-validation-middleware";
 import {
     paramsBlogIdInputValidation,

@@ -5,8 +5,8 @@ import {
     getPostController,
     updatePostController
 } from "../controllers/posts-controller";
-import {authMiddleware} from "../validators/auth-middleware";
-import {inputValidationMiddleware} from "../validators/input-validation-middlware";
+import {authMiddleware} from "../common/middlewares/auth-middleware";
+import {inputValidationMiddleware} from "../common/middlewares/input-validation-middlware";
 import {postsInputValidationMiddleware} from "../validators/posts-input-validation-middleware";
 
 export const postsRouter = Router()
