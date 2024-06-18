@@ -4,13 +4,13 @@ import {
     getBlogByIdController,
     getBlogsController, getPostsByBlogIdController, updateBlogByIdController,
 } from "../controllers/blogs-controller"
-import {authMiddleware} from "../middlewares/auth-middleware";
-import {inputValidationMiddleware, notFoundValidationMiddleware} from "../middlewares/input-validation-middlware";
-import {blogsInputValidationMiddleware} from "../middlewares/blogs-input-validation-middleware";
+import {authMiddleware} from "../validators/auth-middleware";
+import {inputValidationMiddleware, notFoundValidationMiddleware} from "../validators/input-validation-middlware";
+import {blogsInputValidationMiddleware} from "../validators/blogs-input-validation-middleware";
 import {
     paramsBlogIdInputValidation,
     postForBlogInputValidationMiddleware
-} from "../middlewares/posts-input-validation-middleware";
+} from "../validators/posts-input-validation-middleware";
 
 export const blogsRouter = Router()
 
