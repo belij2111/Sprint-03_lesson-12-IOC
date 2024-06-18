@@ -6,7 +6,7 @@ import {
     SearchLoginTermFieldsType, searchLoginTermUtil,
     SortQueryFieldsType,
     sortQueryFieldsUtil
-} from "../helpers/sort-query-fields-util";
+} from "../common/helpers/sort-query-fields-util";
 import {usersService} from "../services/users-service";
 import {usersMongoQueryRepository} from "../repositories/users-mongo-query-repository";
 import {OutputUserType} from "../types/user-types";

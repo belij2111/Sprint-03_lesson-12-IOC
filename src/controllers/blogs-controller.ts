@@ -9,7 +9,7 @@ import {
     searchNameTermUtil,
     SortQueryFieldsType,
     sortQueryFieldsUtil
-} from "../helpers/sort-query-fields-util";
+} from "../common/helpers/sort-query-fields-util";
 import {blogsService} from "../services/blogs-service";
 import {postsService} from "../services/posts-service";
 

@@ -1,7 +1,7 @@
 import {InputPostType} from "../types/post-types";
 import {PostDbType} from "../db/post-db-type";
 import {ObjectId} from "mongodb";
-import {dateTimeIsoString} from "../helpers/date-time -iso-string";
+import {dateTimeIsoString} from "../common/helpers/date-time -iso-string";
 import {postsMongoRepository} from "../repositories/posts-mongo-repository";
 
 export const postsService = {

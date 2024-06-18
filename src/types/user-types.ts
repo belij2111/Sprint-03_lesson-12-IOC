@@ -2,7 +2,7 @@ import {
     SearchEmailTermFilterType,
     SearchLoginTermFilterType,
     SortQueryFilterType
-} from "../helpers/sort-query-fields-util";
+} from "../common/helpers/sort-query-fields-util";
 
 export interface OutputUserType {
     id: string,

@@ -1,4 +1,4 @@
-import {SearchNameTermFilterType, SortQueryFilterType} from "../helpers/sort-query-fields-util";
+import {SearchNameTermFilterType, SortQueryFilterType} from "../common/helpers/sort-query-fields-util";
 
 export interface OutputBlogType {
     id: string,
