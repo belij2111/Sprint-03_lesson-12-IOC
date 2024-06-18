@@ -3,7 +3,7 @@ import {dateTimeIsoString} from "../helpers/date-time -iso-string";
 import {InputUserType} from "../types/user-types";
 import {UserDbType} from "../db/user-db-type";
 import {usersMongoRepository} from "../repositories/users-mongo-repository";
-import {bcryptService} from "../adapters/bcrypt-service";
+import {bcryptService} from "../common/adapters/bcrypt-service";
 
 export const usersService = {
     async createUser(inputUser: InputUserType): Promise<{ id: string }> {

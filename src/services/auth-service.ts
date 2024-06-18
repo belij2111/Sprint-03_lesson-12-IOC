@@ -1,6 +1,6 @@
 import {usersMongoRepository} from "../repositories/users-mongo-repository";
 import {LoginInputType} from "../types/auth-types";
-import {bcryptService} from "../adapters/bcrypt-service";
+import {bcryptService} from "../common/adapters/bcrypt-service";
 import {UserDbType} from "../db/user-db-type";
 
 export const authService = {
