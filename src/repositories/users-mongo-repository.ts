@@ -26,5 +26,9 @@ export const usersMongoRepository = {
 
     async findById(id: ObjectId): Promise<UserDbType | null> {
         return await userCollection.findOne({_id: id})
+    },
+
+    checkObjectId(id: string): boolean {
+        return ObjectId.isValid(id)
     }
 }
