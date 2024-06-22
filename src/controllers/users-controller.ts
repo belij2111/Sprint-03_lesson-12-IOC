@@ -12,53 +12,72 @@ import {usersService} from "../services/users-service";
 import {usersMongoQueryRepository} from "../repositories/users-mongo-query-repository";
 import {OutputUserType} from "../types/user-types";
 import {ResultStatus} from "../common/types/result-code";
+import {ErrorResponse} from "../common/types/error-response";
 
 export const usersController = {
-    async create(req: Request, res: Response) {
-        const createdInfo = await usersService.createUser(req.body)
-        if (createdInfo.status === ResultStatus.BadRequest) {
+    create: async function (req: Request, res: Response) {
+        try {
+            const createdInfo = await usersService.createUser(req.body)
+            if (createdInfo.status === ResultStatus.BadRequest) {
+                res
+                    .status(400)
+                    .json({errorsMessages: createdInfo.extensions || []})
+                return
+            }
+            if (createdInfo.data && createdInfo.status === ResultStatus.Success) {
+                const newUser = await usersMongoQueryRepository.getUserById(createdInfo.data.id)
+                res
+                    .status(201)
+                    .json(newUser)
+                return
+            }
+        } catch (error) {
             res
-                .status(400)
-                .json({errorsMessages: createdInfo.extensions || []})
-            return
-        }
-        if (createdInfo.data && createdInfo.status === ResultStatus.Success) {
-            const newUser = await usersMongoQueryRepository.getUserById(createdInfo.data.id)
-            res
-                .status(201)
-                .json(newUser)
-            return
+                .status(500)
+                .json({message: 'usersController.create'})
         }
     },
 
-    async get(req: Request<SortQueryFieldsType & SearchLoginTermFieldsType & SearchEmailTermFieldsType>, res: Response<Paginator<OutputUserType[]>>) {
-        const inputQuery = {
-            ...sortQueryFieldsUtil(req.query),
-            ...searchLoginTermUtil(req.query),
-            ...searchEmailTermUtil(req.query)
+    async get(req: Request<SortQueryFieldsType & SearchLoginTermFieldsType & SearchEmailTermFieldsType>, res: Response<Paginator<OutputUserType[]> | ErrorResponse>) {
+        try {
+            const inputQuery = {
+                ...sortQueryFieldsUtil(req.query),
+                ...searchLoginTermUtil(req.query),
+                ...searchEmailTermUtil(req.query)
+            }
+            const allUsers = await usersMongoQueryRepository.getUsers(inputQuery)
+            res
+                .status(200)
+                .json(allUsers)
+        } catch (error) {
+            res
+                .status(500)
+                .json({message: 'usersController.get'})
         }
-        const allUsers = await usersMongoQueryRepository.getUsers(inputQuery)
-        res
-            .status(200)
-            .json(allUsers)
     },
 
     async delete(req: Request<{ id: string }>, res: Response) {
-        const deleteUser = await usersService.deleteUserById(req.params.id)
-        if (deleteUser.status === ResultStatus.NotFound) {
+        try {
+            const deleteUser = await usersService.deleteUserById(req.params.id)
+            if (deleteUser.status === ResultStatus.NotFound) {
+                res
+                    .status(404)
+                    .json({errorsMessages: deleteUser.extensions || []})
+                return
+            }
+            if (deleteUser.status === ResultStatus.BadRequest) {
+                res
+                    .status(400)
+                    .json({errorsMessages: deleteUser.extensions || []})
+                return
+            }
             res
-                .status(404)
+                .status(204)
                 .json({errorsMessages: deleteUser.extensions || []})
-            return
-        }
-        if (deleteUser.status === ResultStatus.BadRequest) {
+        } catch (error) {
             res
-                .status(400)
-                .json({errorsMessages: deleteUser.extensions || []})
-            return
+                .status(500)
+                .json({message: 'usersController.delete'})
         }
-        res
-            .status(204)
-            .json({errorsMessages: deleteUser.extensions || []})
     }
 }
