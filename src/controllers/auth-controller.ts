@@ -14,8 +14,8 @@ export const authController = {
             }
             if (result.status === ResultStatus.Success) {
                 res
-                    .status(204)
-                    .json({})
+                    .status(200)
+                    .json(result.data)
                 return
             }
         } catch (error) {

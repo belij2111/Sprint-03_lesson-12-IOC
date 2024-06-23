@@ -1,12 +1,30 @@
 import {usersMongoRepository} from "../repositories/users-mongo-repository";
-import {LoginInputType} from "../types/auth-types";
+import {LoginInputType, LoginSuccessOutputType} from "../types/auth-types";
 import {bcryptService} from "../common/adapters/bcrypt-service";
 import {UserDbType} from "../db/user-db-type";
 import {Result} from "../common/types/result-type";
 import {ResultStatus} from "../common/types/result-code";
+import {jwtService} from "../common/adapters/jwt-service";
 
 export const authService = {
-    async loginUser(inputAuth: LoginInputType): Promise<Result<boolean | null>> {
+    async loginUser(inputAuth: LoginInputType): Promise<Result<LoginSuccessOutputType | null>> {
+        const userAuth = await this.authenticateUser(inputAuth)
+        if (userAuth.status === ResultStatus.Unauthorized) {
+            return {
+                status: ResultStatus.Unauthorized,
+                extensions: userAuth.extensions,
+                data: null
+            }
+        }
+        const accessToken = await jwtService.createToken(userAuth.data)
+        console.log(accessToken)
+        return {
+            status: ResultStatus.Success,
+            data: {accessToken}
+        }
+    },
+
+    async authenticateUser(inputAuth: LoginInputType): Promise<Result<string | null>> {
         const userAuth: UserDbType | null = await usersMongoRepository.findByLoginOrEmail(inputAuth)
         if (!userAuth) {
             return {
@@ -25,13 +43,7 @@ export const authService = {
         }
         return {
             status: ResultStatus.Success,
-            data: result
+            data: userAuth._id.toString()
         }
     }
-
-    // async loginUser(inputAuth: LoginInputType): Promise<boolean> {
-    //     const userAuth: UserDbType | null = await usersMongoRepository.findByLoginOrEmail(inputAuth)
-    //     if (!userAuth) return false
-    //     return await bcryptService.checkPassword(inputAuth.password, userAuth.password)
-    // }
 }
