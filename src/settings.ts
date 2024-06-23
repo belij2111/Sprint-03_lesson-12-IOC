@@ -12,6 +12,8 @@ export const SETTINGS = {
         TESTING: '/testing/all-data'
     },
     ADMIN_AUTH: process.env.ADMIN_AUTH || '',
+    SECRET_KEY: process.env.SECRET_KEY || '',
+    TOKEN_DURATION: process.env.TOKEN_DURATION || '',
     MONGO_URL: process.env.MONGO_URL || '',
     DB_NAME: process.env.DB_NAME || '',
     BLOG_COLLECTION_NAME: process.env.BLOG_COLLECTION_NAME || '',
