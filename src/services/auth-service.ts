@@ -17,7 +17,6 @@ export const authService = {
             }
         }
         const accessToken = await jwtService.createToken(userAuth.data)
-        console.log(accessToken)
         return {
             status: ResultStatus.Success,
             data: {accessToken}
