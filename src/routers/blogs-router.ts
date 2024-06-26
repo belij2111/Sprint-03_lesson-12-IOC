@@ -4,7 +4,7 @@ import {
     getBlogByIdController,
     getBlogsController, getPostsByBlogIdController, updateBlogByIdController,
 } from "../controllers/blogs-controller"
-import {authMiddleware} from "../common/middlewares/auth-middleware";
+import {authBasicMiddleware} from "../common/middlewares/auth-basic-middleware";
 import {inputValidationMiddleware, notFoundValidationMiddleware} from "../common/middlewares/input-validation-middlware";
 import {blogsInputValidationMiddleware} from "../validators/blogs-input-validation-middleware";
 import {
@@ -14,10 +14,10 @@ import {
 
 export const blogsRouter = Router()
 
-blogsRouter.post('/', authMiddleware, blogsInputValidationMiddleware, inputValidationMiddleware, createBlogController)
+blogsRouter.post('/', authBasicMiddleware, blogsInputValidationMiddleware, inputValidationMiddleware, createBlogController)
 blogsRouter.get('/', getBlogsController)
 blogsRouter.post('/:blogId/posts',
-    authMiddleware,
+    authBasicMiddleware,
     postForBlogInputValidationMiddleware,
     inputValidationMiddleware,
     paramsBlogIdInputValidation,
@@ -25,5 +25,5 @@ blogsRouter.post('/:blogId/posts',
     createPostByBlogIdController)
 blogsRouter.get('/:blogId/posts', getPostsByBlogIdController)
 blogsRouter.get('/:id', getBlogByIdController)
-blogsRouter.put('/:id', authMiddleware, blogsInputValidationMiddleware, inputValidationMiddleware, updateBlogByIdController)
-blogsRouter.delete('/:id', authMiddleware, inputValidationMiddleware, deleteBlogByIdController)
+blogsRouter.put('/:id', authBasicMiddleware, blogsInputValidationMiddleware, inputValidationMiddleware, updateBlogByIdController)
+blogsRouter.delete('/:id', authBasicMiddleware, inputValidationMiddleware, deleteBlogByIdController)
