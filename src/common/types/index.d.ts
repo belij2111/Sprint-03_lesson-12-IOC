@@ -1,7 +1,10 @@
+import {UserDbType} from "../../db/user-db-type";
+import {JwtPayload} from "jsonwebtoken";
+
 declare global {
     namespace Express {
         export interface Request {
-            userId: string | null
+            user: JwtPayload
         }
     }
 }
