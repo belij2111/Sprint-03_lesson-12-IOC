@@ -3,6 +3,7 @@ import {userCollection} from "../db/mongo-db";
 import {Paginator} from "../common/types/paginator-types";
 import {OutputUserType, QueryUserFilterType} from "../types/user-types";
 import {UserDbType} from "../db/user-db-type";
+import {MeOutputType} from "../types/auth-types";
 
 export const usersMongoQueryRepository = {
     async getUsers(inputQuery: QueryUserFilterType): Promise<Paginator<OutputUserType[]>> {
@@ -46,6 +47,13 @@ export const usersMongoQueryRepository = {
         return this.userMapToOutput(user)
     },
 
+    async getAuthUserById(id: string): Promise<MeOutputType | null> {
+        if (!this.checkObjectId(id)) return null
+        const user = await this.findById(new ObjectId(id))
+        if (!user) return null
+        return this.authUserMapToOutput(user)
+    },
+
     async findById(id: ObjectId): Promise<UserDbType | null> {
         return await userCollection.findOne({_id: id})
     },
@@ -56,6 +64,14 @@ export const usersMongoQueryRepository = {
             login: user.login,
             email: user.email,
             createdAt: user.createdAt
+        }
+    },
+
+    authUserMapToOutput(user: UserDbType): MeOutputType {
+        return {
+            userId: user._id.toString(),
+            login: user.login,
+            email: user.email
         }
     },
 
