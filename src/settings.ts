@@ -9,7 +9,7 @@ export const SETTINGS = {
         POSTS: '/posts',
         AUTH: '/auth',
         USERS: '/users',
-        COMMENTS: '/users',
+        COMMENTS: '/comments',
         TESTING: '/testing/all-data'
     },
     ADMIN_AUTH: process.env.ADMIN_AUTH || '',
