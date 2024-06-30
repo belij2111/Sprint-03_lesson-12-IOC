@@ -87,10 +87,10 @@ export const createCommentByPostIdController = async (req: Request, res: Respons
             return
         }
         if (createdInfo.data && createdInfo.status === ResultStatus.Success) {
-            const newCommment = await commentsMongoQueryRepository.getCommentsById(createdInfo.data.id)
+            const newComment = await commentsMongoQueryRepository.getCommentsById(createdInfo.data.id)
             res
                 .status(201)
-                .json(newCommment)
+                .json(newComment)
             return
         }
     } catch (error) {
