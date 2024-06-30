@@ -4,6 +4,9 @@ import {postsMongoQueryRepository} from "../repositories/posts-mongo-query-repos
 import {Paginator} from "../common/types/paginator-types";
 import {SortQueryFieldsType, sortQueryFieldsUtil} from "../common/helpers/sort-query-fields-util";
 import {postsService} from "../services/posts-service";
+import {commentsService} from "../services/comments-service";
+import {ResultStatus} from "../common/types/result-code";
+import {commentsMongoQueryRepository} from "../repositories/comments-mongo-query-repository";
 
 export const createPostController = async (req: Request, res: Response) => {
     const createdInfo = await postsService.createPost(req.body)
@@ -66,4 +69,33 @@ export const deletePostByIdController = async (req: Request<{ id: string }>, res
     res
         .status(204)
         .json({message: 'Post deleted successfully'})
+}
+
+export const createCommentByPostIdController = async (req: Request, res: Response) => {
+    try {
+        const createdInfo = await commentsService.createComment(req.params.postId, req.user.id, req.body)
+        if (createdInfo.status === ResultStatus.Unauthorized) {
+            res
+                .status(401)
+                .json({errorsMessages: createdInfo.extensions || []})
+            return
+        }
+        if (createdInfo.status === ResultStatus.NotFound) {
+            res
+                .status(400)
+                .json({errorsMessages: createdInfo.extensions || []})
+            return
+        }
+        if (createdInfo.data && createdInfo.status === ResultStatus.Success) {
+            const newCommment = await commentsMongoQueryRepository.getCommentsById(createdInfo.data.id)
+            res
+                .status(201)
+                .json(newCommment)
+            return
+        }
+    } catch (error) {
+        res
+            .status(500)
+            .json({message: 'createCommentByPostIdController'})
+    }
 }
