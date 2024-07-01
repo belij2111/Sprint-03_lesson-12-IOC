@@ -87,7 +87,7 @@ export const createCommentByPostIdController = async (req: Request, res: Respons
             return
         }
         if (createdInfo.data && createdInfo.status === ResultStatus.Success) {
-            const newComment = await commentsMongoQueryRepository.getCommentsById(createdInfo.data.id)
+            const newComment = await commentsMongoQueryRepository.getCommentById(createdInfo.data.id)
             res
                 .status(201)
                 .json(newComment)

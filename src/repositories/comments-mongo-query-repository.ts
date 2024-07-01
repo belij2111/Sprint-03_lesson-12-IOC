@@ -4,7 +4,7 @@ import {commentCollection} from "../db/mongo-db";
 import {CommentDbType} from "../db/comment-db-type";
 
 export const commentsMongoQueryRepository = {
-    async getCommentsById(id: string): Promise<OutputCommentType | null> {
+    async getCommentById(id: string): Promise<OutputCommentType | null> {
         if (!this.checkObjectId(id)) return null
         const comment = await this.findById(new ObjectId(id))
         if (!comment) return null

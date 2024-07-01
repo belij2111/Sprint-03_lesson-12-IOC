@@ -4,7 +4,7 @@ import {commentsMongoQueryRepository} from "../repositories/comments-mongo-query
 export const commentsController = {
     async getById(req: Request<{ id: string }>, res: Response) {
         try {
-            const getComment = await commentsMongoQueryRepository.getCommentsById(req.params.id)
+            const getComment = await commentsMongoQueryRepository.getCommentById(req.params.id)
             if (!getComment) {
                 res
                     .status(404)
