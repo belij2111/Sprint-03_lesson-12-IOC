@@ -1,7 +1,7 @@
 import {Router} from "express";
 import {
     createCommentByPostIdController,
-    createPostController, deletePostByIdController,
+    createPostController, deletePostByIdController, getCommentsByPostIdController,
     getPostByIdController,
     getPostController,
     updatePostController
@@ -20,3 +20,4 @@ postsRouter.get('/:id', getPostByIdController)
 postsRouter.put('/:id', authBasicMiddleware, postsInputValidationMiddleware, inputValidationMiddleware, updatePostController)
 postsRouter.delete('/:id', authBasicMiddleware, inputValidationMiddleware, deletePostByIdController)
 postsRouter.post('/:postId/comments', authBearerMiddleware, commentsInputValidationMiddleware, inputValidationMiddleware, createCommentByPostIdController)
+postsRouter.get('/:postId/comments', getCommentsByPostIdController)
