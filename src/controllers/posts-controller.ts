@@ -7,6 +7,7 @@ import {postsService} from "../services/posts-service";
 import {commentsService} from "../services/comments-service";
 import {ResultStatus} from "../common/types/result-code";
 import {commentsMongoQueryRepository} from "../repositories/comments-mongo-query-repository";
+import {OutputCommentType} from "../types/comment-types";
 
 export const createPostController = async (req: Request, res: Response) => {
     const createdInfo = await postsService.createPost(req.body)
@@ -98,4 +99,22 @@ export const createCommentByPostIdController = async (req: Request, res: Respons
             .status(500)
             .json({message: 'createCommentByPostIdController'})
     }
+}
+
+export const getCommentsByPostIdController = async (req: Request<{
+    postId: string
+}, {}, {}, SortQueryFieldsType>, res: Response<Paginator<OutputCommentType[]>>) => {
+    const inputQuery = {
+        ...sortQueryFieldsUtil(req.query)
+    }
+    const postId = req.params.postId
+    const comments = await commentsMongoQueryRepository.getCommentsByPostId(postId, inputQuery)
+    if (!comments) {
+        res
+            .sendStatus(404)
+        return
+    }
+    res
+        .status(200)
+        .json(comments)
 }
