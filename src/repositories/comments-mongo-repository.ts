@@ -17,6 +17,11 @@ export const commentsMongoRepository = {
         return await commentCollection.findOne({_id: id})
     },
 
+    async deleteById(findComment: CommentDbType): Promise<boolean | null> {
+        await commentCollection.deleteOne(findComment)
+        return true
+    },
+
     checkObjectId(id: string): boolean {
         return ObjectId.isValid(id)
     }

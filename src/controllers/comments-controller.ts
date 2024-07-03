@@ -48,5 +48,36 @@ export const commentsController = {
                 .status(500)
                 .json({message: 'commentController.update'})
         }
+    },
+
+    async delete(req: Request<{ commentId: string }>, res: Response) {
+        try {
+            const deleteComment = await commentsService.deleteCommentById(req.params.commentId, req.user.id)
+            if (deleteComment.status === ResultStatus.BadRequest) {
+                res
+                    .status(400)
+                    .json({errorsMessages: deleteComment.extensions || []})
+                return
+            }
+            if (deleteComment.status === ResultStatus.NotFound) {
+                res
+                    .status(404)
+                    .json({errorsMessages: deleteComment.extensions || []})
+                return
+            }
+            if (deleteComment.status === ResultStatus.Forbidden) {
+                res
+                    .status(403)
+                    .json({errorsMessages: deleteComment.extensions || []})
+                return
+            }
+            res
+                .status(204)
+                .json({})
+        } catch (error) {
+            res
+                .status(500)
+                .json({message: 'commentController.update'})
+        }
     }
 }

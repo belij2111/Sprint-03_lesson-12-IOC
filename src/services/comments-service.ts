@@ -71,5 +71,35 @@ export const commentsService = {
             status: ResultStatus.Success,
             data: result
         }
+    },
+
+    async deleteCommentById(id: string, userId: string): Promise<Result<boolean | null>> {
+        const checkId = commentsMongoRepository.checkObjectId(id)
+        if (!checkId)
+            return {
+                status: ResultStatus.BadRequest,
+                extensions: [{field: 'checkId', message: 'Invalid id'}],
+                data: null
+            }
+        const findComment = await commentsMongoRepository.findById(new ObjectId(id))
+        if (!findComment) {
+            return {
+                status: ResultStatus.NotFound,
+                extensions: [{field: 'findComment', message: 'Comment not found'}],
+                data: null
+            }
+        }
+        if (findComment.commentatorInfo.userId !== userId) {
+            return {
+                status: ResultStatus.Forbidden,
+                extensions: [{field: 'user', message: 'The comment is not your own'}],
+                data: null
+            }
+        }
+        const result = await commentsMongoRepository.deleteById(findComment)
+        return {
+            status: ResultStatus.Success,
+            data: result
+        }
     }
 }
