@@ -83,7 +83,7 @@ export const createCommentByPostIdController = async (req: Request, res: Respons
         }
         if (createdInfo.status === ResultStatus.NotFound) {
             res
-                .status(400)
+                .status(404)
                 .json({errorsMessages: createdInfo.extensions || []})
             return
         }
