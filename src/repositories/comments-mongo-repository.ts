@@ -8,6 +8,15 @@ export const commentsMongoRepository = {
         return {id: result.insertedId.toString()}
     },
 
+    async update(findComment: CommentDbType, updateComment: Object): Promise<boolean | null> {
+        await commentCollection.updateOne(findComment, {$set: updateComment})
+        return true
+    },
+
+    async findById(id: ObjectId): Promise<CommentDbType | null> {
+        return await commentCollection.findOne({_id: id})
+    },
+
     checkObjectId(id: string): boolean {
         return ObjectId.isValid(id)
     }

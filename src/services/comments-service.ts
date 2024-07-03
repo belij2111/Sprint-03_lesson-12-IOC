@@ -22,7 +22,6 @@ export const commentsService = {
                 data: null
             }
         }
-
         const existingPost: PostDbType | null = await postsMongoRepository.findById(new ObjectId(postId))
         if (!existingPost) {
             return {
@@ -31,7 +30,6 @@ export const commentsService = {
                 data: null
             }
         }
-
         const createNewComment: CommentDbType = {
             _id: new ObjectId(),
             content: inputComment.content,
@@ -43,6 +41,32 @@ export const commentsService = {
             postId: new ObjectId(postId)
         }
         const result = await commentsMongoRepository.create(createNewComment)
+        return {
+            status: ResultStatus.Success,
+            data: result
+        }
+    },
+
+    async updateComment(id: string, inputComment: InputCommentType, userId: string): Promise<Result<boolean | null>> {
+        const findComment = await commentsMongoRepository.findById(new ObjectId(id))
+        if (!findComment) {
+            return {
+                status: ResultStatus.NotFound,
+                extensions: [{field: 'findComment', message: 'Comment not found'}],
+                data: null
+            }
+        }
+        if (findComment.commentatorInfo.userId !== userId) {
+            return {
+                status: ResultStatus.Forbidden,
+                extensions: [{field: 'user', message: 'The comment is not your own'}],
+                data: null
+            }
+        }
+        const updatePost = {
+            content: inputComment.content
+        }
+        const result = await commentsMongoRepository.update(findComment, updatePost)
         return {
             status: ResultStatus.Success,
             data: result
