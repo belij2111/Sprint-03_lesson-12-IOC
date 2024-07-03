@@ -63,10 +63,10 @@ export const commentsService = {
                 data: null
             }
         }
-        const updatePost = {
+        const updateComment = {
             content: inputComment.content
         }
-        const result = await commentsMongoRepository.update(findComment, updatePost)
+        const result = await commentsMongoRepository.update(findComment, updateComment)
         return {
             status: ResultStatus.Success,
             data: result
