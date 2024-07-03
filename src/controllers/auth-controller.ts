@@ -47,7 +47,7 @@ export const authController = {
         } catch (error) {
             res
                 .status(500)
-                .json({message: 'authController.login'})
+                .json({message: 'authController.get'})
         }
     }
 }
