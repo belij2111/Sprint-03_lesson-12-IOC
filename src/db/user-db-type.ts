@@ -5,5 +5,10 @@ export interface UserDbType {
     login: string,
     password: string,
     email: string,
-    createdAt: string
+    createdAt: string,
+    emailConfirmation: {
+        confirmationCode: string,
+        expirationDate: Date,
+        isConfirmed: boolean
+    }
 }

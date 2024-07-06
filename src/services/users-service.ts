@@ -6,6 +6,8 @@ import {usersMongoRepository} from "../repositories/users-mongo-repository";
 import {bcryptService} from "../common/adapters/bcrypt-service";
 import {Result} from "../common/types/result-type";
 import {ResultStatus} from "../common/types/result-code";
+import {randomUUID} from "node:crypto";
+import {add} from "date-fns/add"
 
 export const usersService = {
     async createUser(inputUser: InputUserType): Promise<Result<{ id: string } | null>> {
@@ -34,7 +36,14 @@ export const usersService = {
             ...inputUser,
             password: passHash,
             _id: new ObjectId(),
-            createdAt: dateTimeIsoString()
+            createdAt: dateTimeIsoString(),
+            emailConfirmation: {
+                confirmationCode: randomUUID(),
+                expirationDate: add(new Date(), {
+                    hours: 1
+                }),
+                isConfirmed: true
+            }
         }
         const result = await usersMongoRepository.create(createNewUser)
         return {
