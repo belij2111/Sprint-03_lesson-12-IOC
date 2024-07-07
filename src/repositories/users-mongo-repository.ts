@@ -1,7 +1,7 @@
 import {ObjectId} from "mongodb";
 import {userCollection} from "../db/mongo-db";
 import {UserDbType} from "../db/user-db-type";
-import {LoginInputType} from "../types/auth-types";
+import {LoginInputType, RegistrationConfirmationCodeInputType} from "../types/auth-types";
 
 export const usersMongoRepository = {
     async create(inputUser: UserDbType): Promise<{ id: string }> {
@@ -22,6 +22,21 @@ export const usersMongoRepository = {
             ]
         }
         return await userCollection.findOne(filter)
+    },
+
+    async findByConfirmationCode(inputCode: RegistrationConfirmationCodeInputType): Promise<UserDbType | null> {
+        const filter = {
+            confirmationCode: inputCode.code
+        }
+        return await userCollection.findOne(filter)
+    },
+
+    async updateEmailConfirmation(userId: ObjectId, isConfirmed: boolean): Promise<boolean> {
+        const result = await userCollection.updateOne(
+            {_id: userId},
+            {$set: {'emailConfirmation.isConfirmed': isConfirmed}}
+        )
+        return result.modifiedCount !== 0
     },
 
     async findById(id: ObjectId): Promise<UserDbType | null> {

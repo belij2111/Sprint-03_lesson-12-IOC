@@ -1,5 +1,5 @@
 import {usersMongoRepository} from "../repositories/users-mongo-repository";
-import {LoginInputType, LoginSuccessOutputType} from "../types/auth-types";
+import {LoginInputType, LoginSuccessOutputType, RegistrationConfirmationCodeInputType} from "../types/auth-types";
 import {bcryptService} from "../common/adapters/bcrypt-service";
 import {UserDbType} from "../db/user-db-type";
 import {Result} from "../common/types/result-type";
@@ -64,6 +64,37 @@ export const authService = {
         ).catch((error) => {
             console.error('Send email error', error)
         })
+        return {
+            status: ResultStatus.Success,
+            data: null
+        }
+    },
+
+    async confirmationRegistrationUser(inputCode: RegistrationConfirmationCodeInputType): Promise<Result<boolean | null>> {
+        const verifiedUser = await usersMongoRepository.findByConfirmationCode(inputCode)
+        if (!verifiedUser) {
+            return {
+                status: ResultStatus.BadRequest,
+                extensions: [{field: 'code', message: 'Confirmation code is incorrect'}],
+                data: null
+            }
+        }
+        if (verifiedUser.emailConfirmation.isConfirmed) {
+            return {
+                status: ResultStatus.BadRequest,
+                extensions: [{field: 'code', message: 'The account has already been confirmed'}],
+                data: null
+            }
+        }
+        if (verifiedUser.emailConfirmation.expirationDate < new Date()) {
+            return {
+                status: ResultStatus.BadRequest,
+                extensions: [{field: 'code', message: 'The confirmation code has expired'}],
+                data: null
+            }
+        }
+        const isConfirmed = true
+        await usersMongoRepository.updateEmailConfirmation(verifiedUser._id, isConfirmed)
         return {
             status: ResultStatus.Success,
             data: null

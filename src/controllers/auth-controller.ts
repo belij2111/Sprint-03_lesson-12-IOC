@@ -23,6 +23,25 @@ export const authController = {
         }
     },
 
+    async registrationConfirmation(req: Request, res: Response) {
+        try {
+            const result = await authService.confirmationRegistrationUser(req.body)
+            if (result.status === ResultStatus.BadRequest) {
+                res
+                    .status(400)
+                    .json({errorsMessages: result.extensions || []})
+                return
+            }
+            res
+                .status(204)
+                .json({})
+        } catch (error) {
+            res
+                .status(500)
+                .json({message: 'authController.registrationConfirmation'})
+        }
+    },
+
     async login(req: Request, res: Response) {
         try {
             const result = await authService.loginUser(req.body)
