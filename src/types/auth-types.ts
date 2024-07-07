@@ -12,3 +12,7 @@ export interface MeOutputType {
     login: string,
     userId: string
 }
+
+export interface RegistrationConfirmationCodeInputType {
+    code: string
+}
