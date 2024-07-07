@@ -4,6 +4,25 @@ import {ResultStatus} from "../common/types/result-code";
 import {usersMongoQueryRepository} from "../repositories/users-mongo-query-repository";
 
 export const authController = {
+    async registration(req: Request, res: Response) {
+        try {
+            const result = await authService.registerUser(req.body)
+            if (result.status === ResultStatus.BadRequest) {
+                res
+                    .status(400)
+                    .json({errorsMessages: result.extensions || []})
+                return
+            }
+            res
+                .status(204)
+                .json({})
+        } catch (error) {
+            res
+                .status(500)
+                .json({message: 'authController.registration'})
+        }
+    },
+
     async login(req: Request, res: Response) {
         try {
             const result = await authService.loginUser(req.body)

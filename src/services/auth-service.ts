@@ -5,8 +5,71 @@ import {UserDbType} from "../db/user-db-type";
 import {Result} from "../common/types/result-type";
 import {ResultStatus} from "../common/types/result-code";
 import {jwtService} from "../common/adapters/jwt-service";
+import {InputUserType} from "../types/user-types";
+import {ObjectId} from "mongodb";
+import {dateTimeIsoString} from "../common/helpers/date-time-iso-string";
+import {randomUUID} from "node:crypto";
+import {add} from "date-fns/add";
+import {nodemailerAdapter} from "../common/adapters/nodemailer-adapter";
 
 export const authService = {
+    async registerUser(inputUser: InputUserType): Promise<Result> {
+        if (!inputUser.login || !inputUser.password || !inputUser.email) {
+            return {
+                status: ResultStatus.BadRequest,
+                extensions: [{field: 'login,password,email', message: 'All fields are required'}],
+                data: null
+            }
+        }
+        const existingUserByLogin = await usersMongoRepository.findByLoginOrEmail({
+            loginOrEmail: inputUser.login,
+            password: inputUser.password
+        })
+        if (existingUserByLogin) {
+            return {
+                status: ResultStatus.BadRequest,
+                extensions: [{field: 'login', message: 'Login is not unique'}],
+                data: null
+            }
+        }
+        const existingUserByEmail = await usersMongoRepository.findByLoginOrEmail({
+            loginOrEmail: inputUser.email,
+            password: inputUser.password
+        })
+        if (existingUserByEmail) {
+            return {
+                status: ResultStatus.BadRequest,
+                extensions: [{field: 'email', message: 'Email is not unique'}],
+                data: null
+            }
+        }
+        const passHash = await bcryptService.generateHash(inputUser.password)
+        const createNewUser: UserDbType = {
+            ...inputUser,
+            password: passHash,
+            _id: new ObjectId(),
+            createdAt: dateTimeIsoString(),
+            emailConfirmation: {
+                confirmationCode: randomUUID(),
+                expirationDate: add(new Date(), {
+                    hours: 1
+                }),
+                isConfirmed: false
+            }
+        }
+        await usersMongoRepository.create(createNewUser)
+        nodemailerAdapter.sendEmail(
+            createNewUser.email,
+            createNewUser.emailConfirmation.confirmationCode
+        ).catch((error) => {
+            console.error('Send email error', error)
+        })
+        return {
+            status: ResultStatus.Success,
+            data: null
+        }
+    },
+
     async loginUser(inputAuth: LoginInputType): Promise<Result<LoginSuccessOutputType | null>> {
         const userAuth = await this.authenticateUser(inputAuth)
         if (userAuth.status === ResultStatus.Unauthorized) {
