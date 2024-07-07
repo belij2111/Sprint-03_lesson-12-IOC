@@ -20,5 +20,7 @@ export const SETTINGS = {
     BLOG_COLLECTION_NAME: process.env.BLOG_COLLECTION_NAME || '',
     POST_COLLECTION_NAME: process.env.POST_COLLECTION_NAME || '',
     USER_COLLECTION_NAME: process.env.USER_COLLECTION_NAME || '',
-    COMMENT_COLLECTION_NAME: process.env.COMMENT_COLLECTION_NAME || ''
+    COMMENT_COLLECTION_NAME: process.env.COMMENT_COLLECTION_NAME || '',
+    EMAIL: process.env.EMAIL || '',
+    EMAIL_PASS: process.env.EMAIL_PASS || ''
 }
