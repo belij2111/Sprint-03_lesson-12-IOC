@@ -16,3 +16,7 @@ export interface MeOutputType {
 export interface RegistrationConfirmationCodeInputType {
     code: string
 }
+
+export interface RegistrationEmailResendingInputType {
+    email: string
+}
