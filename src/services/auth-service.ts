@@ -1,5 +1,10 @@
 import {usersMongoRepository} from "../repositories/users-mongo-repository";
-import {LoginInputType, LoginSuccessOutputType, RegistrationConfirmationCodeInputType} from "../types/auth-types";
+import {
+    LoginInputType,
+    LoginSuccessOutputType,
+    RegistrationConfirmationCodeInputType,
+    RegistrationEmailResendingInputType
+} from "../types/auth-types";
 import {bcryptService} from "../common/adapters/bcrypt-service";
 import {UserDbType} from "../db/user-db-type";
 import {Result} from "../common/types/result-type";
@@ -95,6 +100,37 @@ export const authService = {
         }
         const isConfirmed = true
         await usersMongoRepository.updateEmailConfirmation(verifiedUser._id, isConfirmed)
+        return {
+            status: ResultStatus.Success,
+            data: null
+        }
+    },
+
+    async registrationEmailResending(inputEmail: RegistrationEmailResendingInputType): Promise<Result> {
+        const existingUserByEmail = await usersMongoRepository.findByEmail(inputEmail)
+        if (!existingUserByEmail) {
+            return {
+                status: ResultStatus.BadRequest,
+                extensions: [{field: 'email', message: 'User with this email does not exist'}],
+                data: null
+            }
+        }
+        if (existingUserByEmail.emailConfirmation.isConfirmed) {
+            return {
+                status: ResultStatus.BadRequest,
+                extensions: [{field: 'email', message: 'The account has already been confirmed'}],
+                data: null
+            }
+        }
+        const newConfirmationCode = randomUUID()
+        const newExpirationDate = add(new Date(), {
+            hours: 1
+        })
+        await usersMongoRepository.updateRegistrationConfirmation(existingUserByEmail._id, newConfirmationCode, newExpirationDate)
+        await nodemailerAdapter.sendEmail(
+            inputEmail.email,
+            newConfirmationCode
+        )
         return {
             status: ResultStatus.Success,
             data: null

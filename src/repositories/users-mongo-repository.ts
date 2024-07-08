@@ -1,7 +1,11 @@
 import {ObjectId} from "mongodb";
 import {userCollection} from "../db/mongo-db";
 import {UserDbType} from "../db/user-db-type";
-import {LoginInputType, RegistrationConfirmationCodeInputType} from "../types/auth-types";
+import {
+    LoginInputType,
+    RegistrationConfirmationCodeInputType,
+    RegistrationEmailResendingInputType
+} from "../types/auth-types";
 
 export const usersMongoRepository = {
     async create(inputUser: UserDbType): Promise<{ id: string }> {
@@ -24,9 +28,18 @@ export const usersMongoRepository = {
         return await userCollection.findOne(filter)
     },
 
+    async findByEmail(inputEmail: RegistrationEmailResendingInputType): Promise<UserDbType | null> {
+        const filter = {
+            email: inputEmail.email
+        }
+        return await userCollection.findOne(filter)
+    },
+
     async findByConfirmationCode(inputCode: RegistrationConfirmationCodeInputType): Promise<UserDbType | null> {
         const filter = {
-            confirmationCode: inputCode.code
+            'emailConfirmation.confirmationCode': inputCode.code,
+            'emailConfirmation.expirationDate': {$gt: new Date()},
+            'emailConfirmation.isConfirmed': false
         }
         return await userCollection.findOne(filter)
     },
@@ -35,6 +48,19 @@ export const usersMongoRepository = {
         const result = await userCollection.updateOne(
             {_id: userId},
             {$set: {'emailConfirmation.isConfirmed': isConfirmed}}
+        )
+        return result.modifiedCount !== 0
+    },
+
+    async updateRegistrationConfirmation(userId: ObjectId, code: string, expirationDate: Date) {
+        const result = await userCollection.updateOne(
+            {_id: userId},
+            {
+                $set: {
+                    'emailConfirmation.confirmationCode': code,
+                    'emailConfirmation.expirationDate': expirationDate
+                }
+            }
         )
         return result.modifiedCount !== 0
     },
