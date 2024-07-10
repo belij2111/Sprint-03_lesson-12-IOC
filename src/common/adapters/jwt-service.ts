@@ -2,11 +2,11 @@ import jwt from "jsonwebtoken"
 import {SETTINGS} from "../../settings";
 
 export const jwtService = {
-    async createToken(userId: string | null): Promise<string> {
+    async createToken(userId: string | null, duration: string): Promise<string> {
         return jwt.sign(
             {userId: userId},
             SETTINGS.SECRET_KEY,
-            {expiresIn: SETTINGS.TOKEN_DURATION}
+            {expiresIn: duration}
         )
     },
 
