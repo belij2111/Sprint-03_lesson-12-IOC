@@ -7,6 +7,11 @@ export interface LoginSuccessOutputType {
     accessToken: string
 }
 
+export interface LoginServiceOutputType {
+    accessToken: string,
+    refreshToken: string
+}
+
 export interface MeOutputType {
     email: string,
     login: string,
