@@ -1,6 +1,6 @@
 import {usersMongoRepository} from "../repositories/users-mongo-repository";
 import {
-    LoginInputType,
+    LoginInputType, LoginServiceOutputType,
     LoginSuccessOutputType,
     RegistrationConfirmationCodeInputType,
     RegistrationEmailResendingInputType
@@ -16,6 +16,7 @@ import {dateTimeIsoString} from "../common/helpers/date-time-iso-string";
 import {randomUUID} from "node:crypto";
 import {add} from "date-fns/add";
 import {nodemailerAdapter} from "../common/adapters/nodemailer-adapter";
+import {SETTINGS} from "../settings";
 
 export const authService = {
     async registerUser(inputUser: InputUserType): Promise<Result> {
@@ -137,7 +138,7 @@ export const authService = {
         }
     },
 
-    async loginUser(inputAuth: LoginInputType): Promise<Result<LoginSuccessOutputType | null>> {
+    async loginUser(inputAuth: LoginInputType): Promise<Result<LoginServiceOutputType | null>> {
         const userAuth = await this.authenticateUser(inputAuth)
         if (userAuth.status === ResultStatus.Unauthorized) {
             return {
@@ -146,10 +147,11 @@ export const authService = {
                 data: null
             }
         }
-        const accessToken = await jwtService.createToken(userAuth.data)
+        const accessToken = await jwtService.createToken(userAuth.data, SETTINGS.ACCESS_TOKEN_DURATION)
+        const refreshToken = await jwtService.createToken(userAuth.data, SETTINGS.REFRESH_TOKEN_DURATION)
         return {
             status: ResultStatus.Success,
-            data: {accessToken}
+            data: {accessToken, refreshToken}
         }
     },
 

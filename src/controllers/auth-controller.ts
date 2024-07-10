@@ -2,6 +2,7 @@ import {Request, Response} from "express";
 import {authService} from "../services/auth-service";
 import {ResultStatus} from "../common/types/result-code";
 import {usersMongoQueryRepository} from "../repositories/users-mongo-query-repository";
+import {LoginServiceOutputType} from "../types/auth-types";
 
 export const authController = {
     async registration(req: Request, res: Response) {
@@ -71,9 +72,11 @@ export const authController = {
                 return
             }
             if (result.status === ResultStatus.Success) {
+                const {accessToken, refreshToken} = result.data as LoginServiceOutputType
                 res
+                    .cookie("refreshToken", refreshToken, {httpOnly: true, secure: true})
                     .status(200)
-                    .json(result.data)
+                    .json({accessToken})
                 return
             }
         } catch (error) {
