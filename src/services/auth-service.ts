@@ -1,7 +1,6 @@
 import {usersMongoRepository} from "../repositories/users-mongo-repository";
 import {
     LoginInputType, LoginServiceOutputType,
-    LoginSuccessOutputType,
     RegistrationConfirmationCodeInputType,
     RegistrationEmailResendingInputType
 } from "../types/auth-types";
@@ -17,6 +16,9 @@ import {randomUUID} from "node:crypto";
 import {add} from "date-fns/add";
 import {nodemailerAdapter} from "../common/adapters/nodemailer-adapter";
 import {SETTINGS} from "../settings";
+import {authMongoRepository} from "../repositories/auth-mongo-repository";
+import {JwtPayload} from "jsonwebtoken";
+import {RefreshTokenDbType} from "../db/refresh-token-db-type";
 
 export const authService = {
     async registerUser(inputUser: InputUserType): Promise<Result> {
@@ -149,6 +151,26 @@ export const authService = {
         }
         const accessToken = await jwtService.createToken(userAuth.data, SETTINGS.ACCESS_TOKEN_DURATION)
         const refreshToken = await jwtService.createToken(userAuth.data, SETTINGS.REFRESH_TOKEN_DURATION)
+        return {
+            status: ResultStatus.Success,
+            data: {accessToken, refreshToken}
+        }
+    },
+
+    async refreshToken(oldRefreshToken: RefreshTokenDbType, userId: any): Promise<Result<LoginServiceOutputType | null>> {
+        const isBlacklisted = await authMongoRepository.findInBlackList(oldRefreshToken)
+        if (isBlacklisted) {
+            return {
+                status: ResultStatus.Unauthorized,
+                extensions: [{field: 'refreshToken', message: 'Refresh token is blacklisted'}],
+                data: null
+            }
+        }
+        await authMongoRepository.addToBlackList(oldRefreshToken)
+        // const decodedRefreshToken = await jwtService.verifyToken(oldRefreshToken) as JwtPayload
+        // const userId = decodedRefreshToken.userId
+        const accessToken = await jwtService.createToken(userId, SETTINGS.ACCESS_TOKEN_DURATION)
+        const refreshToken = await jwtService.createToken(userId, SETTINGS.REFRESH_TOKEN_DURATION)
         return {
             status: ResultStatus.Success,
             data: {accessToken, refreshToken}

@@ -3,6 +3,7 @@ import {authService} from "../services/auth-service";
 import {ResultStatus} from "../common/types/result-code";
 import {usersMongoQueryRepository} from "../repositories/users-mongo-query-repository";
 import {LoginServiceOutputType} from "../types/auth-types";
+import {RefreshTokenDbType} from "../db/refresh-token-db-type";
 
 export const authController = {
     async registration(req: Request, res: Response) {
@@ -108,6 +109,26 @@ export const authController = {
             res
                 .status(500)
                 .json({message: 'authController.get'})
+        }
+    },
+
+    async refreshToken(req: Request, res: Response) {
+        const refreshToken = req.cookies.refreshToken
+        const userId = req.user
+        const result = await authService.refreshToken(refreshToken,userId)
+        if (result.status === ResultStatus.Unauthorized) {
+            res
+                .status(401)
+                .json({errorsMessages: result.extensions || []})
+            return
+        }
+        if (result.status === ResultStatus.Success) {
+            const {accessToken, refreshToken} = result.data as LoginServiceOutputType
+            res
+                .cookie("refreshToken", refreshToken, {httpOnly: true, secure: true})
+                .status(200)
+                .json({accessToken})
+            return
         }
     }
 }
