@@ -157,15 +157,15 @@ export const authService = {
         }
     },
 
-    async refreshToken(oldRefreshToken: RefreshTokenDbType, userId: any): Promise<Result<LoginServiceOutputType | null>> {
-        const isBlacklisted = await authMongoRepository.findInBlackList(oldRefreshToken)
-        if (isBlacklisted) {
-            return {
-                status: ResultStatus.Unauthorized,
-                extensions: [{field: 'refreshToken', message: 'Refresh token is blacklisted'}],
-                data: null
-            }
-        }
+    async refreshToken(oldRefreshToken: string, userId: any): Promise<Result<LoginServiceOutputType | null>> {
+        // const isBlacklisted = await authMongoRepository.findInBlackList(oldRefreshToken)
+        // if (isBlacklisted) {
+        //     return {
+        //         status: ResultStatus.Unauthorized,
+        //         extensions: [{field: 'refreshToken', message: 'Refresh token is blacklisted'}],
+        //         data: null
+        //     }
+        // }
         await authMongoRepository.addToBlackList(oldRefreshToken)
         // const decodedRefreshToken = await jwtService.verifyToken(oldRefreshToken) as JwtPayload
         // const userId = decodedRefreshToken.userId

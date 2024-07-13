@@ -4,6 +4,7 @@ import {ResultStatus} from "../common/types/result-code";
 import {usersMongoQueryRepository} from "../repositories/users-mongo-query-repository";
 import {LoginServiceOutputType} from "../types/auth-types";
 import {RefreshTokenDbType} from "../db/refresh-token-db-type";
+import {authMongoRepository} from "../repositories/auth-mongo-repository";
 
 export const authController = {
     async registration(req: Request, res: Response) {
@@ -115,7 +116,7 @@ export const authController = {
     async refreshToken(req: Request, res: Response) {
         const refreshToken = req.cookies.refreshToken
         const userId = req.user
-        const result = await authService.refreshToken(refreshToken,userId)
+        const result = await authService.refreshToken(refreshToken, userId)
         if (result.status === ResultStatus.Unauthorized) {
             res
                 .status(401)
@@ -130,5 +131,14 @@ export const authController = {
                 .json({accessToken})
             return
         }
+    },
+
+    async logout(req: Request, res: Response) {
+        const refreshToken = req.cookies.refreshToken
+        await authMongoRepository.addToBlackList(refreshToken)
+        res
+            .clearCookie("refreshToken")
+            .status(204)
+            .json({})
     }
 }
