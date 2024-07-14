@@ -3,7 +3,6 @@ import {authService} from "../services/auth-service";
 import {ResultStatus} from "../common/types/result-code";
 import {usersMongoQueryRepository} from "../repositories/users-mongo-query-repository";
 import {LoginServiceOutputType} from "../types/auth-types";
-import {authMongoRepository} from "../repositories/auth-mongo-repository";
 
 export const authController = {
     async registration(req: Request, res: Response) {
@@ -134,10 +133,13 @@ export const authController = {
 
     async logout(req: Request, res: Response) {
         const refreshToken = req.cookies.refreshToken
-        await authMongoRepository.addToBlackList(refreshToken)
-        res
-            .clearCookie("refreshToken")
-            .status(204)
-            .json({})
+        const result = await authService.logout(refreshToken)
+        if (result.status === ResultStatus.Success) {
+            res
+                .clearCookie("refreshToken")
+                .status(204)
+                .json({})
+            return
+        }
     }
 }

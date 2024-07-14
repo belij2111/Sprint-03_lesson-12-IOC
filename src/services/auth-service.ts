@@ -1,6 +1,7 @@
 import {usersMongoRepository} from "../repositories/users-mongo-repository";
 import {
-    LoginInputType, LoginServiceOutputType,
+    LoginInputType,
+    LoginServiceOutputType,
     RegistrationConfirmationCodeInputType,
     RegistrationEmailResendingInputType
 } from "../types/auth-types";
@@ -162,6 +163,14 @@ export const authService = {
         return {
             status: ResultStatus.Success,
             data: {accessToken, refreshToken}
+        }
+    },
+
+    async logout(oldRefreshToken: string): Promise<Result> {
+        await authMongoRepository.addToBlackList(oldRefreshToken)
+        return {
+            status: ResultStatus.Success,
+            data: null
         }
     },
 
