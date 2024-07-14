@@ -3,7 +3,6 @@ import {authService} from "../services/auth-service";
 import {ResultStatus} from "../common/types/result-code";
 import {usersMongoQueryRepository} from "../repositories/users-mongo-query-repository";
 import {LoginServiceOutputType} from "../types/auth-types";
-import {RefreshTokenDbType} from "../db/refresh-token-db-type";
 import {authMongoRepository} from "../repositories/auth-mongo-repository";
 
 export const authController = {
