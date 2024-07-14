@@ -112,34 +112,46 @@ export const authController = {
     },
 
     async refreshToken(req: Request, res: Response) {
-        const refreshToken = req.cookies.refreshToken
-        const userId = req.user
-        const result = await authService.refreshToken(refreshToken, userId)
-        if (result.status === ResultStatus.Unauthorized) {
+        try {
+            const refreshToken = req.cookies.refreshToken
+            const userId = req.user
+            const result = await authService.refreshToken(refreshToken, userId)
+            if (result.status === ResultStatus.Unauthorized) {
+                res
+                    .status(401)
+                    .json({errorsMessages: result.extensions || []})
+                return
+            }
+            if (result.status === ResultStatus.Success) {
+                const {accessToken, refreshToken} = result.data as LoginServiceOutputType
+                res
+                    .cookie("refreshToken", refreshToken, {httpOnly: true, secure: true})
+                    .status(200)
+                    .json({accessToken})
+                return
+            }
+        } catch (error) {
             res
-                .status(401)
-                .json({errorsMessages: result.extensions || []})
-            return
-        }
-        if (result.status === ResultStatus.Success) {
-            const {accessToken, refreshToken} = result.data as LoginServiceOutputType
-            res
-                .cookie("refreshToken", refreshToken, {httpOnly: true, secure: true})
-                .status(200)
-                .json({accessToken})
-            return
+                .status(500)
+                .json({message: 'authController.refreshToken'})
         }
     },
 
     async logout(req: Request, res: Response) {
-        const refreshToken = req.cookies.refreshToken
-        const result = await authService.logout(refreshToken)
-        if (result.status === ResultStatus.Success) {
+        try {
+            const refreshToken = req.cookies.refreshToken
+            const result = await authService.logout(refreshToken)
+            if (result.status === ResultStatus.Success) {
+                res
+                    .clearCookie("refreshToken")
+                    .status(204)
+                    .json({})
+                return
+            }
+        } catch (error) {
             res
-                .clearCookie("refreshToken")
-                .status(204)
-                .json({})
-            return
+                .status(500)
+                .json({message: 'authController.logout'})
         }
     }
 }
