@@ -18,6 +18,7 @@ import {add} from "date-fns/add";
 import {nodemailerAdapter} from "../common/adapters/nodemailer-adapter";
 import {SETTINGS} from "../settings";
 import {authMongoRepository} from "../repositories/auth-mongo-repository";
+import {JwtPayload} from "jsonwebtoken";
 
 export const authService = {
     async registerUser(inputUser: InputUserType): Promise<Result> {
@@ -156,7 +157,7 @@ export const authService = {
         }
     },
 
-    async refreshToken(oldRefreshToken: string, userId: any): Promise<Result<LoginServiceOutputType | null>> {
+    async refreshToken(oldRefreshToken: string, userId: string): Promise<Result<LoginServiceOutputType | null>> {
         await authMongoRepository.addToBlackList(oldRefreshToken)
         const accessToken = await jwtService.createToken(userId, SETTINGS.ACCESS_TOKEN_DURATION)
         const refreshToken = await jwtService.createToken(userId, SETTINGS.REFRESH_TOKEN_DURATION)

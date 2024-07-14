@@ -114,7 +114,7 @@ export const authController = {
     async refreshToken(req: Request, res: Response) {
         try {
             const refreshToken = req.cookies.refreshToken
-            const userId = req.user
+            const userId = req.user.id
             const result = await authService.refreshToken(refreshToken, userId)
             if (result.status === ResultStatus.Unauthorized) {
                 res
