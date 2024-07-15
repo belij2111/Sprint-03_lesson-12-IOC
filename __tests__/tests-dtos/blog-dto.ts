@@ -1,18 +1,18 @@
 import {InputBlogType} from "../../src/types/blog-types";
 
 export const blogDto = {
-    createValidBlogDto(): InputBlogType {
+    validBlogsDto(count?: number): InputBlogType {
         return {
-            name: 'Blog 1',
-            description: 'This is a new blog',
-            websiteUrl: 'https://www.example.com'
+            name: `Blog${count}`,
+            description: `This is a new blog${count}`,
+            websiteUrl: `https://www.example${count}.com`
         }
     },
-    createInvalidBlogDto(): InputBlogType {
+    invalidBlogsDto(count?: number): InputBlogType {
         return {
-            name: 'Blog 1',
-            description: 'This is a new blog',
-            websiteUrl: 'invalid url'
+            name: `Blog${count}`,
+            description: `This is a new blog${count}`,
+            websiteUrl: `invalid url${count}`
         }
     }
 }
