@@ -12,12 +12,15 @@ describe('Blogs Components', () => {
         await connectToDb(await startMongoServer())
         // await connectToDb(SETTINGS.MONGO_URL)
     })
-    beforeEach(async () => {
-        await blogCollection.deleteMany()
-    })
     afterAll(async () => {
         await blogCollection.deleteMany()
         await stopMongoServer()
+    })
+    beforeEach(async () => {
+        await blogCollection.deleteMany()
+    })
+    afterEach(async () => {
+        await blogCollection.deleteMany()
     })
     it('should return version number', async () => {
         await req
@@ -96,6 +99,26 @@ describe('Blogs Components', () => {
                 .send(validBlog)
                 .expect(401)
             // console.log(result.status)
+        })
+    })
+
+    describe('GET/blogs/:id', () => {
+        it(`should return blog by ID : STATUS 200`, async () => {
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
+            const result: Response = await req
+                .get(SETTINGS.PATH.BLOGS + '/' + createBlog.id)
+                .expect(200)
+            expect(result.body).toEqual(createBlog)
+            // console.log(result.body, createBlog)
+        })
+        it(`shouldn't return blog by ID : STATUS 404`, async () => {
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
+            const result: Response = await req
+                .get(SETTINGS.PATH.BLOGS + '/-100')
+                .expect(404)
+            // console.log(result.body, createBlog)
         })
     })
 
