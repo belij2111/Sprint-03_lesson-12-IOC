@@ -6,6 +6,7 @@ import {startMongoServer, stopMongoServer} from "../mongo-memory-setup";
 import {req} from "../test-helpers";
 import {Response} from "supertest";
 import {sortParamsDto} from "../tests-dtos/sort-params-dto";
+import {ObjectId} from "mongodb";
 
 describe('Blogs Components', () => {
     beforeAll(async () => {
@@ -119,6 +120,56 @@ describe('Blogs Components', () => {
                 .get(SETTINGS.PATH.BLOGS + '/-100')
                 .expect(404)
             // console.log(result.body, createBlog)
+        })
+    })
+
+    describe('PUT/blogs/:id', () => {
+        it(`should update blog by ID : STATUS 204`, async () => {
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
+            const updateBlog = blogDto.validBlogsDto(555)
+            const result: Response = await req
+                .put(SETTINGS.PATH.BLOGS + '/' + createBlog.id)
+                .set(authorizationHeader)
+                .send(updateBlog)
+                .expect(204)
+            expect(result.body).toEqual({})
+            // console.log(createBlog, updateBlog, result.status)
+        })
+        it(`shouldn't update blog by ID with incorrect input data : STATUS 400`, async () => {
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const createBlog = await blogsTestManager.createBlog(authorizationHeader, 2)
+            const invalidUpdateBlog = blogDto.invalidBlogsDto(0)
+            const result: Response = await req
+                .put(SETTINGS.PATH.BLOGS + '/' + createBlog.id)
+                .set(authorizationHeader)
+                .send(invalidUpdateBlog)
+                .expect(400)
+            expect(result.body.errorsMessages).toEqual([{message: expect.any(String), field: 'websiteUrl'},])
+            // console.log(createBlog, invalidUpdateBlog, result.body.errorsMessages)
+        })
+        it(`shouldn't update blog by ID : STATUS 401`, async () => {
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
+            const invalidAuthorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', 'invalid')
+            const updateBlog = blogDto.validBlogsDto(333)
+            const result: Response = await req
+                .put(SETTINGS.PATH.BLOGS + '/' + createBlog.id)
+                .set(invalidAuthorizationHeader)
+                .send(updateBlog)
+                .expect(401)
+            // console.log(createBlog, updateBlog, result.status)
+        })
+        it(`shouldn't update blog by ID : STATUS 404`, async () => {
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
+            const updateBlog = blogDto.validBlogsDto(2)
+            const result: Response = await req
+                .put(SETTINGS.PATH.BLOGS + '/' + new ObjectId())
+                .set(authorizationHeader)
+                .send(updateBlog)
+                .expect(404)
+            // console.log(createBlog, updateBlog, result.status)
         })
     })
 
