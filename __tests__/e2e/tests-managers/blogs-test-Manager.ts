@@ -5,11 +5,11 @@ import {Response} from "supertest";
 import {blogDto} from "../../tests-dtos/blog-dto";
 
 export const blogsTestManager = {
-    async createBlog(authorizationHeader: { [key: string]: string; }) {
+    async createBlog(authorizationHeader: { [key: string]: string; }, count?: number) {
         const response: Response = await req
             .post(SETTINGS.PATH.BLOGS)
             .set(authorizationHeader || {})
-            .send(blogDto.validBlogsDto())
+            .send(blogDto.validBlogsDto(count))
             .expect(201)
         return response.body
     },
