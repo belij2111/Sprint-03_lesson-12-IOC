@@ -173,4 +173,36 @@ describe('Blogs Components', () => {
         })
     })
 
+    describe('DELETE/blogs/:id', () => {
+        it(`should delete blog by ID : STATUS 204`, async () => {
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
+            const result: Response = await req
+                .delete(SETTINGS.PATH.BLOGS + '/' + createBlog.id)
+                .set(authorizationHeader)
+                .expect(204)
+            // console.log(result.body, result.status)
+        })
+        it(`shouldn't delete blog by ID if the request is unauthorized : STATUS 401`, async () => {
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
+            const invalidAuthorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', 'invalid')
+            const result: Response = await req
+                .delete(SETTINGS.PATH.BLOGS + '/' + createBlog.id)
+                .set(invalidAuthorizationHeader)
+                .expect(401)
+            // console.log(result.status)
+        })
+        it(`shouldn't delete blog by ID if the blog does not exist : STATUS 404`, async () => {
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
+            const result: Response = await req
+                .delete(SETTINGS.PATH.BLOGS + '/' + new ObjectId())
+                .set(authorizationHeader)
+                .expect(404)
+            expect(result.body).toHaveProperty('message', 'Blog not found')
+            // console.log(result.body)
+        })
+    })
+
 })
