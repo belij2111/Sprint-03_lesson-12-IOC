@@ -14,7 +14,6 @@ describe('Blogs Components', () => {
         // await connectToDb(SETTINGS.MONGO_URL)
     })
     afterAll(async () => {
-        await blogCollection.deleteMany()
         await stopMongoServer()
     })
     beforeEach(async () => {
