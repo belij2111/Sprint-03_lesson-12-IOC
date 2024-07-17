@@ -113,7 +113,7 @@ describe('Blogs Components', () => {
             expect(result.body).toEqual(createBlog)
             // console.log(result.body, createBlog)
         })
-        it(`shouldn't return blog by ID : STATUS 404`, async () => {
+        it(`shouldn't return blog by ID if the blog does not exist : STATUS 404`, async () => {
             const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
             const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
             const result: Response = await req
@@ -160,7 +160,7 @@ describe('Blogs Components', () => {
                 .expect(401)
             // console.log(createBlog, updateBlog, result.status)
         })
-        it(`shouldn't update blog by ID : STATUS 404`, async () => {
+        it(`shouldn't update blog by ID if the blog does not exist : STATUS 404`, async () => {
             const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
             const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
             const updateBlog = blogDto.validBlogsDto(2)
