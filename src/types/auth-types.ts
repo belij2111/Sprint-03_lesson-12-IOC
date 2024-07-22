@@ -25,3 +25,8 @@ export interface RegistrationConfirmationCodeInputType {
 export interface RegistrationEmailResendingInputType {
     email: string
 }
+
+export interface ApiCallDataInputType {
+    ip: string,
+    url: string
+}
