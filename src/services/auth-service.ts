@@ -1,5 +1,6 @@
 import {usersMongoRepository} from "../repositories/users-mongo-repository";
 import {
+    ApiCallDataInputType,
     LoginInputType,
     LoginServiceOutputType,
     RegistrationConfirmationCodeInputType,
@@ -18,7 +19,6 @@ import {add} from "date-fns/add";
 import {nodemailerAdapter} from "../common/adapters/nodemailer-adapter";
 import {SETTINGS} from "../settings";
 import {authMongoRepository} from "../repositories/auth-mongo-repository";
-import {JwtPayload} from "jsonwebtoken";
 
 export const authService = {
     async registerUser(inputUser: InputUserType): Promise<Result> {
@@ -169,6 +169,29 @@ export const authService = {
 
     async logout(oldRefreshToken: string): Promise<Result> {
         await authMongoRepository.addToBlackList(oldRefreshToken)
+        return {
+            status: ResultStatus.Success,
+            data: null
+        }
+    },
+
+    async checkApiCalls(apiCallData: ApiCallDataInputType): Promise<Result> {
+        const timeLimit = add(new Date(), {seconds: -SETTINGS.TIME_LIMIT_API_CALLS})
+        const numberLimit = parseInt(SETTINGS.NUMBER_LIMIT_API_CALLS, 10)
+        const countApiCalls = await authMongoRepository.findApiCalls(apiCallData, timeLimit)
+        if (countApiCalls >= numberLimit) {
+            return {
+                status: ResultStatus.TooManyRequests,
+                extensions: [{field: 'rateLimit', message: 'Too many requests in a short period'}],
+                data: null
+            }
+        }
+        const apiCall = {
+            ip: apiCallData.ip,
+            url: apiCallData.url,
+            date: new Date()
+        }
+        await authMongoRepository.addApiCall(apiCall)
         return {
             status: ResultStatus.Success,
             data: null
