@@ -1,8 +1,8 @@
 export interface DeviceSessionsDbType {
-    userId: string,
+    userId: string | null,
     deviceId: string,
-    iatDate: Date,
-    deviceName: string,
     ip: string,
+    deviceName: string,
+    iatDate: Date,
     expDate: Date
 }
