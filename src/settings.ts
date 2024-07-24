@@ -10,6 +10,7 @@ export const SETTINGS = {
         AUTH: '/auth',
         USERS: '/users',
         COMMENTS: '/comments',
+        SECURITY_DEVICES: '/security',
         TESTING: '/testing/all-data'
     },
     ADMIN_AUTH: process.env.ADMIN_AUTH || '',
