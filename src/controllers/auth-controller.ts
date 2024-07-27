@@ -3,6 +3,8 @@ import {authService} from "../services/auth-service";
 import {ResultStatus} from "../common/types/result-code";
 import {usersMongoQueryRepository} from "../repositories/users-mongo-query-repository";
 import {LoginServiceOutputType} from "../types/auth-types";
+import {jwtService} from "../common/adapters/jwt-service";
+import {CustomJwtPayload} from "../common/types/custom-jwt-payload-type";
 
 export const authController = {
     async registration(req: Request, res: Response) {
@@ -64,7 +66,9 @@ export const authController = {
 
     async login(req: Request, res: Response) {
         try {
-            const result = await authService.loginUser(req.body)
+            const ip = req.ip ?? 'unknown'
+            const deviceName = req.headers['user-agent'] ?? 'unknown'
+            const result = await authService.loginUser(req.body, ip, deviceName)
             if (result.status === ResultStatus.Unauthorized) {
                 res
                     .status(401)
@@ -114,8 +118,12 @@ export const authController = {
     async refreshToken(req: Request, res: Response) {
         try {
             const refreshToken = req.cookies.refreshToken
-            const userId = req.user.id
-            const result = await authService.refreshToken(refreshToken, userId)
+            const decodePayload = await jwtService.decodeToken(refreshToken) as CustomJwtPayload
+            const payload: CustomJwtPayload = {
+                userId: decodePayload.userId,
+                deviceId: decodePayload.deviceId
+            }
+            const result = await authService.refreshToken(payload)
             if (result.status === ResultStatus.Unauthorized) {
                 res
                     .status(401)
