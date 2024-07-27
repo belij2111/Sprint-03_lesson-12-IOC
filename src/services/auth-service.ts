@@ -164,8 +164,8 @@ export const authService = {
             deviceId: decodePayload.deviceId,
             ip: ip,
             deviceName: deviceName,
-            iatDate: new Date(decodePayload.iat! * 1000).toString(),
-            expDate: new Date(decodePayload.exp! * 1000).toString()
+            iatDate: new Date(decodePayload.iat! * 1000).toISOString(),
+            expDate: new Date(decodePayload.exp! * 1000).toISOString()
         }
         await securityDevicesMongoRepository.create(deviceSession)
         return {
