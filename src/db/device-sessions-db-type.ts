@@ -3,6 +3,6 @@ export interface DeviceSessionsDbType {
     deviceId: string,
     ip: string,
     deviceName: string,
-    iatDate: Date,
-    expDate: Date
+    iatDate: string,
+    expDate: string
 }
