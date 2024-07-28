@@ -6,3 +6,4 @@ export const securityDevicesRouter = Router()
 
 securityDevicesRouter.get('/devices', refreshTokenMiddleware, securityDevicesController.get)
 securityDevicesRouter.delete('/devices', refreshTokenMiddleware, securityDevicesController.delete)
+securityDevicesRouter.delete('/devices/:deviceId', refreshTokenMiddleware, securityDevicesController.deleteByDeviceId)
