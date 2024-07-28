@@ -29,6 +29,11 @@ export const securityDevicesMongoRepository = {
         return true
     },
 
+    async deleteByDeviceId(deviceId: string): Promise<boolean | null> {
+        const result = await deviceSessionsCollection.deleteOne({deviceId})
+        return result.deletedCount !== 0
+    },
+
     checkObjectId(id: string): boolean {
         return ObjectId.isValid(id)
     }

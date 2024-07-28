@@ -10,5 +10,35 @@ export const securityDevicesService = {
             extensions: [{field: 'terminate  sessions', message: 'All sessions except the current one are completed'}],
             data: result
         }
+    },
+
+    async deleteByDeviceId(userId: string, deviceId: string): Promise<Result<boolean | null>> {
+        const checkId = securityDevicesMongoRepository.checkObjectId(userId)
+        if (!checkId)
+            return {
+                status: ResultStatus.BadRequest,
+                extensions: [{field: 'checkId', message: 'Invalid id'}],
+                data: null
+            }
+        const findDevice = await securityDevicesMongoRepository.findByDeviceId(deviceId)
+        if (!findDevice) {
+            return {
+                status: ResultStatus.NotFound,
+                extensions: [{field: 'deviceId', message: 'The device was not found'}],
+                data: null
+            }
+        }
+        if (userId !== findDevice.deviceId) {
+            return {
+                status: ResultStatus.Forbidden,
+                extensions: [{field: 'deviceId', message: `You cannot delete another user's device ID`}],
+                data: null
+            }
+        }
+        const result = await securityDevicesMongoRepository.deleteByDeviceId(findDevice.deviceId)
+        return {
+            status: ResultStatus.Success,
+            data: result
+        }
     }
 }
