@@ -28,7 +28,7 @@ export const securityDevicesService = {
                 data: null
             }
         }
-        if (userId !== findDevice.deviceId) {
+        if (userId !== findDevice.userId) {
             return {
                 status: ResultStatus.Forbidden,
                 extensions: [{field: 'deviceId', message: `You cannot delete another user's device ID`}],
