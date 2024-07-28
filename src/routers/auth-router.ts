@@ -8,7 +8,7 @@ import {logApiCallsMiddleware} from "../common/middlewares/log-api-calls-middlew
 
 export const authRouter = Router()
 
-authRouter.post('/login', logApiCallsMiddleware, authController.login)
+authRouter.post('/login', logApiCallsMiddleware, inputValidationMiddleware, authController.login)
 authRouter.get('/me', authBearerMiddleware, authController.get)
 authRouter.post('/registration', logApiCallsMiddleware, usersInputValidationMiddleware, inputValidationMiddleware, authController.registration)
 authRouter.post('/registration-confirmation', logApiCallsMiddleware, authController.registrationConfirmation)
