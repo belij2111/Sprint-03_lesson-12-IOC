@@ -65,8 +65,20 @@ export const authController = {
 
     async login(req: Request, res: Response) {
         try {
-            const ip = req.ip ?? 'unknown'
-            const deviceName = req.headers['user-agent'] ?? 'unknown'
+            if (!req.ip) {
+                res
+                    .status(400)
+                    .json({error: "IP address is required"})
+                return
+            }
+            if (!req.headers['user-agent']) {
+                res
+                    .status(400)
+                    .json({error: "IP address is required"})
+                return
+            }
+            const ip = req.ip
+            const deviceName = req.headers['user-agent']
             const result = await authService.loginUser(req.body, ip, deviceName)
             if (result.status === ResultStatus.Unauthorized) {
                 res
