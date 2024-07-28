@@ -191,7 +191,7 @@ export const authService = {
         const refreshToken = await jwtService.createToken(newPayload, SETTINGS.REFRESH_TOKEN_DURATION)
         const decodeNewPayload = await jwtService.decodeToken(refreshToken) as CustomJwtPayload
         const deviceId = deviceSession.deviceId
-        const iatDate = decodeNewPayload.iat!.toString()
+        const iatDate = new Date(decodeNewPayload.iat! * 1000).toISOString()
         await securityDevicesMongoRepository.updateByDeviceId(deviceId, iatDate)
         return {
             status: ResultStatus.Success,
