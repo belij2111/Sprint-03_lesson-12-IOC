@@ -175,22 +175,14 @@ export const authService = {
     },
 
     async refreshToken(payload: CustomJwtPayload): Promise<Result<LoginServiceOutputType | null>> {
-        const deviceSession = await securityDevicesMongoRepository.findByDeviceId(payload.deviceId)
-        if (!deviceSession) {
-            return {
-                status: ResultStatus.Unauthorized,
-                extensions: [{field: 'deviceId', message: 'The specified device was not found'}],
-                data: null
-            }
-        }
         const newPayload: Pick<DeviceSessionsDbType, 'userId' | 'deviceId'> = {
-            userId: deviceSession.userId,
-            deviceId: deviceSession.deviceId
+            userId: payload.userId,
+            deviceId: payload.deviceId
         }
         const accessToken = await jwtService.createToken(newPayload, SETTINGS.ACCESS_TOKEN_DURATION)
         const refreshToken = await jwtService.createToken(newPayload, SETTINGS.REFRESH_TOKEN_DURATION)
         const decodeNewPayload = await jwtService.decodeToken(refreshToken) as CustomJwtPayload
-        const deviceId = deviceSession.deviceId
+        const deviceId = decodeNewPayload.deviceId
         const iatDate = new Date(decodeNewPayload.iat! * 1000).toISOString()
         await securityDevicesMongoRepository.updateByDeviceId(deviceId, iatDate)
         return {
