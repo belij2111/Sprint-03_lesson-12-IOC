@@ -3,7 +3,6 @@ import {authService} from "../services/auth-service";
 import {ResultStatus} from "../common/types/result-code";
 import {usersMongoQueryRepository} from "../repositories/users-mongo-query-repository";
 import {LoginServiceOutputType} from "../types/auth-types";
-import {jwtService} from "../common/adapters/jwt-service";
 import {CustomJwtPayload} from "../common/types/custom-jwt-payload-type";
 
 export const authController = {
@@ -117,11 +116,9 @@ export const authController = {
 
     async refreshToken(req: Request, res: Response) {
         try {
-            const refreshToken = req.cookies.refreshToken
-            const decodePayload = await jwtService.decodeToken(refreshToken) as CustomJwtPayload
             const payload: CustomJwtPayload = {
-                userId: decodePayload.userId,
-                deviceId: decodePayload.deviceId
+                userId: req.user.id,
+                deviceId: req.deviceId
             }
             const result = await authService.refreshToken(payload)
             if (result.status === ResultStatus.Unauthorized) {
@@ -147,8 +144,8 @@ export const authController = {
 
     async logout(req: Request, res: Response) {
         try {
-            const refreshToken = req.cookies.refreshToken
-            const result = await authService.logout(refreshToken)
+            const deviceId = req.deviceId
+            const result = await authService.logout(deviceId)
             if (result.status === ResultStatus.Success) {
                 res
                     .clearCookie("refreshToken")

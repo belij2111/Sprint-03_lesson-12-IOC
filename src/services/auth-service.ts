@@ -175,7 +175,6 @@ export const authService = {
     },
 
     async refreshToken(payload: CustomJwtPayload): Promise<Result<LoginServiceOutputType | null>> {
-        // await authMongoRepository.addToBlackList(oldRefreshToken)
         const deviceSession = await securityDevicesMongoRepository.findByDeviceId(payload.deviceId)
         if (!deviceSession) {
             return {
@@ -200,11 +199,19 @@ export const authService = {
         }
     },
 
-    async logout(oldRefreshToken: string): Promise<Result> {
-        await authMongoRepository.addToBlackList(oldRefreshToken)
+    async logout(deviceId: string): Promise<Result<boolean | null>> {
+        const findDevice = await securityDevicesMongoRepository.findByDeviceId(deviceId)
+        if (!findDevice) {
+            return {
+                status: ResultStatus.NotFound,
+                extensions: [{field: 'deviceId', message: 'The device was not found'}],
+                data: null
+            }
+        }
+        const result = await securityDevicesMongoRepository.deleteByDeviceId(findDevice.deviceId)
         return {
             status: ResultStatus.Success,
-            data: null
+            data: result
         }
     },
 
