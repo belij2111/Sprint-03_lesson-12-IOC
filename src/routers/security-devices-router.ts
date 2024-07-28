@@ -5,3 +5,4 @@ import {refreshTokenMiddleware} from "../common/middlewares/refresh-token-middle
 export const securityDevicesRouter = Router()
 
 securityDevicesRouter.get('/devices', refreshTokenMiddleware, securityDevicesController.get)
+securityDevicesRouter.delete('/devices', refreshTokenMiddleware, securityDevicesController.delete)
