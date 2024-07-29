@@ -7,6 +7,7 @@ import {blogsTestManager} from "./tests-managers/blogs-test-Manager";
 import {postDto} from "../tests-dtos/post-dto";
 import {sortParamsDto} from "../tests-dtos/sort-params-dto";
 import {postsTestManager} from "./tests-managers/posts-test-Manager";
+import {ObjectId} from "mongodb";
 
 describe('Posts Components', () => {
     beforeAll(async () => {
@@ -50,7 +51,7 @@ describe('Posts Components', () => {
         it(`shouldn't create new post with incorrect input data : STATUS 400`, async () => {
             const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
             const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
-            const invalidPost = postDto.invalidBlogsDto(createBlog.id, 777)
+            const invalidPost = postDto.invalidPostDto(createBlog.id, 777)
             const result: Response = await req
                 .post(SETTINGS.PATH.POSTS)
                 .set(authorizationHeader)
@@ -123,6 +124,60 @@ describe('Posts Components', () => {
                 .get(SETTINGS.PATH.POSTS + '/-100')
                 .expect(404)
             // console.log(result.body, createPost)
+        })
+    })
+
+    describe('PUT/posts/:id', () => {
+        it(`should update post by ID : STATUS 204`, async () => {
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
+            const createPost = await postsTestManager.createPost(authorizationHeader, createBlog.id, 1)
+            const updatePost = postDto.validPostDto(createBlog.id, 555)
+            const result: Response = await req
+                .put(SETTINGS.PATH.POSTS + '/' + createPost.id)
+                .set(authorizationHeader)
+                .send(updatePost)
+                .expect(204)
+            expect(result.body).toEqual({})
+            // console.log(createPost, updatePost, result.status)
+        })
+        it(`shouldn't update post by ID with incorrect input data : STATUS 400`, async () => {
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
+            const createPost = await postsTestManager.createPost(authorizationHeader, createBlog.id, 1)
+            const invalidUpdatePost = postDto.invalidPostDto(createBlog.id, 0)
+            const result: Response = await req
+                .put(SETTINGS.PATH.POSTS + '/' + createPost.id)
+                .set(authorizationHeader)
+                .send(invalidUpdatePost)
+                .expect(400)
+            expect(result.body.errorsMessages).toEqual([{message: expect.any(String), field: 'title'},])
+            // console.log(createPost, invalidUpdatePost, result.body.errorsMessages)
+        })
+        it(`shouldn't update post by ID : STATUS 401`, async () => {
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
+            const createPost = await postsTestManager.createPost(authorizationHeader, createBlog.id, 1)
+            const invalidAuthorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', 'invalid')
+            const updatePost = postDto.validPostDto(createBlog.id, 555)
+            const result: Response = await req
+                .put(SETTINGS.PATH.POSTS + '/' + createPost.id)
+                .set(invalidAuthorizationHeader)
+                .send(updatePost)
+                .expect(401)
+            // console.log(createPost, updatePost, result.status)
+        })
+        it(`shouldn't update post by ID if the post does not exist : STATUS 404`, async () => {
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
+            const createPost = await postsTestManager.createPost(authorizationHeader, createBlog.id, 1)
+            const updatePost = postDto.validPostDto(createBlog.id, 555)
+            const result: Response = await req
+                .put(SETTINGS.PATH.POSTS + '/' + new ObjectId())
+                .set(authorizationHeader)
+                .send(updatePost)
+                .expect(404)
+            // console.log(createPost, updatePost, result.status)
         })
     })
 
