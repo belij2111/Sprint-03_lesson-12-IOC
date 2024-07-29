@@ -5,6 +5,8 @@ import {req} from "../test-helpers";
 import {SETTINGS} from "../../src/settings";
 import {blogsTestManager} from "./tests-managers/blogs-test-Manager";
 import {postDto} from "../tests-dtos/post-dto";
+import {sortParamsDto} from "../tests-dtos/sort-params-dto";
+import {postsTestManager} from "./tests-managers/posts-test-Manager";
 
 describe('Posts Components', () => {
     beforeAll(async () => {
@@ -67,6 +69,38 @@ describe('Posts Components', () => {
                 .send(validPost)
                 .expect(401)
             // console.log(result.status)
+        })
+    })
+
+    describe('GET/posts', () => {
+        it(`should return posts empty array : STATUS 200`, async () => {
+            const result: Response = await req
+                .get(SETTINGS.PATH.POSTS)
+                .expect(200)
+            expect(result.body.items.length).toBe(0)
+            // console.log(result.body)
+        })
+        it(`should return posts with paging : STATUS 200`, async () => {
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
+            const createPost = await postsTestManager.createPosts(authorizationHeader, createBlog.id, 5)
+            const {pageNumber, pageSize, sortBy, sortDirection} = sortParamsDto
+            const result: Response = await req
+                .get(SETTINGS.PATH.POSTS)
+                .query({
+                    pageNumber,
+                    pageSize,
+                    sortBy,
+                    sortDirection
+                })
+                .expect(200)
+            expect(result.body.items.length).toBe((createPost).length)
+            expect(result.body.totalCount).toBe((createPost).length)
+            expect(result.body.items).toEqual(createPost)
+            expect(result.body.pagesCount).toBe(1)
+            expect(result.body.page).toBe(1)
+            expect(result.body.pageSize).toBe(10)
+            // console.log(result.body.items)
         })
     })
 
