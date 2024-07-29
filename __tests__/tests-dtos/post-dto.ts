@@ -9,7 +9,7 @@ export const postDto = {
             blogId: id
         }
     },
-    invalidBlogsDto(id: string, count?: number): InputPostType {
+    invalidPostDto(id: string, count?: number): InputPostType {
         return {
             title: `555555555555555555555555555555555555Post${count}`,
             shortDescription: `This is a new post${count}`,
