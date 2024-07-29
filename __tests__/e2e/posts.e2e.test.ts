@@ -104,4 +104,26 @@ describe('Posts Components', () => {
         })
     })
 
+    describe('GET/posts/:id', () => {
+        it(`should return post by ID : STATUS 200`, async () => {
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
+            const createPost = await postsTestManager.createPost(authorizationHeader, createBlog.id, 1)
+            const result: Response = await req
+                .get(SETTINGS.PATH.POSTS + '/' + createPost.id)
+                .expect(200)
+            expect(result.body).toEqual(createPost)
+            // console.log(result.body, createPost)
+        })
+        it(`shouldn't return post by ID if the post does not exist : STATUS 404`, async () => {
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
+            const createPost = await postsTestManager.createPost(authorizationHeader, createBlog.id, 1)
+            const result: Response = await req
+                .get(SETTINGS.PATH.POSTS + '/-100')
+                .expect(404)
+            // console.log(result.body, createPost)
+        })
+    })
+
 })
