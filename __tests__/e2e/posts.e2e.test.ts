@@ -181,4 +181,39 @@ describe('Posts Components', () => {
         })
     })
 
+    describe('DELETE/post/:id', () => {
+        it(`should delete post by ID : STATUS 204`, async () => {
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
+            const createPost = await postsTestManager.createPost(authorizationHeader, createBlog.id, 1)
+            const result: Response = await req
+                .delete(SETTINGS.PATH.POSTS + '/' + createPost.id)
+                .set(authorizationHeader)
+                .expect(204)
+            // console.log(result.body, result.status)
+        })
+        it(`shouldn't delete post by ID if the request is unauthorized : STATUS 401`, async () => {
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
+            const createPost = await postsTestManager.createPost(authorizationHeader, createBlog.id, 1)
+            const invalidAuthorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', 'invalid')
+            const result: Response = await req
+                .delete(SETTINGS.PATH.POSTS + '/' + createPost.id)
+                .set(invalidAuthorizationHeader)
+                .expect(401)
+            // console.log(result.status)
+        })
+        it(`shouldn't delete post by ID if the post does not exist : STATUS 404`, async () => {
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
+            const createPost = await postsTestManager.createPost(authorizationHeader, createBlog.id, 1)
+            const result: Response = await req
+                .delete(SETTINGS.PATH.POSTS + '/' + new ObjectId())
+                .set(authorizationHeader)
+                .expect(404)
+            expect(result.body).toHaveProperty('message', 'Post not found')
+            // console.log(result.body)
+        })
+    })
+
 })
