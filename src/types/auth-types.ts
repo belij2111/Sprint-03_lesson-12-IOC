@@ -30,3 +30,7 @@ export interface ApiCallDataInputType {
     ip: string,
     url: string
 }
+
+export interface PasswordRecoveryInputType {
+    email: string
+}
