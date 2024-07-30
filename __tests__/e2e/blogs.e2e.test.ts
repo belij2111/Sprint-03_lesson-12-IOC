@@ -7,6 +7,7 @@ import {req} from "../test-helpers";
 import {Response} from "supertest";
 import {sortParamsDto} from "../tests-dtos/sort-params-dto";
 import {ObjectId} from "mongodb";
+import {postDto} from "../tests-dtos/post-dto";
 
 describe('Blogs Components', () => {
     beforeAll(async () => {
@@ -200,6 +201,64 @@ describe('Blogs Components', () => {
                 .set(authorizationHeader)
                 .expect(404)
             expect(result.body).toHaveProperty('message', 'Blog not found')
+            // console.log(result.body)
+        })
+    })
+
+    describe('POST/blogs/:blogId/posts', () => {
+        it(`should create new post for specific blog : STATUS 201`, async () => {
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
+            const validPost = postDto.validPostDto(createBlog.id, 1)
+
+            const result: Response = await req
+                .post(SETTINGS.PATH.BLOGS + '/' + createBlog.id + SETTINGS.PATH.POSTS)
+                .set(authorizationHeader)
+                .send(validPost)
+                .expect(201)
+            expect(result.body).toEqual({
+                id: expect.any(String),
+                title: validPost.title,
+                shortDescription: validPost.shortDescription,
+                content: validPost.content,
+                blogId: createBlog.id,
+                blogName: createBlog.name,
+                createdAt: expect.any(String)
+            })
+            // console.log(result.body, createBlog.name)
+        })
+        it(`shouldn't create new post for specific blog with incorrect input data : STATUS 400`, async () => {
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
+            const invalidPost = postDto.invalidPostDto(createBlog.id, 777)
+            const result: Response = await req
+                .post(SETTINGS.PATH.BLOGS + '/' + createBlog.id + SETTINGS.PATH.POSTS)
+                .set(authorizationHeader)
+                .send(invalidPost)
+                .expect(400)
+            // console.log(result.body)
+        })
+        it(`shouldn't create new post for specific blog if the request is unauthorized : STATUS 401`, async () => {
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
+            const validPost = postDto.validPostDto(createBlog.id, 1)
+            const invalidAuthorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', 'invalid')
+            const result: Response = await req
+                .post(SETTINGS.PATH.BLOGS + '/' + createBlog.id + SETTINGS.PATH.POSTS)
+                .set(invalidAuthorizationHeader)
+                .send(validPost)
+                .expect(401)
+            console.log(result.status)
+        })
+        it(`shouldn't create new post for specific blog if the blog does not exist : STATUS 404`, async () => {
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
+            const validPost = postDto.validPostDto(createBlog.id, 1)
+            const result: Response = await req
+                .post(SETTINGS.PATH.BLOGS + '/-100' + SETTINGS.PATH.POSTS)
+                .set(authorizationHeader)
+                .send(validPost)
+                .expect(404)
             // console.log(result.body)
         })
     })
