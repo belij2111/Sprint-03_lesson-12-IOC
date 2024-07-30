@@ -8,6 +8,7 @@ import {Response} from "supertest";
 import {sortParamsDto} from "../tests-dtos/sort-params-dto";
 import {ObjectId} from "mongodb";
 import {postDto} from "../tests-dtos/post-dto";
+import {postsTestManager} from "./tests-managers/posts-test-Manager";
 
 describe('Blogs Components', () => {
     beforeAll(async () => {
@@ -260,6 +261,40 @@ describe('Blogs Components', () => {
                 .send(validPost)
                 .expect(404)
             // console.log(result.body)
+        })
+    })
+
+    describe('GET/blogs/:blogId/posts', () => {
+        it(`should return posts for specific blog with paging : STATUS 200`, async () => {
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
+            const createPosts = await postsTestManager.createPosts(authorizationHeader, createBlog.id, 5)
+            const {pageNumber, pageSize, sortBy, sortDirection} = sortParamsDto
+            const result: Response = await req
+                .get(SETTINGS.PATH.BLOGS + '/' + createBlog.id + SETTINGS.PATH.POSTS)
+                .query({
+                    pageNumber,
+                    pageSize,
+                    sortBy,
+                    sortDirection
+                })
+                .expect(200)
+            expect(result.body.items.length).toBe((createPosts).length)
+            expect(result.body.totalCount).toBe((createPosts).length)
+            expect(result.body.items).toEqual(createPosts)
+            expect(result.body.pagesCount).toBe(1)
+            expect(result.body.page).toBe(1)
+            expect(result.body.pageSize).toBe(10)
+            // console.log(result.body.items)
+        })
+        it(`shouldn't return posts for specific blog if the blog does not exist : STATUS 200`, async () => {
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
+            const createPosts = await postsTestManager.createPosts(authorizationHeader, createBlog.id, 5)
+            const result: Response = await req
+                .get(SETTINGS.PATH.BLOGS + '/-100' + SETTINGS.PATH.POSTS)
+                .expect(404)
+            // console.log(result.body, result.status, createPosts)
         })
     })
 
