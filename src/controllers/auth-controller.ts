@@ -63,6 +63,19 @@ export const authController = {
         }
     },
 
+    async passwordRecovery(req: Request, res: Response) {
+        try {
+            const result = await authService.passwordRecovery(req.body)
+            res
+                .status(204)
+                .json({})
+        } catch (error) {
+            res
+                .status(500)
+                .json({message: 'authController.passwordRecovery'})
+        }
+    },
+
     async login(req: Request, res: Response) {
         try {
             if (!req.ip) {

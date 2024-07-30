@@ -2,7 +2,7 @@ import {usersMongoRepository} from "../repositories/users-mongo-repository";
 import {
     ApiCallDataInputType,
     LoginInputType,
-    LoginServiceOutputType,
+    LoginServiceOutputType, PasswordRecoveryInputType,
     RegistrationConfirmationCodeInputType,
     RegistrationEmailResendingInputType
 } from "../types/auth-types";
@@ -71,7 +71,8 @@ export const authService = {
         await usersMongoRepository.create(createNewUser)
         nodemailerAdapter.sendEmail(
             createNewUser.email,
-            createNewUser.emailConfirmation.confirmationCode
+            createNewUser.emailConfirmation.confirmationCode,
+            'registration'
         ).catch((error) => {
             console.error('Send email error', error)
         })
@@ -135,7 +136,28 @@ export const authService = {
         await usersMongoRepository.updateRegistrationConfirmation(existingUserByEmail._id, newConfirmationCode, newExpirationDate)
         await nodemailerAdapter.sendEmail(
             inputEmail.email,
-            newConfirmationCode
+            newConfirmationCode,
+            'registration'
+        )
+        return {
+            status: ResultStatus.Success,
+            data: null
+        }
+    },
+
+    async passwordRecovery(inputEmail: PasswordRecoveryInputType): Promise<Result> {
+        const existingUserByEmail = await usersMongoRepository.findByEmail(inputEmail)
+        if (!existingUserByEmail) {
+            return {
+                status: ResultStatus.Success,
+                data: null
+            }
+        }
+        const recoveryCode = randomUUID()
+        await nodemailerAdapter.sendEmail(
+            inputEmail.email,
+            recoveryCode,
+            'passwordRecovery'
         )
         return {
             status: ResultStatus.Success,
