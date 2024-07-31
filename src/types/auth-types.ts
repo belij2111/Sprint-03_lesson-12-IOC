@@ -34,3 +34,8 @@ export interface ApiCallDataInputType {
 export interface PasswordRecoveryInputType {
     email: string
 }
+
+export interface NewPasswordInputType {
+    newPassword: string,
+    recoveryCode: string
+}
