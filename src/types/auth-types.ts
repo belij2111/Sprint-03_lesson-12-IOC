@@ -3,10 +3,6 @@ export interface LoginInputType {
     password: string
 }
 
-export interface LoginSuccessOutputType {
-    accessToken: string
-}
-
 export interface LoginServiceOutputType {
     accessToken: string,
     refreshToken: string
