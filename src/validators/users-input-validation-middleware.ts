@@ -9,14 +9,17 @@ const loginInputValidation = body('login')
     .matches(/^[a-zA-Z0-9_-]*$/)
     .withMessage("login should contain only letters, numbers, underscores, and hyphens")
 
-const passwordInputValidation = body('password')
-    .trim()
-    .isString()
-    .withMessage("not string")
-    .isLength({min: 6, max: 20})
-    .withMessage("password length should be from 6 to 20 symbols")
+export const passwordInputValidation = (fieldName: string) => {
+    return body(fieldName)
+        .trim()
+        .isString()
+        .withMessage("not string")
+        .isLength({min: 6, max: 20})
+        .withMessage("password length should be from 6 to 20 symbols")
+}
 
-const emailInputValidation = body('email')
+
+export const emailInputValidation = body('email')
     .trim()
     .isString()
     .withMessage("not string")
@@ -28,6 +31,6 @@ const emailInputValidation = body('email')
 
 export const usersInputValidationMiddleware = [
     loginInputValidation,
-    passwordInputValidation,
+    passwordInputValidation('password'),
     emailInputValidation
 ]
