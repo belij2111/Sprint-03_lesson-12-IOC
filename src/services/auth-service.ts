@@ -2,7 +2,7 @@ import {usersMongoRepository} from "../repositories/users-mongo-repository";
 import {
     ApiCallDataInputType,
     LoginInputType,
-    LoginServiceOutputType, PasswordRecoveryInputType,
+    LoginServiceOutputType, NewPasswordInputType, PasswordRecoveryInputType,
     RegistrationConfirmationCodeInputType,
     RegistrationEmailResendingInputType
 } from "../types/auth-types";
@@ -163,6 +163,25 @@ export const authService = {
             status: ResultStatus.Success,
             data: null
         }
+    },
+
+    async newPassword(inputData: NewPasswordInputType): Promise<Result> {
+        const {newPassword, recoveryCode} = inputData
+        const existingUserByRecoveryCode = await usersMongoRepository.findByRecoveryCode(recoveryCode)
+        if (!existingUserByRecoveryCode) {
+            return {
+                status: ResultStatus.BadRequest,
+                extensions: [{field: 'recoveryCode', message: 'Recovery Code is incorrect'}],
+                data: null
+            }
+        }
+        const newPasswordHash = await bcryptService.generateHash(newPassword)
+        await usersMongoRepository.updatePassword(existingUserByRecoveryCode._id, newPasswordHash)
+        return {
+            status: ResultStatus.Success,
+            data: null
+        }
+
     },
 
     async loginUser(inputAuth: LoginInputType, ip: string, deviceName: string): Promise<Result<LoginServiceOutputType | null>> {

@@ -76,6 +76,25 @@ export const authController = {
         }
     },
 
+    async newPassword(req: Request, res: Response) {
+        try {
+            const result = await authService.newPassword(req.body)
+            if (result.status === ResultStatus.BadRequest) {
+                res
+                    .status(400)
+                    .json({errorsMessages: result.extensions || []})
+                return
+            }
+            res
+                .status(204)
+                .json({})
+        } catch (error) {
+            res
+                .status(500)
+                .json({message: 'authController.newPassword'})
+        }
+    },
+
     async login(req: Request, res: Response) {
         try {
             if (!req.ip) {

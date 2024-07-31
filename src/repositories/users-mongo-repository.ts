@@ -44,6 +44,13 @@ export const usersMongoRepository = {
         return await userCollection.findOne(filter)
     },
 
+    async findByRecoveryCode(inputCode: string): Promise<UserDbType | null> {
+        const filter = {
+            'emailConfirmation.confirmationCode': inputCode
+        }
+        return await userCollection.findOne(filter)
+    },
+
     async updateEmailConfirmation(userId: ObjectId, isConfirmed: boolean): Promise<boolean> {
         const result = await userCollection.updateOne(
             {_id: userId},
@@ -61,6 +68,14 @@ export const usersMongoRepository = {
                     'emailConfirmation.expirationDate': expirationDate
                 }
             }
+        )
+        return result.modifiedCount !== 0
+    },
+
+    async updatePassword(userId: ObjectId, password: string): Promise<boolean> {
+        const result = await userCollection.updateOne(
+            {_id: userId},
+            {$set: {password: password}}
         )
         return result.modifiedCount !== 0
     },
