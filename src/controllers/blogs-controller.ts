@@ -13,90 +13,95 @@ import {
 import {blogsService} from "../services/blogs-service";
 import {postsService} from "../services/posts-service";
 
-export const createBlogController = async (req: Request, res: Response) => {
-    const createdInfo = await blogsService.createBlog(req.body)
-    const newBlog = await blogsMongoQueryRepository.getBlogById(createdInfo.id)
-    res
-        .status(201)
-        .json(newBlog)
-}
-
-export const createPostByBlogIdController = async (req: Request, res: Response) => {
-    const createdInfo = await postsService.createPostByBlogId(req.params.blogId, req.body)
-    if (!createdInfo) {
+export const blogsController = {
+    async create(req: Request, res: Response) {
+        const createdInfo = await blogsService.createBlog(req.body)
+        const newBlog = await blogsMongoQueryRepository.getBlogById(createdInfo.id)
         res
-            .status(404)
-            .json({message: 'Blog not found'})
-        return
-    }
-    const newPost = await postsMongoQueryRepository.getPostById(createdInfo.id)
-    res
-        .status(201)
-        .json(newPost)
-}
+            .status(201)
+            .json(newBlog)
+    },
 
-export const getBlogsController = async (req: Request<SortQueryFieldsType & SearchNameTermFieldsType>, res: Response<Paginator<OutputBlogType[]>>) => {
-    const inputQuery = {
-        ...sortQueryFieldsUtil(req.query),
-        ...searchNameTermUtil(req.query)
-    }
-    const allBlogs = await blogsMongoQueryRepository.getBlogs(inputQuery)
-    res
-        .status(200)
-        .json(allBlogs)
-}
-
-export const getBlogByIdController = async (req: Request, res: Response<OutputBlogType>) => {
-    const blogId = req.params.id
-    const blog = await blogsMongoQueryRepository.getBlogById(blogId)
-    if (!blog) {
+    async createPostByBlogId(req: Request, res: Response) {
+        const createdInfo = await postsService.createPostByBlogId(req.params.blogId, req.body)
+        if (!createdInfo) {
+            res
+                .status(404)
+                .json({message: 'Blog not found'})
+            return
+        }
+        const newPost = await postsMongoQueryRepository.getPostById(createdInfo.id)
         res
-            .sendStatus(404)
-        return
+            .status(201)
+            .json(newPost)
+    },
+
+    async get(req: Request<SortQueryFieldsType & SearchNameTermFieldsType>, res: Response<Paginator<OutputBlogType[]>>) {
+        const inputQuery = {
+            ...sortQueryFieldsUtil(req.query),
+            ...searchNameTermUtil(req.query)
+        }
+        const allBlogs = await blogsMongoQueryRepository.getBlogs(inputQuery)
+        res
+            .status(200)
+            .json(allBlogs)
+    },
+
+    async getById(req: Request, res: Response<OutputBlogType>) {
+        const blogId = req.params.id
+        const blog = await blogsMongoQueryRepository.getBlogById(blogId)
+        if (!blog) {
+            res
+                .sendStatus(404)
+            return
+        }
+        res
+            .status(200)
+            .json(blog)
+    },
+
+    async getPostsByBlogId(req: Request, res: Response<Paginator<OutputPostType[]>>) {
+        const postBlogId = req.params.blogId
+        const inputQuery = {
+            ...sortQueryFieldsUtil(req.query)
+        }
+        const posts = await postsMongoQueryRepository.getPostsByBlogId(postBlogId, inputQuery)
+        if (!posts) {
+            res
+                .sendStatus(404)
+            return
+        }
+        res
+            .status(200)
+            .json(posts)
+    },
+
+    async updateById(req: Request<{ id: string }, {}, InputBlogType>, res: Response) {
+        const updateBlog = await blogsService.updateBlogById(req.params.id, req.body)
+        if (!updateBlog) {
+            res
+                .status(404)
+                .json({message: 'Blog not found'})
+            return
+        }
+        res
+            .status(204)
+            .json({message: "successfully updated"})
+    },
+
+    async deleteById(req: Request<{ id: string }>, res: Response) {
+        const deleteBlog = await blogsService.deleteBlogById(req.params.id)
+        if (!deleteBlog) {
+            res
+                .status(404)
+                .json({message: 'Blog not found'})
+
+            return
+        }
+        res
+            .status(204)
+            .json({message: 'Blog deleted successfully'})
     }
-    res
-        .status(200)
-        .json(blog)
 }
 
-export const getPostsByBlogIdController = async (req: Request, res: Response<Paginator<OutputPostType[]>>) => {
-    const postBlogId = req.params.blogId
-    const inputQuery = {
-        ...sortQueryFieldsUtil(req.query)
-    }
-    const posts = await postsMongoQueryRepository.getPostsByBlogId(postBlogId, inputQuery)
-    if (!posts) {
-        res
-            .sendStatus(404)
-        return
-    }
-    res
-        .status(200)
-        .json(posts)
-}
 
-export const updateBlogByIdController = async (req: Request<{ id: string }, {}, InputBlogType>, res: Response) => {
-    const updateBlog = await blogsService.updateBlogById(req.params.id, req.body)
-    if (!updateBlog) {
-        res
-            .status(404)
-            .json({message: 'Blog not found'})
-        return
-    }
-    res
-        .status(204)
-        .json({message: "successfully updated"})
-}
-
-export const deleteBlogByIdController = async (req: Request<{ id: string }>, res: Response) => {
-    const deleteBlog = await blogsService.deleteBlogById(req.params.id)
-    if (!deleteBlog) {
-        res
-            .status(404)
-            .json({message: 'Blog not found'})
-        return
-    }
-    res
-        .status(204)
-        .json({message: 'Blog deleted successfully'})
-}
