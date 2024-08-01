@@ -154,6 +154,10 @@ export const authService = {
             }
         }
         const recoveryCode = randomUUID()
+        const newExpirationDate = add(new Date(), {
+            hours: 1
+        })
+        await usersMongoRepository.updateRegistrationConfirmation(existingUserByEmail._id, recoveryCode, newExpirationDate)
         await nodemailerAdapter.sendEmail(
             inputEmail.email,
             recoveryCode,
