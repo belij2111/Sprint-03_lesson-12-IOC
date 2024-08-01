@@ -15,7 +15,7 @@ import {ResultStatus} from "../common/types/result-code";
 import {ErrorResponse} from "../common/types/error-response";
 
 export const usersController = {
-    create: async function (req: Request, res: Response) {
+    async create(req: Request, res: Response) {
         try {
             const createdInfo = await usersService.createUser(req.body)
             if (createdInfo.status === ResultStatus.BadRequest) {
