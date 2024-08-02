@@ -82,7 +82,7 @@ export const postsController = {
             if (deletePost.status === ResultStatus.NotFound) {
                 res
                     .status(404)
-                    .json({message: 'Post not found'})
+                    .json({errorsMessages: deletePost.extensions || []})
                 return
             }
             res
