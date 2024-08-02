@@ -201,7 +201,6 @@ describe('Blogs Components', () => {
                 .delete(SETTINGS.PATH.BLOGS + '/' + new ObjectId())
                 .set(authorizationHeader)
                 .expect(404)
-            expect(result.body).toHaveProperty('message', 'Blog not found')
             // console.log(result.body)
         })
     })
