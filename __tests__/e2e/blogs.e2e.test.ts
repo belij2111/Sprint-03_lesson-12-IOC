@@ -248,7 +248,7 @@ describe('Blogs Components', () => {
                 .set(invalidAuthorizationHeader)
                 .send(validPost)
                 .expect(401)
-            console.log(result.status)
+            // console.log(result.status)
         })
         it(`shouldn't create new post for specific blog if the blog does not exist : STATUS 404`, async () => {
             const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
