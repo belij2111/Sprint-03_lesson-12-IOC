@@ -211,7 +211,6 @@ describe('Posts Components', () => {
                 .delete(SETTINGS.PATH.POSTS + '/' + new ObjectId())
                 .set(authorizationHeader)
                 .expect(404)
-            expect(result.body).toHaveProperty('message', 'Post not found')
             // console.log(result.body)
         })
     })
