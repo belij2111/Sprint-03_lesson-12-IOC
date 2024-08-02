@@ -36,16 +36,19 @@ export const blogsController = {
     async createPostByBlogId(req: Request, res: Response) {
         try {
             const createdInfo = await postsService.createPostByBlogId(req.params.blogId, req.body)
-            if (!createdInfo) {
+            if (createdInfo.status === ResultStatus.NotFound) {
                 res
                     .status(404)
-                    .json({message: 'Blog not found'})
+                    .json({errorsMessages: createdInfo.extensions || []})
                 return
             }
-            const newPost = await postsMongoQueryRepository.getPostById(createdInfo.id)
-            res
-                .status(201)
-                .json(newPost)
+            if (createdInfo.data && createdInfo.status === ResultStatus.Success) {
+                const newPost = await postsMongoQueryRepository.getPostById(createdInfo.data.id)
+                res
+                    .status(201)
+                    .json(newPost)
+                return
+            }
         } catch (error) {
             res
                 .status(500)
@@ -141,7 +144,7 @@ export const blogsController = {
             }
             res
                 .status(204)
-                .json({errorsMessages: deleteBlog.extensions || []})
+                .json({})
         } catch (error) {
             res
                 .status(500)

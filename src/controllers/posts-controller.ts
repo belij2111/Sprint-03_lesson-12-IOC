@@ -11,17 +11,26 @@ import {OutputCommentType} from "../types/comment-types";
 
 export const postsController = {
     async create(req: Request, res: Response) {
-        const createdInfo = await postsService.createPost(req.body)
-        if (!createdInfo) {
+        try {
+            const createdInfo = await postsService.createPost(req.body)
+            if (createdInfo.status === ResultStatus.NotFound) {
+                res
+                    .status(404)
+                    .json({errorsMessages: createdInfo.extensions || []})
+                return
+            }
+            if (createdInfo.data && createdInfo.status === ResultStatus.Success) {
+                const newPost = await postsMongoQueryRepository.getPostById(createdInfo.data.id)
+                res
+                    .status(201)
+                    .json(newPost)
+                return
+            }
+        } catch (error) {
             res
-                .status(404)
-                .json({message: 'Blog not found'})
-            return
+                .status(500)
+                .json({message: 'postsController.create'})
         }
-        const newPost = await postsMongoQueryRepository.getPostById(createdInfo.id)
-        res
-            .status(201)
-            .json(newPost)
     },
 
     async get(req: Request<{}, {}, {}, SortQueryFieldsType>, res: Response<Paginator<OutputPostType[]>>) {
@@ -49,29 +58,41 @@ export const postsController = {
     },
 
     async update(req: Request<{ id: string }, {}, InputPostType>, res: Response) {
-        const updatePost = await postsService.updatePostById(req.params.id, req.body)
-        if (!updatePost) {
+        try {
+            const updatePost = await postsService.updatePostById(req.params.id, req.body)
+            if (updatePost.status === ResultStatus.NotFound) {
+                res
+                    .status(404)
+                    .json({errorsMessages: updatePost.extensions || []})
+                return
+            }
             res
-                .status(404)
-                .json({message: 'Post not found'})
-            return
+                .status(204)
+                .json({})
+        } catch (error) {
+            res
+                .status(500)
+                .json({message: 'postsController.update'})
         }
-        res
-            .status(204)
-            .json({message: "successfully updated"})
     },
 
     async deleteById(req: Request<{ id: string }>, res: Response) {
-        const deletePost = await postsService.deletePostById(req.params.id)
-        if (!deletePost) {
+        try {
+            const deletePost = await postsService.deletePostById(req.params.id)
+            if (deletePost.status === ResultStatus.NotFound) {
+                res
+                    .status(404)
+                    .json({message: 'Post not found'})
+                return
+            }
             res
-                .status(404)
-                .json({message: 'Post not found'})
-            return
+                .status(204)
+                .json({})
+        } catch (error) {
+            res
+                .status(500)
+                .json({message: 'postsController.deleteById'})
         }
-        res
-            .status(204)
-            .json({message: 'Post deleted successfully'})
     },
 
     async createCommentByPostId(req: Request, res: Response) {
@@ -121,4 +142,3 @@ export const postsController = {
             .json(comments)
     }
 }
-

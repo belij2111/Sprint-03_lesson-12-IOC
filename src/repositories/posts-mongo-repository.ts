@@ -15,8 +15,8 @@ export const postsMongoRepository = {
     },
 
     async updateById(findPost: PostDbType, updatePost: Object): Promise<boolean | null> {
-        await postCollection.updateOne(findPost, {$set: updatePost})
-        return true
+        const result = await postCollection.updateOne(findPost, {$set: updatePost})
+        return result.modifiedCount !== 0
     },
 
     async deleteById(findPost: PostDbType): Promise<boolean | null> {
