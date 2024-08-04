@@ -1,9 +1,9 @@
 import {SETTINGS} from "./settings";
 import {app} from "./app";
-import {connectToDb} from "./db/mongo-db";
+import {db} from "./db/mongo-db";
 
 const startApp = async () => {
-    if (!await connectToDb(SETTINGS.MONGO_URL)) {
+    if (!await db.run(SETTINGS.MONGO_URL)) {
         console.log('not connected to db');
         process.exit(1)
     }

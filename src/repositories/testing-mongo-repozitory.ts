@@ -1,20 +1,13 @@
-import {
-    apiCallsCollection,
-    blogCollection,
-    commentCollection, deviceSessionsCollection,
-    postCollection,
-    refreshTokenCollection,
-    userCollection
-} from "../db/mongo-db";
+import {db} from "../db/mongo-db";
 
 export const testingMongoRepository = {
     async deleteAllData() {
-        await blogCollection.deleteMany()
-        await postCollection.deleteMany()
-        await userCollection.deleteMany()
-        await commentCollection.deleteMany()
-        await refreshTokenCollection.deleteMany()
-        await apiCallsCollection.deleteMany()
-        await deviceSessionsCollection.deleteMany()
+        await db.getCollections().blogCollection.deleteMany()
+        await db.getCollections().postCollection.deleteMany()
+        await db.getCollections().userCollection.deleteMany()
+        await db.getCollections().commentCollection.deleteMany()
+        await db.getCollections().refreshTokenCollection.deleteMany()
+        await db.getCollections().apiCallsCollection.deleteMany()
+        await db.getCollections().deviceSessionsCollection.deleteMany()
     }
 }

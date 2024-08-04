@@ -1,24 +1,24 @@
 import {ObjectId} from "mongodb";
 import {CommentDbType} from "../db/comment-db-type";
-import {commentCollection} from "../db/mongo-db";
+import {db} from "../db/mongo-db";
 
 export const commentsMongoRepository = {
     async create(inputComment: CommentDbType): Promise<{ id: string }> {
-        const result = await commentCollection.insertOne(inputComment)
+        const result = await db.getCollections().commentCollection.insertOne(inputComment)
         return {id: result.insertedId.toString()}
     },
 
     async update(findComment: CommentDbType, updateComment: Object): Promise<boolean | null> {
-        await commentCollection.updateOne(findComment, {$set: updateComment})
+        await db.getCollections().commentCollection.updateOne(findComment, {$set: updateComment})
         return true
     },
 
     async findById(id: ObjectId): Promise<CommentDbType | null> {
-        return await commentCollection.findOne({_id: id})
+        return await db.getCollections().commentCollection.findOne({_id: id})
     },
 
     async deleteById(findComment: CommentDbType): Promise<boolean | null> {
-        await commentCollection.deleteOne(findComment)
+        await db.getCollections().commentCollection.deleteOne(findComment)
         return true
     },
 

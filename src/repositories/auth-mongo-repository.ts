@@ -1,10 +1,10 @@
-import {apiCallsCollection} from "../db/mongo-db";
+import {db} from "../db/mongo-db";
 import {ApiCallDataInputType} from "../types/auth-types";
 import {ApiCallDbType} from "../db/api-call-db-type";
 
 export const authMongoRepository = {
     async addApiCall(apiCall: ApiCallDbType) {
-        await apiCallsCollection.insertOne(apiCall)
+        await db.getCollections().apiCallsCollection.insertOne(apiCall)
     },
 
     async findApiCalls(apiCallData: ApiCallDataInputType, timeLimit: Date) {
@@ -13,6 +13,6 @@ export const authMongoRepository = {
             url: apiCallData.url,
             date: {$gte: timeLimit}
         }
-        return await apiCallsCollection.countDocuments(filter)
+        return await db.getCollections().apiCallsCollection.countDocuments(filter)
     }
 }

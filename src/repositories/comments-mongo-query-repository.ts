@@ -1,6 +1,6 @@
 import {ObjectId} from "mongodb";
 import {OutputCommentType} from "../types/comment-types";
-import {commentCollection, postCollection} from "../db/mongo-db";
+import {db} from "../db/mongo-db";
 import {CommentDbType} from "../db/comment-db-type";
 import {SortQueryFilterType} from "../common/helpers/sort-query-fields-util";
 import {Paginator} from "../common/types/paginator-types";
@@ -15,13 +15,13 @@ export const commentsMongoQueryRepository = {
         const filter = {
             ...byId
         }
-        const items = await commentCollection
+        const items = await db.getCollections().commentCollection
             .find(filter)
             .sort(inputQuery.sortBy, inputQuery.sortDirection)
             .skip((inputQuery.pageNumber - 1) * inputQuery.pageSize)
             .limit(inputQuery.pageSize)
             .toArray()
-        const totalCount = await commentCollection.countDocuments(filter)
+        const totalCount = await db.getCollections().commentCollection.countDocuments(filter)
         return {
             pagesCount: Math.ceil(totalCount / inputQuery.pageSize),
             page: inputQuery.pageNumber,
@@ -39,11 +39,11 @@ export const commentsMongoQueryRepository = {
     },
 
     async findPostById(postId: ObjectId): Promise<PostDbType | null> {
-        return await postCollection.findOne({_id: postId})
+        return await db.getCollections().postCollection.findOne({_id: postId})
     },
 
     async findById(id: ObjectId): Promise<CommentDbType | null> {
-        return await commentCollection.findOne({_id: id})
+        return await db.getCollections().commentCollection.findOne({_id: id})
     },
 
     commentMapToOutput(comment: CommentDbType): OutputCommentType {

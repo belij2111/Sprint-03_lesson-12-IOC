@@ -1,4 +1,4 @@
-import {blogCollection, connectToDb, postCollection} from "../../src/db/mongo-db";
+import {db} from "../../src/db/mongo-db";
 import {startMongoServer, stopMongoServer} from "../mongo-memory-setup";
 import {Response} from "supertest";
 import {req} from "../test-helpers";
@@ -11,19 +11,17 @@ import {ObjectId} from "mongodb";
 
 describe('Posts Components', () => {
     beforeAll(async () => {
-        await connectToDb(await startMongoServer())
-        // await connectToDb(SETTINGS.MONGO_URL)
+        await db.run(await startMongoServer())
+        // await db.run(SETTINGS.MONGO_URL)
     })
     afterAll(async () => {
         await stopMongoServer()
     })
     beforeEach(async () => {
-        await blogCollection.deleteMany()
-        await postCollection.deleteMany()
+        await db.drop()
     })
     afterEach(async () => {
-        await blogCollection.deleteMany()
-        await postCollection.deleteMany()
+        await db.drop()
     })
 
     describe('POST/posts', () => {

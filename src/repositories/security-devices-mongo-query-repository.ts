@@ -1,5 +1,5 @@
 import {ObjectId} from "mongodb";
-import {deviceSessionsCollection} from "../db/mongo-db";
+import {db} from "../db/mongo-db";
 import {OutputDeviseSessionsType} from "../types/device-sessions-types";
 import {DeviceSessionsDbType} from "../db/device-sessions-db-type";
 
@@ -11,7 +11,7 @@ export const securityDevicesMongoQueryRepository = {
     },
 
     async findByUserId(userId: string) {
-        return await deviceSessionsCollection.find({userId}).toArray()
+        return await db.getCollections().deviceSessionsCollection.find({userId}).toArray()
     },
 
     deviceSessionsMapToOutput(devices: DeviceSessionsDbType): OutputDeviseSessionsType {

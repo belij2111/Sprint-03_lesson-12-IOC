@@ -1,7 +1,7 @@
 import {OutputBlogType, QueryBlogFilterType} from "../types/blog-types";
 import {BlogDBType} from "../db/blog-db-type";
 import {ObjectId} from "mongodb";
-import {blogCollection} from "../db/mongo-db";
+import {db} from "../db/mongo-db";
 import {Paginator} from "../common/types/paginator-types";
 
 export const blogsMongoQueryRepository = {
@@ -12,14 +12,14 @@ export const blogsMongoQueryRepository = {
         const filter = {
             ...search,
         }
-        const items = await blogCollection
+        const items = await db.getCollections().blogCollection
             .find(filter)
             .sort(inputQuery.sortBy, inputQuery.sortDirection)
             .skip((inputQuery.pageNumber - 1) * inputQuery.pageSize)
             .limit(inputQuery.pageSize)
             .map(this.blogMapToOutput)
             .toArray()
-        const totalCount = await blogCollection.countDocuments(filter)
+        const totalCount = await db.getCollections().blogCollection.countDocuments(filter)
         return {
             pagesCount: Math.ceil(totalCount / inputQuery.pageSize),
             page: inputQuery.pageNumber,
@@ -37,7 +37,7 @@ export const blogsMongoQueryRepository = {
     },
 
     async findById(id: ObjectId): Promise<BlogDBType | null> {
-        return await blogCollection.findOne({_id: id})
+        return await db.getCollections().blogCollection.findOne({_id: id})
     },
 
     blogMapToOutput(blog: BlogDBType): OutputBlogType {

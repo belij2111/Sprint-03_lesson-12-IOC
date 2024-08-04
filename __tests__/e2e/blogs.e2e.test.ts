@@ -1,4 +1,4 @@
-import {blogCollection, connectToDb} from "../../src/db/mongo-db";
+import {db} from "../../src/db/mongo-db";
 import {SETTINGS} from "../../src/settings";
 import {blogDto} from "../tests-dtos/blog-dto";
 import {blogsTestManager} from "./tests-managers/blogs-test-Manager";
@@ -12,17 +12,17 @@ import {postsTestManager} from "./tests-managers/posts-test-Manager";
 
 describe('Blogs Components', () => {
     beforeAll(async () => {
-        await connectToDb(await startMongoServer())
-        // await connectToDb(SETTINGS.MONGO_URL)
+        await db.run(await startMongoServer())
+        // await db.run(SETTINGS.MONGO_URL)
     })
     afterAll(async () => {
         await stopMongoServer()
     })
     beforeEach(async () => {
-        await blogCollection.deleteMany()
+        await db.drop()
     })
     afterEach(async () => {
-        await blogCollection.deleteMany()
+        await db.drop()
     })
     it('should return version number', async () => {
         await req

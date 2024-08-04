@@ -1,5 +1,5 @@
 import {ObjectId} from "mongodb";
-import {userCollection} from "../db/mongo-db";
+import {db} from "../db/mongo-db";
 import {Paginator} from "../common/types/paginator-types";
 import {OutputUserType, QueryUserFilterType} from "../types/user-types";
 import {UserDbType} from "../db/user-db-type";
@@ -23,14 +23,14 @@ export const usersMongoQueryRepository = {
                 },
             ]
         }
-        const items = await userCollection
+        const items = await db.getCollections().userCollection
             .find(filter)
             .sort(inputQuery.sortBy, inputQuery.sortDirection)
             .skip((inputQuery.pageNumber - 1) * inputQuery.pageSize)
             .limit(inputQuery.pageSize)
             .map(this.userMapToOutput)
             .toArray()
-        const totalCount = await userCollection.countDocuments(filter)
+        const totalCount = await db.getCollections().userCollection.countDocuments(filter)
         return {
             pagesCount: Math.ceil(totalCount / inputQuery.pageSize),
             page: inputQuery.pageNumber,
@@ -55,7 +55,7 @@ export const usersMongoQueryRepository = {
     },
 
     async findById(id: ObjectId): Promise<UserDbType | null> {
-        return await userCollection.findOne({_id: id})
+        return await db.getCollections().userCollection.findOne({_id: id})
     },
 
     userMapToOutput(user: UserDbType): OutputUserType {
