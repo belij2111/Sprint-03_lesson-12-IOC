@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 import {BlogModel} from "../domain/blog.entity";
-import {PostModel, PostSchema} from "../domain/post.entity";
-import {CommentModel, CommentSchema} from "../domain/comment.entity";
+import {PostModel} from "../domain/post.entity";
+import {CommentModel} from "../domain/comment.entity";
 import {UserModel} from "../domain/user.entity";
 import {RefreshTokenModel} from "../domain/refresh-token.entity";
 import {ApiCallsModel} from "../domain/api-calls.entity";
