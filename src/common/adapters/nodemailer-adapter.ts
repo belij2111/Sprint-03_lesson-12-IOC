@@ -7,8 +7,8 @@ export const nodemailerAdapter = {
         let transport = nodemailer.createTransport({
             service: "gmail",
             auth: {
-                user: SETTINGS.EMAIL,
-                pass: SETTINGS.EMAIL_PASS
+                user: SETTINGS.EMAIL_CREDENTIALS.EMAIL,
+                pass: SETTINGS.EMAIL_CREDENTIALS.EMAIL_PASS
             },
             tls: {
                 rejectUnauthorized: false,

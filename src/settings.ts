@@ -34,10 +34,12 @@ export const SETTINGS = {
         MONGO_URL: process.env.MONGO_URL || '',
         DB_NAME: process.env.DB_NAME || ''
     },
+    EMAIL_CREDENTIALS: {
+        EMAIL: process.env.EMAIL || '',
+        EMAIL_PASS: process.env.EMAIL_PASS || ''
+    },
 
 
-    EMAIL: process.env.EMAIL || '',
-    EMAIL_PASS: process.env.EMAIL_PASS || '',
     TIME_LIMIT_API_CALLS: process.env.TIME_LIMIT_API_CALLS || '',
     NUMBER_LIMIT_API_CALLS: process.env.NUMBER_LIMIT_API_CALLS || ''
 }
