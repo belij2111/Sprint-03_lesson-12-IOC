@@ -201,8 +201,8 @@ export const authService = {
             userId: userAuth.data,
             deviceId: randomUUID()
         }
-        const accessToken = await jwtService.createToken(userAuth, SETTINGS.ACCESS_TOKEN_DURATION)
-        const refreshToken = await jwtService.createToken(payload, SETTINGS.REFRESH_TOKEN_DURATION)
+        const accessToken = await jwtService.createToken(userAuth, SETTINGS.TOKEN.ACCESS_TOKEN_DURATION)
+        const refreshToken = await jwtService.createToken(payload, SETTINGS.TOKEN.REFRESH_TOKEN_DURATION)
         const decodePayload = await jwtService.decodeToken(refreshToken) as CustomJwtPayload
         const deviceSession: DeviceSessionsDbType = {
             userId: decodePayload.userId,
@@ -224,8 +224,8 @@ export const authService = {
             userId: payload.userId,
             deviceId: payload.deviceId
         }
-        const accessToken = await jwtService.createToken(newPayload, SETTINGS.ACCESS_TOKEN_DURATION)
-        const refreshToken = await jwtService.createToken(newPayload, SETTINGS.REFRESH_TOKEN_DURATION)
+        const accessToken = await jwtService.createToken(newPayload, SETTINGS.TOKEN.ACCESS_TOKEN_DURATION)
+        const refreshToken = await jwtService.createToken(newPayload, SETTINGS.TOKEN.REFRESH_TOKEN_DURATION)
         const decodeNewPayload = await jwtService.decodeToken(refreshToken) as CustomJwtPayload
         const deviceId = decodeNewPayload.deviceId
         const iatDate = new Date(decodeNewPayload.iat! * 1000).toISOString()

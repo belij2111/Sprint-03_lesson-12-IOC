@@ -24,11 +24,13 @@ export const SETTINGS = {
     },
     AUTH_SECRETS: {
         ADMIN_AUTH: process.env.ADMIN_AUTH || '',
-        SECRET_KEY: process.env.SECRET_KEY || '',
+        SECRET_KEY: process.env.SECRET_KEY || ''
+    },
+    TOKEN: {
+        ACCESS_TOKEN_DURATION: process.env.ACCESS_TOKEN_DURATION || '',
+        REFRESH_TOKEN_DURATION: process.env.REFRESH_TOKEN_DURATION || ''
     },
 
-    ACCESS_TOKEN_DURATION: process.env.ACCESS_TOKEN_DURATION || '',
-    REFRESH_TOKEN_DURATION: process.env.REFRESH_TOKEN_DURATION || '',
     MONGO_URL: process.env.MONGO_URL || '',
     DB_NAME: process.env.DB_NAME || '',
     EMAIL: process.env.EMAIL || '',
