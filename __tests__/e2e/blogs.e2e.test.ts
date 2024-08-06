@@ -13,7 +13,7 @@ import {postsTestManager} from "./tests-managers/posts-test-Manager";
 describe('Blogs Components', () => {
     beforeAll(async () => {
         await db.run(await startMongoServer())
-        // await db.run(SETTINGS.MONGO_URL)
+        // await db.run(SETTINGS.DATA_BASE.MONGO_URL)
     })
     afterAll(async () => {
         await stopMongoServer()

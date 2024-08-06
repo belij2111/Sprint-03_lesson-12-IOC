@@ -30,9 +30,12 @@ export const SETTINGS = {
         ACCESS_TOKEN_DURATION: process.env.ACCESS_TOKEN_DURATION || '',
         REFRESH_TOKEN_DURATION: process.env.REFRESH_TOKEN_DURATION || ''
     },
+    DATA_BASE: {
+        MONGO_URL: process.env.MONGO_URL || '',
+        DB_NAME: process.env.DB_NAME || ''
+    },
 
-    MONGO_URL: process.env.MONGO_URL || '',
-    DB_NAME: process.env.DB_NAME || '',
+
     EMAIL: process.env.EMAIL || '',
     EMAIL_PASS: process.env.EMAIL_PASS || '',
     TIME_LIMIT_API_CALLS: process.env.TIME_LIMIT_API_CALLS || '',

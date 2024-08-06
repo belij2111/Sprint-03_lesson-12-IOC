@@ -3,7 +3,7 @@ import {app} from "./app";
 import {db} from "./db/mongo-db";
 
 const startApp = async () => {
-    if (!await db.run(SETTINGS.MONGO_URL)) {
+    if (!await db.run(SETTINGS.DATA_BASE.MONGO_URL)) {
         console.log('not connected to db');
         process.exit(1)
     }

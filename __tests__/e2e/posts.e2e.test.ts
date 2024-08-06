@@ -12,7 +12,7 @@ import {ObjectId} from "mongodb";
 describe('Posts Components', () => {
     beforeAll(async () => {
         await db.run(await startMongoServer())
-        // await db.run(SETTINGS.MONGO_URL)
+        // await db.run(SETTINGS.DATA_BASE.MONGO_URL)
     })
     afterAll(async () => {
         await stopMongoServer()
