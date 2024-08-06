@@ -5,7 +5,7 @@ export const jwtService = {
     async createToken(payload: object, duration: string): Promise<string> {
         return jwt.sign(
             payload,
-            SETTINGS.SECRET_KEY,
+            SETTINGS.AUTH_SECRETS.SECRET_KEY,
             {expiresIn: duration}
         )
     },
@@ -21,7 +21,7 @@ export const jwtService = {
 
     async verifyToken(token: string) {
         try {
-            return jwt.verify(token, SETTINGS.SECRET_KEY)
+            return jwt.verify(token, SETTINGS.AUTH_SECRETS.SECRET_KEY)
         } catch (error) {
             console.error('Token verify some error')
             return null

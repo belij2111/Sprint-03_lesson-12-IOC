@@ -10,7 +10,7 @@ export const authBasicMiddleware = (req: Request, res: Response, next: NextFunct
         return
     }
 
-    const buff = Buffer.from(SETTINGS.ADMIN_AUTH, 'utf-8')
+    const buff = Buffer.from(SETTINGS.AUTH_SECRETS.ADMIN_AUTH, 'utf-8')
     const codedAuth = buff.toString('base64')
 
     if (auth.slice(6) !== codedAuth || auth.slice(0, 5) !== 'Basic') {

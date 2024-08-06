@@ -39,7 +39,7 @@ describe('Blogs Components', () => {
             // console.log(result.body)
         })
         it(`should return blogs with paging : STATUS 200`, async () => {
-            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.AUTH_SECRETS.ADMIN_AUTH)
             const createBlogs = await blogsTestManager.createBlogs(authorizationHeader, 4)
             const {pageNumber, pageSize, sortBy, sortDirection} = sortParamsDto
             const searchNameTerm = "Blog"
@@ -66,7 +66,7 @@ describe('Blogs Components', () => {
     describe('POST/blogs', () => {
         it(`should create new blog : STATUS 201`, async () => {
             const validBlog = blogDto.validBlogsDto(1)
-            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.AUTH_SECRETS.ADMIN_AUTH)
             const result: Response = await req
                 .post(SETTINGS.PATH.BLOGS)
                 .set(authorizationHeader)
@@ -84,7 +84,7 @@ describe('Blogs Components', () => {
         })
         it(`shouldn't create new blog with incorrect input data : STATUS 400`, async () => {
             const invalidBlog = blogDto.invalidBlogsDto(777)
-            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.AUTH_SECRETS.ADMIN_AUTH)
             const result: Response = await req
                 .post(SETTINGS.PATH.BLOGS)
                 .set(authorizationHeader)
@@ -106,7 +106,7 @@ describe('Blogs Components', () => {
 
     describe('GET/blogs/:id', () => {
         it(`should return blog by ID : STATUS 200`, async () => {
-            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.AUTH_SECRETS.ADMIN_AUTH)
             const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
             const result: Response = await req
                 .get(SETTINGS.PATH.BLOGS + '/' + createBlog.id)
@@ -115,7 +115,7 @@ describe('Blogs Components', () => {
             // console.log(result.body, createBlog)
         })
         it(`shouldn't return blog by ID if the blog does not exist : STATUS 404`, async () => {
-            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.AUTH_SECRETS.ADMIN_AUTH)
             const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
             const result: Response = await req
                 .get(SETTINGS.PATH.BLOGS + '/-100')
@@ -126,7 +126,7 @@ describe('Blogs Components', () => {
 
     describe('PUT/blogs/:id', () => {
         it(`should update blog by ID : STATUS 204`, async () => {
-            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.AUTH_SECRETS.ADMIN_AUTH)
             const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
             const updateBlog = blogDto.validBlogsDto(555)
             const result: Response = await req
@@ -138,7 +138,7 @@ describe('Blogs Components', () => {
             // console.log(createBlog, updateBlog, result.status)
         })
         it(`shouldn't update blog by ID with incorrect input data : STATUS 400`, async () => {
-            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.AUTH_SECRETS.ADMIN_AUTH)
             const createBlog = await blogsTestManager.createBlog(authorizationHeader, 2)
             const invalidUpdateBlog = blogDto.invalidBlogsDto(0)
             const result: Response = await req
@@ -150,7 +150,7 @@ describe('Blogs Components', () => {
             // console.log(createBlog, invalidUpdateBlog, result.body.errorsMessages)
         })
         it(`shouldn't update blog by ID : STATUS 401`, async () => {
-            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.AUTH_SECRETS.ADMIN_AUTH)
             const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
             const invalidAuthorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', 'invalid')
             const updateBlog = blogDto.validBlogsDto(333)
@@ -162,7 +162,7 @@ describe('Blogs Components', () => {
             // console.log(createBlog, updateBlog, result.status)
         })
         it(`shouldn't update blog by ID if the blog does not exist : STATUS 404`, async () => {
-            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.AUTH_SECRETS.ADMIN_AUTH)
             const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
             const updateBlog = blogDto.validBlogsDto(2)
             const result: Response = await req
@@ -176,7 +176,7 @@ describe('Blogs Components', () => {
 
     describe('DELETE/blogs/:id', () => {
         it(`should delete blog by ID : STATUS 204`, async () => {
-            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.AUTH_SECRETS.ADMIN_AUTH)
             const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
             const result: Response = await req
                 .delete(SETTINGS.PATH.BLOGS + '/' + createBlog.id)
@@ -185,7 +185,7 @@ describe('Blogs Components', () => {
             // console.log(result.body, result.status)
         })
         it(`shouldn't delete blog by ID if the request is unauthorized : STATUS 401`, async () => {
-            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.AUTH_SECRETS.ADMIN_AUTH)
             const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
             const invalidAuthorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', 'invalid')
             const result: Response = await req
@@ -195,7 +195,7 @@ describe('Blogs Components', () => {
             // console.log(result.status)
         })
         it(`shouldn't delete blog by ID if the blog does not exist : STATUS 404`, async () => {
-            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.AUTH_SECRETS.ADMIN_AUTH)
             const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
             const result: Response = await req
                 .delete(SETTINGS.PATH.BLOGS + '/' + new ObjectId())
@@ -207,7 +207,7 @@ describe('Blogs Components', () => {
 
     describe('POST/blogs/:blogId/posts', () => {
         it(`should create new post for specific blog : STATUS 201`, async () => {
-            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.AUTH_SECRETS.ADMIN_AUTH)
             const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
             const validPost = postDto.validPostDto(createBlog.id, 1)
 
@@ -228,7 +228,7 @@ describe('Blogs Components', () => {
             // console.log(result.body, createBlog.name)
         })
         it(`shouldn't create new post for specific blog with incorrect input data : STATUS 400`, async () => {
-            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.AUTH_SECRETS.ADMIN_AUTH)
             const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
             const invalidPost = postDto.invalidPostDto(createBlog.id, 777)
             const result: Response = await req
@@ -239,7 +239,7 @@ describe('Blogs Components', () => {
             // console.log(result.body)
         })
         it(`shouldn't create new post for specific blog if the request is unauthorized : STATUS 401`, async () => {
-            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.AUTH_SECRETS.ADMIN_AUTH)
             const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
             const validPost = postDto.validPostDto(createBlog.id, 1)
             const invalidAuthorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', 'invalid')
@@ -251,7 +251,7 @@ describe('Blogs Components', () => {
             // console.log(result.status)
         })
         it(`shouldn't create new post for specific blog if the blog does not exist : STATUS 404`, async () => {
-            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.AUTH_SECRETS.ADMIN_AUTH)
             const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
             const validPost = postDto.validPostDto(createBlog.id, 1)
             const result: Response = await req
@@ -265,7 +265,7 @@ describe('Blogs Components', () => {
 
     describe('GET/blogs/:blogId/posts', () => {
         it(`should return posts for specific blog with paging : STATUS 200`, async () => {
-            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.AUTH_SECRETS.ADMIN_AUTH)
             const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
             const createPosts = await postsTestManager.createPosts(authorizationHeader, createBlog.id, 5)
             const {pageNumber, pageSize, sortBy, sortDirection} = sortParamsDto
@@ -287,7 +287,7 @@ describe('Blogs Components', () => {
             // console.log(result.body.items)
         })
         it(`shouldn't return posts for specific blog if the blog does not exist : STATUS 200`, async () => {
-            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.ADMIN_AUTH)
+            const authorizationHeader = await blogsTestManager.createAuthorizationHeader('Basic', SETTINGS.AUTH_SECRETS.ADMIN_AUTH)
             const createBlog = await blogsTestManager.createBlog(authorizationHeader, 1)
             const createPosts = await postsTestManager.createPosts(authorizationHeader, createBlog.id, 5)
             const result: Response = await req

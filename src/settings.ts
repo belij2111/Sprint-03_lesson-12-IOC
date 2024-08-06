@@ -22,8 +22,11 @@ export const SETTINGS = {
         API_CALLS: process.env.API_CALLS_COLLECTION_NAME || '',
         DEVICE_SESSIONS: process.env.DEVICE_SESSIONS_COLLECTION_NAME || ''
     },
-    ADMIN_AUTH: process.env.ADMIN_AUTH || '',
-    SECRET_KEY: process.env.SECRET_KEY || '',
+    AUTH_SECRETS: {
+        ADMIN_AUTH: process.env.ADMIN_AUTH || '',
+        SECRET_KEY: process.env.SECRET_KEY || '',
+    },
+
     ACCESS_TOKEN_DURATION: process.env.ACCESS_TOKEN_DURATION || '',
     REFRESH_TOKEN_DURATION: process.env.REFRESH_TOKEN_DURATION || '',
     MONGO_URL: process.env.MONGO_URL || '',
