@@ -253,8 +253,8 @@ export const authService = {
     },
 
     async checkApiCalls(apiCallData: ApiCallDataInputType): Promise<Result> {
-        const timeLimit = add(new Date(), {seconds: -SETTINGS.TIME_LIMIT_API_CALLS})
-        const numberLimit = parseInt(SETTINGS.NUMBER_LIMIT_API_CALLS, 10)
+        const timeLimit = add(new Date(), {seconds: -SETTINGS.API_CALLS.TIME_LIMIT})
+        const numberLimit = parseInt(SETTINGS.API_CALLS.NUMBER_LIMIT, 10)
         const countApiCalls = await authMongoRepository.findApiCalls(apiCallData, timeLimit)
         if (countApiCalls >= numberLimit) {
             return {

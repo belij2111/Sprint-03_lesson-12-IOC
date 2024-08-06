@@ -38,8 +38,8 @@ export const SETTINGS = {
         EMAIL: process.env.EMAIL || '',
         EMAIL_PASS: process.env.EMAIL_PASS || ''
     },
-
-
-    TIME_LIMIT_API_CALLS: process.env.TIME_LIMIT_API_CALLS || '',
-    NUMBER_LIMIT_API_CALLS: process.env.NUMBER_LIMIT_API_CALLS || ''
+    API_CALLS: {
+        TIME_LIMIT: process.env.TIME_LIMIT_API_CALLS || '',
+        NUMBER_LIMIT: process.env.NUMBER_LIMIT_API_CALLS || ''
+    }
 }
