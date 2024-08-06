@@ -11,4 +11,4 @@ export const DeviceSessionsSchema = new mongoose.Schema<DeviceSessionsDbType>({
     expDate: {type: String, required: true}
 })
 
-export const DeviceSessionsModel = mongoose.model<DeviceSessionsDbType>(SETTINGS.DEVICE_SESSIONS_COLLECTION_NAME, DeviceSessionsSchema)
+export const DeviceSessionsModel = mongoose.model<DeviceSessionsDbType>(SETTINGS.COLLECTION_NAME.DEVICE_SESSIONS, DeviceSessionsSchema)

@@ -11,4 +11,4 @@ export const BlogSchema = new mongoose.Schema<BlogDBType>({
     isMembership: {type: Boolean, required: true}
 })
 
-export const BlogModel = mongoose.model<BlogDBType>(SETTINGS.BLOG_COLLECTION_NAME, BlogSchema)
+export const BlogModel = mongoose.model<BlogDBType>(SETTINGS.COLLECTION_NAME.BLOG, BlogSchema)

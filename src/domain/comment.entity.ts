@@ -16,4 +16,4 @@ export const CommentSchema = new mongoose.Schema<CommentDbType>({
 
 })
 
-export const CommentModel = mongoose.model<CommentDbType>(SETTINGS.COMMENT_COLLECTION_NAME, CommentSchema)
+export const CommentModel = mongoose.model<CommentDbType>(SETTINGS.COLLECTION_NAME.COMMENT, CommentSchema)

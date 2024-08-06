@@ -7,4 +7,4 @@ export const RefreshTokenSchema = new mongoose.Schema<RefreshTokenDbType>({
     refreshToken: {type: String, required: true},
 })
 
-export const RefreshTokenModel = mongoose.model<RefreshTokenDbType>(SETTINGS.REFRESH_TOKEN_COLLECTION_NAME, RefreshTokenSchema)
+export const RefreshTokenModel = mongoose.model<RefreshTokenDbType>(SETTINGS.COLLECTION_NAME.REFRESH_TOKEN, RefreshTokenSchema)

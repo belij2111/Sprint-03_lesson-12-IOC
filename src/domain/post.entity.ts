@@ -12,4 +12,4 @@ export const PostSchema = new mongoose.Schema<PostDbType>({
     createdAt: {type: String, required: true},
 })
 
-export const PostModel = mongoose.model<PostDbType>(SETTINGS.POST_COLLECTION_NAME, PostSchema)
+export const PostModel = mongoose.model<PostDbType>(SETTINGS.COLLECTION_NAME.POST, PostSchema)

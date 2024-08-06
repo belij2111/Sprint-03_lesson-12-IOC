@@ -8,4 +8,4 @@ export const ApiCallsSchema = new mongoose.Schema<ApiCallDbType>({
     date: {type: Date, required: true},
 })
 
-export const ApiCallsModel = mongoose.model<ApiCallDbType>(SETTINGS.API_CALLS_COLLECTION_NAME, ApiCallsSchema)
+export const ApiCallsModel = mongoose.model<ApiCallDbType>(SETTINGS.COLLECTION_NAME.API_CALLS, ApiCallsSchema)

@@ -17,4 +17,4 @@ export const UserSchema = new mongoose.Schema<UserDbType>({
     emailConfirmation: {type: EmailConfirmation}
 })
 
-export const UserModel = mongoose.model<UserDbType>(SETTINGS.USER_COLLECTION_NAME, UserSchema)
+export const UserModel = mongoose.model<UserDbType>(SETTINGS.COLLECTION_NAME.USER, UserSchema)
