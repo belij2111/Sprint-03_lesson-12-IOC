@@ -1,11 +1,4 @@
 import mongoose from 'mongoose'
-import {BlogModel} from "../domain/blog.entity";
-import {PostModel} from "../domain/post.entity";
-import {CommentModel} from "../domain/comment.entity";
-import {UserModel} from "../domain/user.entity";
-import {RefreshTokenModel} from "../domain/refresh-token.entity";
-import {ApiCallsModel} from "../domain/api-calls.entity";
-import {DeviceSessionsModel} from "../domain/device-sessions.entity";
 
 export const db = {
     async run(DB_URL: string): Promise<boolean> {
@@ -34,18 +27,6 @@ export const db = {
         } catch (e) {
             console.error('Error in drop db', e)
             await this.stop()
-        }
-    },
-
-    getCollections() {
-        return {
-            blogCollection: BlogModel,
-            postCollection: PostModel,
-            userCollection: UserModel,
-            commentCollection: CommentModel,
-            refreshTokenCollection: RefreshTokenModel,
-            apiCallsCollection: ApiCallsModel,
-            deviceSessionsCollection: DeviceSessionsModel
         }
     }
 }
