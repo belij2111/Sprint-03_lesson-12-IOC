@@ -1,10 +1,11 @@
 import {ObjectId} from "mongodb";
 import {OutputCommentType} from "../types/comment-types";
-import {db} from "../db/mongo-db";
 import {CommentDbType} from "../db/comment-db-type";
 import {SortQueryFilterType} from "../common/helpers/sort-query-fields-util";
 import {Paginator} from "../common/types/paginator-types";
 import {PostDbType} from "../db/post-db-type";
+import {CommentModel} from "../domain/comment.entity";
+import {PostModel} from "../domain/post.entity";
 
 export const commentsMongoQueryRepository = {
     async getCommentsByPostId(postId: string, inputQuery: SortQueryFilterType): Promise<Paginator<OutputCommentType[]> | null> {
@@ -15,13 +16,14 @@ export const commentsMongoQueryRepository = {
         const filter = {
             ...byId
         }
-        const items = await db.getCollections().commentCollection
+        const items = await CommentModel
             .find(filter)
-            .sort(inputQuery.sortBy, inputQuery.sortDirection)
+            .sort({[inputQuery.sortBy]: inputQuery.sortDirection})
             .skip((inputQuery.pageNumber - 1) * inputQuery.pageSize)
             .limit(inputQuery.pageSize)
-            .toArray()
-        const totalCount = await db.getCollections().commentCollection.countDocuments(filter)
+            .lean()
+            .exec()
+        const totalCount = await CommentModel.countDocuments(filter)
         return {
             pagesCount: Math.ceil(totalCount / inputQuery.pageSize),
             page: inputQuery.pageNumber,
@@ -39,11 +41,11 @@ export const commentsMongoQueryRepository = {
     },
 
     async findPostById(postId: ObjectId): Promise<PostDbType | null> {
-        return await db.getCollections().postCollection.findOne({_id: postId})
+        return PostModel.findOne({_id: postId})
     },
 
     async findById(id: ObjectId): Promise<CommentDbType | null> {
-        return await db.getCollections().commentCollection.findOne({_id: id})
+        return CommentModel.findOne({_id: id})
     },
 
     commentMapToOutput(comment: CommentDbType): OutputCommentType {

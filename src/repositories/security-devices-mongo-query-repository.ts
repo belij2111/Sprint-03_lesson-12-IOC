@@ -1,7 +1,7 @@
 import {ObjectId} from "mongodb";
-import {db} from "../db/mongo-db";
 import {OutputDeviseSessionsType} from "../types/device-sessions-types";
 import {DeviceSessionsDbType} from "../db/device-sessions-db-type";
+import {DeviceSessionsModel} from "../domain/device-sessions.entity";
 
 export const securityDevicesMongoQueryRepository = {
     async getDevices(userId: string): Promise<OutputDeviseSessionsType[] | null> {
@@ -11,7 +11,7 @@ export const securityDevicesMongoQueryRepository = {
     },
 
     async findByUserId(userId: string) {
-        return await db.getCollections().deviceSessionsCollection.find({userId}).toArray()
+        return DeviceSessionsModel.find({userId})
     },
 
     deviceSessionsMapToOutput(devices: DeviceSessionsDbType): OutputDeviseSessionsType {

@@ -1,19 +1,19 @@
-import {db} from "../db/mongo-db";
 import {DeviceSessionsDbType} from "../db/device-sessions-db-type";
 import {ObjectId} from "mongodb";
+import {DeviceSessionsModel} from "../domain/device-sessions.entity";
 
 export const securityDevicesMongoRepository = {
     async create(deviceSessionData: DeviceSessionsDbType) {
-        const result = await db.getCollections().deviceSessionsCollection.insertOne(deviceSessionData)
-        return {id: result.insertedId.toString()}
+        const result = await DeviceSessionsModel.create(deviceSessionData)
+        return {id: result._id.toString()}
     },
 
     async findByDeviceId(deviceId: string) {
-        return await db.getCollections().deviceSessionsCollection.findOne({deviceId})
+        return DeviceSessionsModel.findOne({deviceId})
     },
 
     async updateByDeviceId(deviceId: string, iatDate: string): Promise<boolean> {
-        const result = await db.getCollections().deviceSessionsCollection.updateOne(
+        const result = await DeviceSessionsModel.updateOne(
             {deviceId: deviceId},
             {$set: {'iatDate': iatDate}}
         )
@@ -22,7 +22,7 @@ export const securityDevicesMongoRepository = {
 
     async deleteExceptCurrent(userId: string, currentDeviceId: string): Promise<boolean | null> {
         if (!this.checkObjectId(userId)) return null
-        await db.getCollections().deviceSessionsCollection.deleteMany({
+        await DeviceSessionsModel.deleteMany({
             userId,
             deviceId: {$ne: currentDeviceId}
         })
@@ -30,7 +30,7 @@ export const securityDevicesMongoRepository = {
     },
 
     async deleteByDeviceId(deviceId: string): Promise<boolean | null> {
-        const result = await db.getCollections().deviceSessionsCollection.deleteOne({deviceId})
+        const result = await DeviceSessionsModel.deleteOne({deviceId})
         return result.deletedCount !== 0
     },
 

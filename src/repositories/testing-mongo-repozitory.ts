@@ -1,13 +1,19 @@
-import {db} from "../db/mongo-db";
+import {BlogModel} from "../domain/blog.entity";
+import {PostModel} from "../domain/post.entity";
+import {UserModel} from "../domain/user.entity";
+import {CommentModel} from "../domain/comment.entity";
+import {RefreshTokenModel} from "../domain/refresh-token.entity";
+import {ApiCallsModel} from "../domain/api-calls.entity";
+import {DeviceSessionsModel} from "../domain/device-sessions.entity";
 
 export const testingMongoRepository = {
     async deleteAllData() {
-        await db.getCollections().blogCollection.deleteMany()
-        await db.getCollections().postCollection.deleteMany()
-        await db.getCollections().userCollection.deleteMany()
-        await db.getCollections().commentCollection.deleteMany()
-        await db.getCollections().refreshTokenCollection.deleteMany()
-        await db.getCollections().apiCallsCollection.deleteMany()
-        await db.getCollections().deviceSessionsCollection.deleteMany()
+        await BlogModel.deleteMany()
+        await PostModel.deleteMany()
+        await UserModel.deleteMany()
+        await CommentModel.deleteMany()
+        await RefreshTokenModel.deleteMany()
+        await ApiCallsModel.deleteMany()
+        await DeviceSessionsModel.deleteMany()
     }
 }

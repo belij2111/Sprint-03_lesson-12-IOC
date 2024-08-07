@@ -1,21 +1,23 @@
 import {OutputPostType} from "../types/post-types";
 import {PostDbType} from "../db/post-db-type";
-import {db} from "../db/mongo-db";
 import {BlogDBType} from "../db/blog-db-type";
 import {ObjectId} from "mongodb";
 import {Paginator} from "../common/types/paginator-types";
 import {SortQueryFilterType} from "../common/helpers/sort-query-fields-util";
+import {PostModel} from "../domain/post.entity";
+import {BlogModel} from "../domain/blog.entity";
 
 export const postsMongoQueryRepository = {
     async getPost(inputQuery: SortQueryFilterType): Promise<Paginator<OutputPostType[]>> {
         const filter = {}
-        const items = await db.getCollections().postCollection
+        const items = await PostModel
             .find(filter)
-            .sort(inputQuery.sortBy, inputQuery.sortDirection)
+            .sort({[inputQuery.sortBy]: inputQuery.sortDirection})
             .skip((inputQuery.pageNumber - 1) * inputQuery.pageSize)
             .limit(inputQuery.pageSize)
-            .toArray()
-        const totalCount = await db.getCollections().postCollection.countDocuments(filter)
+            .lean()
+            .exec()
+        const totalCount = await PostModel.countDocuments(filter)
         return {
             pagesCount: Math.ceil(totalCount / inputQuery.pageSize),
             page: inputQuery.pageNumber,
@@ -40,13 +42,14 @@ export const postsMongoQueryRepository = {
         const filter = {
             ...byId
         }
-        const items = await db.getCollections().postCollection
+        const items = await PostModel
             .find(filter)
-            .sort(inputQuery.sortBy, inputQuery.sortDirection)
+            .sort({[inputQuery.sortBy]: inputQuery.sortDirection})
             .skip((inputQuery.pageNumber - 1) * inputQuery.pageSize)
             .limit(inputQuery.pageSize)
-            .toArray()
-        const totalCount = await db.getCollections().postCollection.countDocuments(filter)
+            .lean()
+            .exec()
+        const totalCount = await PostModel.countDocuments(filter)
         return {
             pagesCount: Math.ceil(totalCount / inputQuery.pageSize),
             page: inputQuery.pageNumber,
@@ -57,13 +60,12 @@ export const postsMongoQueryRepository = {
     },
 
     async findById(id: ObjectId): Promise<PostDbType | null> {
-        return await db.getCollections().postCollection.findOne({_id: id})
+        return PostModel.findOne({_id: id})
     },
 
     async findBlogById(blogId: string): Promise<BlogDBType | null> {
-        return await db.getCollections().blogCollection.findOne({_id: new ObjectId(blogId)})
+        return BlogModel.findOne({_id: new ObjectId(blogId)})
     },
-
 
     postMapToOutput(post: PostDbType): OutputPostType {
         return {

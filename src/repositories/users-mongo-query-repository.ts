@@ -1,9 +1,9 @@
 import {ObjectId} from "mongodb";
-import {db} from "../db/mongo-db";
 import {Paginator} from "../common/types/paginator-types";
 import {OutputUserType, QueryUserFilterType} from "../types/user-types";
 import {UserDbType} from "../db/user-db-type";
 import {MeOutputType} from "../types/auth-types";
+import {UserModel} from "../domain/user.entity";
 
 export const usersMongoQueryRepository = {
     async getUsers(inputQuery: QueryUserFilterType): Promise<Paginator<OutputUserType[]>> {
@@ -23,20 +23,20 @@ export const usersMongoQueryRepository = {
                 },
             ]
         }
-        const items = await db.getCollections().userCollection
+        const items = await UserModel
             .find(filter)
-            .sort(inputQuery.sortBy, inputQuery.sortDirection)
+            .sort({[inputQuery.sortBy]: inputQuery.sortDirection})
             .skip((inputQuery.pageNumber - 1) * inputQuery.pageSize)
             .limit(inputQuery.pageSize)
-            .map(this.userMapToOutput)
-            .toArray()
-        const totalCount = await db.getCollections().userCollection.countDocuments(filter)
+            .lean()
+            .exec()
+        const totalCount = await UserModel.countDocuments(filter)
         return {
             pagesCount: Math.ceil(totalCount / inputQuery.pageSize),
             page: inputQuery.pageNumber,
             pageSize: inputQuery.pageSize,
             totalCount,
-            items
+            items: items.map(this.userMapToOutput)
         }
     },
 
@@ -55,7 +55,7 @@ export const usersMongoQueryRepository = {
     },
 
     async findById(id: ObjectId): Promise<UserDbType | null> {
-        return await db.getCollections().userCollection.findOne({_id: id})
+        return UserModel.findOne({_id: id})
     },
 
     userMapToOutput(user: UserDbType): OutputUserType {
