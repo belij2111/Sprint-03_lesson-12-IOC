@@ -1,4 +1,4 @@
-import mongoose, {Schema} from "mongoose";
+import mongoose from "mongoose";
 import {SETTINGS} from "../settings";
 import {DeviceSessionsDbType} from "../db/device-sessions-db-type";
 
