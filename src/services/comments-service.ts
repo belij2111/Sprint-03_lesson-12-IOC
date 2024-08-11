@@ -3,18 +3,28 @@ import {InputCommentType} from "../types/comment-types";
 import {ResultStatus} from "../common/types/result-code";
 import {CommentDbType} from "../db/comment-db-type";
 import {ObjectId} from "mongodb";
-import {postsMongoRepository} from "../repositories/posts-mongo-repository";
-import {usersMongoRepository} from "../repositories/users-mongo-repository";
+import {PostsMongoRepository} from "../repositories/posts-mongo-repository";
+import {UsersMongoRepository} from "../repositories/users-mongo-repository";
 import {UserDbType} from "../db/user-db-type";
 import {PostDbType} from "../db/post-db-type";
 import {dateTimeIsoString} from "../common/helpers/date-time-iso-string";
-import {commentsMongoRepository} from "../repositories/comments-mongo-repository";
+import {CommentsMongoRepository} from "../repositories/comments-mongo-repository";
 
-export const commentsService = {
+export class CommentsService {
+    private usersMongoRepository: UsersMongoRepository
+    private postsMongoRepository: PostsMongoRepository
+    private commentsMongoRepository: CommentsMongoRepository
+
+    constructor() {
+        this.usersMongoRepository = new UsersMongoRepository()
+        this.postsMongoRepository = new PostsMongoRepository()
+        this.commentsMongoRepository = new CommentsMongoRepository()
+    }
+
     async createComment(postId: string, userId: string, inputComment: InputCommentType): Promise<Result<{
         id: string
     } | null>> {
-        const existingUser: UserDbType | null = await usersMongoRepository.findById(new ObjectId(userId))
+        const existingUser: UserDbType | null = await this.usersMongoRepository.findById(new ObjectId(userId))
         if (!existingUser) {
             return {
                 status: ResultStatus.Unauthorized,
@@ -22,7 +32,7 @@ export const commentsService = {
                 data: null
             }
         }
-        const existingPost: PostDbType | null = await postsMongoRepository.findById(new ObjectId(postId))
+        const existingPost: PostDbType | null = await this.postsMongoRepository.findById(new ObjectId(postId))
         if (!existingPost) {
             return {
                 status: ResultStatus.NotFound,
@@ -40,15 +50,15 @@ export const commentsService = {
             createdAt: dateTimeIsoString(),
             postId: new ObjectId(postId)
         }
-        const result = await commentsMongoRepository.create(createNewComment)
+        const result = await this.commentsMongoRepository.create(createNewComment)
         return {
             status: ResultStatus.Success,
             data: result
         }
-    },
+    }
 
     async updateComment(id: string, inputComment: InputCommentType, userId: string): Promise<Result<boolean | null>> {
-        const findComment = await commentsMongoRepository.findById(new ObjectId(id))
+        const findComment = await this.commentsMongoRepository.findById(new ObjectId(id))
         if (!findComment) {
             return {
                 status: ResultStatus.NotFound,
@@ -66,22 +76,22 @@ export const commentsService = {
         const updateComment = {
             content: inputComment.content
         }
-        const result = await commentsMongoRepository.update(findComment, updateComment)
+        const result = await this.commentsMongoRepository.update(findComment, updateComment)
         return {
             status: ResultStatus.Success,
             data: result
         }
-    },
+    }
 
     async deleteCommentById(id: string, userId: string): Promise<Result<boolean | null>> {
-        const checkId = commentsMongoRepository.checkObjectId(id)
+        const checkId = this.commentsMongoRepository.checkObjectId(id)
         if (!checkId)
             return {
                 status: ResultStatus.BadRequest,
                 extensions: [{field: 'checkId', message: 'Invalid id'}],
                 data: null
             }
-        const findComment = await commentsMongoRepository.findById(new ObjectId(id))
+        const findComment = await this.commentsMongoRepository.findById(new ObjectId(id))
         if (!findComment) {
             return {
                 status: ResultStatus.NotFound,
@@ -96,7 +106,7 @@ export const commentsService = {
                 data: null
             }
         }
-        const result = await commentsMongoRepository.deleteById(findComment)
+        const result = await this.commentsMongoRepository.deleteById(findComment)
         return {
             status: ResultStatus.Success,
             data: result

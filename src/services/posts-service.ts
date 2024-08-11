@@ -2,13 +2,19 @@ import {InputPostType} from "../types/post-types";
 import {PostDbType} from "../db/post-db-type";
 import {ObjectId} from "mongodb";
 import {dateTimeIsoString} from "../common/helpers/date-time-iso-string";
-import {postsMongoRepository} from "../repositories/posts-mongo-repository";
+import {PostsMongoRepository} from "../repositories/posts-mongo-repository";
 import {Result} from "../common/types/result-type";
 import {ResultStatus} from "../common/types/result-code";
 
-export const postsService = {
+export class PostsService {
+    private postsMongoRepository: PostsMongoRepository
+
+    constructor() {
+        this.postsMongoRepository = new PostsMongoRepository()
+    }
+
     async createPost(inputPost: InputPostType): Promise<Result<{ id: string } | null>> {
-        const findBlog = await postsMongoRepository.findBlogById(inputPost.blogId)
+        const findBlog = await this.postsMongoRepository.findBlogById(inputPost.blogId)
         if (!findBlog)
             return {
                 status: ResultStatus.NotFound,
@@ -22,15 +28,15 @@ export const postsService = {
             blogName: findBlog.name,
             createdAt: dateTimeIsoString()
         }
-        const result = await postsMongoRepository.create(createNewPost)
+        const result = await this.postsMongoRepository.create(createNewPost)
         return {
             status: ResultStatus.Success,
             data: result
         }
-    },
+    }
 
     async createPostByBlogId(blogId: string, inputPost: InputPostType): Promise<Result<{ id: string } | null>> {
-        const findBlog = await postsMongoRepository.findBlogById(blogId)
+        const findBlog = await this.postsMongoRepository.findBlogById(blogId)
         if (!findBlog)
             return {
                 status: ResultStatus.NotFound,
@@ -44,15 +50,15 @@ export const postsService = {
             blogName: findBlog.name,
             createdAt: dateTimeIsoString()
         }
-        const result = await postsMongoRepository.createByBlogId(createNewPost)
+        const result = await this.postsMongoRepository.createByBlogId(createNewPost)
         return {
             status: ResultStatus.Success,
             data: result
         }
-    },
+    }
 
     async updatePostById(id: string, inputPost: InputPostType): Promise<Result<boolean | null>> {
-        const findPost = await postsMongoRepository.findById(new ObjectId(id))
+        const findPost = await this.postsMongoRepository.findById(new ObjectId(id))
         if (!findPost)
             return {
                 status: ResultStatus.NotFound,
@@ -64,25 +70,25 @@ export const postsService = {
             shortDescription: inputPost.shortDescription,
             content: inputPost.content
         }
-        const result = await postsMongoRepository.updateById(findPost, updatePost)
+        const result = await this.postsMongoRepository.updateById(findPost, updatePost)
         return {
             status: ResultStatus.Success,
             data: result
         }
-    },
+    }
 
     async deletePostById(id: string): Promise<Result<boolean | null>> {
-        const findPost = await postsMongoRepository.findById(new ObjectId(id))
+        const findPost = await this.postsMongoRepository.findById(new ObjectId(id))
         if (!findPost)
             return {
                 status: ResultStatus.NotFound,
                 extensions: [{field: 'findPost', message: 'Post not found'}],
                 data: null
             }
-        const result = await postsMongoRepository.deleteById(findPost)
+        const result = await this.postsMongoRepository.deleteById(findPost)
         return {
             status: ResultStatus.Success,
             data: result
         }
-    },
+    }
 }

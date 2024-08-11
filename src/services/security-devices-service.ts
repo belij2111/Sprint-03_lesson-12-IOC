@@ -1,26 +1,34 @@
 import {Result} from "../common/types/result-type";
-import {securityDevicesMongoRepository} from "../repositories/security-devices-mongo-repository";
+import {
+    SecurityDevicesMongoRepository
+} from "../repositories/security-devices-mongo-repository";
 import {ResultStatus} from "../common/types/result-code";
 
-export const securityDevicesService = {
+export class SecurityDevicesService {
+    private securityDevicesMongoRepository: SecurityDevicesMongoRepository
+
+    constructor() {
+        this.securityDevicesMongoRepository = new SecurityDevicesMongoRepository()
+    }
+
     async deleteSessionsExceptCurrent(userId: string, currentDeviceId: string): Promise<Result<boolean | null>> {
-        const result = await securityDevicesMongoRepository.deleteExceptCurrent(userId, currentDeviceId)
+        const result = await this.securityDevicesMongoRepository.deleteExceptCurrent(userId, currentDeviceId)
         return {
             status: ResultStatus.Success,
             extensions: [{field: 'terminate  sessions', message: 'All sessions except the current one are completed'}],
             data: result
         }
-    },
+    }
 
     async deleteByDeviceId(userId: string, deviceId: string): Promise<Result<boolean | null>> {
-        const checkId = securityDevicesMongoRepository.checkObjectId(userId)
+        const checkId = this.securityDevicesMongoRepository.checkObjectId(userId)
         if (!checkId)
             return {
                 status: ResultStatus.BadRequest,
                 extensions: [{field: 'checkId', message: 'Invalid id'}],
                 data: null
             }
-        const findDevice = await securityDevicesMongoRepository.findByDeviceId(deviceId)
+        const findDevice = await this.securityDevicesMongoRepository.findByDeviceId(deviceId)
         if (!findDevice) {
             return {
                 status: ResultStatus.NotFound,
@@ -35,7 +43,7 @@ export const securityDevicesService = {
                 data: null
             }
         }
-        const result = await securityDevicesMongoRepository.deleteByDeviceId(findDevice.deviceId)
+        const result = await this.securityDevicesMongoRepository.deleteByDeviceId(findDevice.deviceId)
         return {
             status: ResultStatus.Success,
             data: result

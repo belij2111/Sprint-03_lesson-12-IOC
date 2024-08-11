@@ -1,4 +1,4 @@
-import {usersMongoRepository} from "../repositories/users-mongo-repository";
+import {UsersMongoRepository} from "../repositories/users-mongo-repository";
 import {
     ApiCallDataInputType,
     LoginInputType,
@@ -18,12 +18,22 @@ import {randomUUID} from "node:crypto";
 import {add} from "date-fns/add";
 import {nodemailerAdapter} from "../common/adapters/nodemailer-adapter";
 import {SETTINGS} from "../settings";
-import {authMongoRepository} from "../repositories/auth-mongo-repository";
+import {AuthMongoRepository} from "../repositories/auth-mongo-repository";
 import {DeviceSessionsDbType} from "../db/device-sessions-db-type";
-import {securityDevicesMongoRepository} from "../repositories/security-devices-mongo-repository";
 import {CustomJwtPayload} from "../common/types/custom-jwt-payload-type";
+import {SecurityDevicesMongoRepository} from "../repositories/security-devices-mongo-repository";
 
-export const authService = {
+export class AuthService {
+    private usersMongoRepository: UsersMongoRepository
+    private securityDevicesMongoRepository: SecurityDevicesMongoRepository
+    private authMongoRepository: AuthMongoRepository
+
+    constructor() {
+        this.usersMongoRepository = new UsersMongoRepository()
+        this.securityDevicesMongoRepository = new SecurityDevicesMongoRepository()
+        this.authMongoRepository = new AuthMongoRepository()
+    }
+
     async registerUser(inputUser: InputUserType): Promise<Result> {
         if (!inputUser.login || !inputUser.password || !inputUser.email) {
             return {
@@ -32,7 +42,7 @@ export const authService = {
                 data: null
             }
         }
-        const existingUserByLogin = await usersMongoRepository.findByLoginOrEmail({
+        const existingUserByLogin = await this.usersMongoRepository.findByLoginOrEmail({
             loginOrEmail: inputUser.login,
             password: inputUser.password
         })
@@ -43,7 +53,7 @@ export const authService = {
                 data: null
             }
         }
-        const existingUserByEmail = await usersMongoRepository.findByLoginOrEmail({
+        const existingUserByEmail = await this.usersMongoRepository.findByLoginOrEmail({
             loginOrEmail: inputUser.email,
             password: inputUser.password
         })
@@ -68,7 +78,7 @@ export const authService = {
                 isConfirmed: false
             }
         }
-        await usersMongoRepository.create(createNewUser)
+        await this.usersMongoRepository.create(createNewUser)
         nodemailerAdapter.sendEmail(
             createNewUser.email,
             createNewUser.emailConfirmation.confirmationCode,
@@ -80,10 +90,10 @@ export const authService = {
             status: ResultStatus.Success,
             data: null
         }
-    },
+    }
 
     async confirmationRegistrationUser(inputCode: RegistrationConfirmationCodeInputType): Promise<Result<boolean | null>> {
-        const verifiedUser = await usersMongoRepository.findByConfirmationCode(inputCode)
+        const verifiedUser = await this.usersMongoRepository.findByConfirmationCode(inputCode)
         if (!verifiedUser) {
             return {
                 status: ResultStatus.BadRequest,
@@ -106,15 +116,15 @@ export const authService = {
             }
         }
         const isConfirmed = true
-        await usersMongoRepository.updateEmailConfirmation(verifiedUser._id, isConfirmed)
+        await this.usersMongoRepository.updateEmailConfirmation(verifiedUser._id, isConfirmed)
         return {
             status: ResultStatus.Success,
             data: null
         }
-    },
+    }
 
     async registrationEmailResending(inputEmail: RegistrationEmailResendingInputType): Promise<Result> {
-        const existingUserByEmail = await usersMongoRepository.findByEmail(inputEmail)
+        const existingUserByEmail = await this.usersMongoRepository.findByEmail(inputEmail)
         if (!existingUserByEmail) {
             return {
                 status: ResultStatus.BadRequest,
@@ -133,7 +143,7 @@ export const authService = {
         const newExpirationDate = add(new Date(), {
             hours: 1
         })
-        await usersMongoRepository.updateRegistrationConfirmation(existingUserByEmail._id, newConfirmationCode, newExpirationDate)
+        await this.usersMongoRepository.updateRegistrationConfirmation(existingUserByEmail._id, newConfirmationCode, newExpirationDate)
         await nodemailerAdapter.sendEmail(
             inputEmail.email,
             newConfirmationCode,
@@ -143,10 +153,10 @@ export const authService = {
             status: ResultStatus.Success,
             data: null
         }
-    },
+    }
 
     async passwordRecovery(inputEmail: PasswordRecoveryInputType): Promise<Result> {
-        const existingUserByEmail = await usersMongoRepository.findByEmail(inputEmail)
+        const existingUserByEmail = await this.usersMongoRepository.findByEmail(inputEmail)
         if (!existingUserByEmail) {
             return {
                 status: ResultStatus.Success,
@@ -157,7 +167,7 @@ export const authService = {
         const newExpirationDate = add(new Date(), {
             hours: 1
         })
-        await usersMongoRepository.updateRegistrationConfirmation(existingUserByEmail._id, recoveryCode, newExpirationDate)
+        await this.usersMongoRepository.updateRegistrationConfirmation(existingUserByEmail._id, recoveryCode, newExpirationDate)
         await nodemailerAdapter.sendEmail(
             inputEmail.email,
             recoveryCode,
@@ -167,11 +177,11 @@ export const authService = {
             status: ResultStatus.Success,
             data: null
         }
-    },
+    }
 
     async newPassword(inputData: NewPasswordInputType): Promise<Result> {
         const {newPassword, recoveryCode} = inputData
-        const existingUserByRecoveryCode = await usersMongoRepository.findByRecoveryCode(recoveryCode)
+        const existingUserByRecoveryCode = await this.usersMongoRepository.findByRecoveryCode(recoveryCode)
         if (!existingUserByRecoveryCode) {
             return {
                 status: ResultStatus.BadRequest,
@@ -180,13 +190,13 @@ export const authService = {
             }
         }
         const newPasswordHash = await bcryptService.generateHash(newPassword)
-        await usersMongoRepository.updatePassword(existingUserByRecoveryCode._id, newPasswordHash)
+        await this.usersMongoRepository.updatePassword(existingUserByRecoveryCode._id, newPasswordHash)
         return {
             status: ResultStatus.Success,
             data: null
         }
 
-    },
+    }
 
     async loginUser(inputAuth: LoginInputType, ip: string, deviceName: string): Promise<Result<LoginServiceOutputType | null>> {
         const userAuth = await this.authenticateUser(inputAuth)
@@ -212,12 +222,12 @@ export const authService = {
             iatDate: new Date(decodePayload.iat! * 1000).toISOString(),
             expDate: new Date(decodePayload.exp! * 1000).toISOString()
         }
-        await securityDevicesMongoRepository.create(deviceSession)
+        await this.securityDevicesMongoRepository.create(deviceSession)
         return {
             status: ResultStatus.Success,
             data: {accessToken, refreshToken}
         }
-    },
+    }
 
     async refreshToken(payload: CustomJwtPayload): Promise<Result<LoginServiceOutputType | null>> {
         const newPayload: Pick<DeviceSessionsDbType, 'userId' | 'deviceId'> = {
@@ -229,15 +239,15 @@ export const authService = {
         const decodeNewPayload = await jwtService.decodeToken(refreshToken) as CustomJwtPayload
         const deviceId = decodeNewPayload.deviceId
         const iatDate = new Date(decodeNewPayload.iat! * 1000).toISOString()
-        await securityDevicesMongoRepository.updateByDeviceId(deviceId, iatDate)
+        await this.securityDevicesMongoRepository.updateByDeviceId(deviceId, iatDate)
         return {
             status: ResultStatus.Success,
             data: {accessToken, refreshToken}
         }
-    },
+    }
 
     async logout(deviceId: string): Promise<Result<boolean | null>> {
-        const findDevice = await securityDevicesMongoRepository.findByDeviceId(deviceId)
+        const findDevice = await this.securityDevicesMongoRepository.findByDeviceId(deviceId)
         if (!findDevice) {
             return {
                 status: ResultStatus.NotFound,
@@ -245,17 +255,17 @@ export const authService = {
                 data: null
             }
         }
-        const result = await securityDevicesMongoRepository.deleteByDeviceId(findDevice.deviceId)
+        const result = await this.securityDevicesMongoRepository.deleteByDeviceId(findDevice.deviceId)
         return {
             status: ResultStatus.Success,
             data: result
         }
-    },
+    }
 
     async checkApiCalls(apiCallData: ApiCallDataInputType): Promise<Result> {
         const timeLimit = add(new Date(), {seconds: -SETTINGS.API_CALLS.TIME_LIMIT})
         const numberLimit = parseInt(SETTINGS.API_CALLS.NUMBER_LIMIT, 10)
-        const countApiCalls = await authMongoRepository.findApiCalls(apiCallData, timeLimit)
+        const countApiCalls = await this.authMongoRepository.findApiCalls(apiCallData, timeLimit)
         if (countApiCalls >= numberLimit) {
             return {
                 status: ResultStatus.TooManyRequests,
@@ -268,15 +278,15 @@ export const authService = {
             url: apiCallData.url,
             date: new Date()
         }
-        await authMongoRepository.addApiCall(apiCall)
+        await this.authMongoRepository.addApiCall(apiCall)
         return {
             status: ResultStatus.Success,
             data: null
         }
-    },
+    }
 
     async authenticateUser(inputAuth: LoginInputType): Promise<Result<string | null>> {
-        const userAuth: UserDbType | null = await usersMongoRepository.findByLoginOrEmail(inputAuth)
+        const userAuth: UserDbType | null = await this.usersMongoRepository.findByLoginOrEmail(inputAuth)
         if (!userAuth) {
             return {
                 status: ResultStatus.Unauthorized,

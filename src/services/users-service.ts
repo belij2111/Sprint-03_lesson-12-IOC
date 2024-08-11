@@ -2,14 +2,20 @@ import {ObjectId} from "mongodb";
 import {dateTimeIsoString} from "../common/helpers/date-time-iso-string";
 import {InputUserType} from "../types/user-types";
 import {UserDbType} from "../db/user-db-type";
-import {usersMongoRepository} from "../repositories/users-mongo-repository";
+import {UsersMongoRepository} from "../repositories/users-mongo-repository";
 import {bcryptService} from "../common/adapters/bcrypt-service";
 import {Result} from "../common/types/result-type";
 import {ResultStatus} from "../common/types/result-code";
 import {randomUUID} from "node:crypto";
 import {add} from "date-fns/add"
 
-export const usersService = {
+export class UsersService {
+    private usersMongoRepository: UsersMongoRepository
+
+    constructor() {
+        this.usersMongoRepository = new UsersMongoRepository()
+    }
+
     async createUser(inputUser: InputUserType): Promise<Result<{ id: string } | null>> {
         if (!inputUser.login || !inputUser.password || !inputUser.email) {
             return {
@@ -19,7 +25,7 @@ export const usersService = {
             }
         }
 
-        const existingUser = await usersMongoRepository.findByLoginOrEmail({
+        const existingUser = await this.usersMongoRepository.findByLoginOrEmail({
             loginOrEmail: inputUser.login || inputUser.email,
             password: inputUser.password
         })
@@ -45,29 +51,29 @@ export const usersService = {
                 isConfirmed: true
             }
         }
-        const result = await usersMongoRepository.create(createNewUser)
+        const result = await this.usersMongoRepository.create(createNewUser)
         return {
             status: ResultStatus.Success,
             data: result
         }
-    },
+    }
 
     async deleteUserById(id: string): Promise<Result<boolean | null>> {
-        const checkId = usersMongoRepository.checkObjectId(id)
+        const checkId = this.usersMongoRepository.checkObjectId(id)
         if (!checkId)
             return {
                 status: ResultStatus.BadRequest,
                 extensions: [{field: 'checkId', message: 'Invalid id'}],
                 data: null
             }
-        const findUser = await usersMongoRepository.findById(new ObjectId(id))
+        const findUser = await this.usersMongoRepository.findById(new ObjectId(id))
         if (!findUser)
             return {
                 status: ResultStatus.NotFound,
                 extensions: [{field: 'findUser', message: 'User not found'}],
                 data: null
             }
-        const result = await usersMongoRepository.deleteById(findUser)
+        const result = await this.usersMongoRepository.deleteById(findUser)
         return {
             status: ResultStatus.Success,
             data: result
