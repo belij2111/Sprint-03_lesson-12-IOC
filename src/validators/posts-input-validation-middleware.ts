@@ -1,5 +1,7 @@
 import {body, param} from "express-validator";
-import {blogsMongoQueryRepository} from "../repositories/blogs-mongo-query-repository";
+import {BlogsMongoQueryRepository} from "../repositories/blogs-mongo-query-repository";
+
+const blogsMongoQueryRepository = new BlogsMongoQueryRepository()
 
 const blogIdInputValidation = body('blogId')
     .trim()
