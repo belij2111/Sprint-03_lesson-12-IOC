@@ -208,7 +208,7 @@ export class AuthService {
             }
         }
         const payload: Pick<DeviceSessionsDbType, 'userId' | 'deviceId'> = {
-            userId: userAuth.data,
+            userId: userAuth.data!,
             deviceId: randomUUID()
         }
         const accessToken = await jwtService.createToken(userAuth, SETTINGS.TOKEN.ACCESS_TOKEN_DURATION)
