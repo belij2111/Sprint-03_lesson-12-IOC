@@ -4,6 +4,6 @@ import {refreshTokenMiddleware} from "../common/middlewares/refresh-token-middle
 
 export const securityDevicesRouter = Router()
 
-securityDevicesRouter.get('/devices', refreshTokenMiddleware, securityDevicesController.get)
-securityDevicesRouter.delete('/devices', refreshTokenMiddleware, securityDevicesController.delete)
-securityDevicesRouter.delete('/devices/:deviceId', refreshTokenMiddleware, securityDevicesController.deleteByDeviceId)
+securityDevicesRouter.get('/devices', refreshTokenMiddleware.refreshToken.bind(refreshTokenMiddleware), securityDevicesController.get.bind(securityDevicesController))
+securityDevicesRouter.delete('/devices', refreshTokenMiddleware.refreshToken.bind(refreshTokenMiddleware), securityDevicesController.delete.bind(securityDevicesController))
+securityDevicesRouter.delete('/devices/:deviceId', refreshTokenMiddleware.refreshToken.bind(refreshTokenMiddleware), securityDevicesController.deleteByDeviceId.bind(securityDevicesController))

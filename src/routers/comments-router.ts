@@ -6,6 +6,6 @@ import {inputValidationMiddleware} from "../common/middlewares/input-validation-
 
 export const commentsRouter = Router()
 
-commentsRouter.get('/:id', commentsController.getById)
-commentsRouter.put('/:commentId', authBearerMiddleware, commentsInputValidationMiddleware, inputValidationMiddleware, commentsController.update)
-commentsRouter.delete('/:commentId', authBearerMiddleware, inputValidationMiddleware, commentsController.delete)
+commentsRouter.get('/:id', commentsController.getById.bind(commentsController))
+commentsRouter.put('/:commentId', authBearerMiddleware.checkAuth.bind(authBearerMiddleware), commentsInputValidationMiddleware, inputValidationMiddleware, commentsController.update.bind(commentsController))
+commentsRouter.delete('/:commentId', authBearerMiddleware.checkAuth.bind(authBearerMiddleware), inputValidationMiddleware, commentsController.delete.bind(commentsController))
