@@ -7,7 +7,7 @@ import {PostDbType} from "../db/post-db-type";
 import {CommentModel} from "../domain/comment.entity";
 import {PostModel} from "../domain/post.entity";
 
-export const commentsMongoQueryRepository = {
+export class CommentsMongoQueryRepository {
     async getCommentsByPostId(postId: string, inputQuery: SortQueryFilterType): Promise<Paginator<OutputCommentType[]> | null> {
         if (!this.checkObjectId(postId)) return null
         const post = await this.findPostById(new ObjectId(postId))
@@ -31,22 +31,22 @@ export const commentsMongoQueryRepository = {
             totalCount,
             items: items.map(this.commentMapToOutput)
         }
-    },
+    }
 
     async getCommentById(id: string): Promise<OutputCommentType | null> {
         if (!this.checkObjectId(id)) return null
         const comment = await this.findById(new ObjectId(id))
         if (!comment) return null
         return this.commentMapToOutput(comment)
-    },
+    }
 
     async findPostById(postId: ObjectId): Promise<PostDbType | null> {
         return PostModel.findOne({_id: postId})
-    },
+    }
 
     async findById(id: ObjectId): Promise<CommentDbType | null> {
         return CommentModel.findOne({_id: id})
-    },
+    }
 
     commentMapToOutput(comment: CommentDbType): OutputCommentType {
         return {
@@ -55,7 +55,7 @@ export const commentsMongoQueryRepository = {
             commentatorInfo: comment.commentatorInfo,
             createdAt: comment.createdAt
         }
-    },
+    }
 
     checkObjectId(id: string): boolean {
         return ObjectId.isValid(id)

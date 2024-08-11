@@ -4,7 +4,7 @@ import {ObjectId} from "mongodb";
 import {Paginator} from "../common/types/paginator-types";
 import {BlogModel} from "../domain/blog.entity";
 
-export const blogsMongoQueryRepository = {
+export class BlogsMongoQueryRepository {
     async getBlogs(inputQuery: QueryBlogFilterType): Promise<Paginator<OutputBlogType[]>> {
         const search = inputQuery.searchNameTerm
             ? {name: {$regex: inputQuery.searchNameTerm, $options: 'i'}}
@@ -27,18 +27,18 @@ export const blogsMongoQueryRepository = {
             totalCount,
             items: items.map(this.blogMapToOutput)
         }
-    },
+    }
 
     async getBlogById(id: string): Promise<OutputBlogType | null> {
         if (!this.checkObjectId(id)) return null
         const blog = await this.findById(new ObjectId(id))
         if (!blog) return null
         return this.blogMapToOutput(blog)
-    },
+    }
 
     async findById(id: ObjectId): Promise<BlogDBType | null> {
         return BlogModel.findOne({_id: id});
-    },
+    }
 
     blogMapToOutput(blog: BlogDBType): OutputBlogType {
         return {
@@ -49,7 +49,7 @@ export const blogsMongoQueryRepository = {
             createdAt: blog.createdAt,
             isMembership: blog.isMembership
         }
-    },
+    }
 
     checkObjectId(id: string): boolean {
         return ObjectId.isValid(id)

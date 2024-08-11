@@ -6,7 +6,7 @@ import {RefreshTokenModel} from "../domain/refresh-token.entity";
 import {ApiCallsModel} from "../domain/api-calls.entity";
 import {DeviceSessionsModel} from "../domain/device-sessions.entity";
 
-export const testingMongoRepository = {
+export class TestingMongoRepository {
     async deleteAllData() {
         await BlogModel.deleteMany()
         await PostModel.deleteMany()

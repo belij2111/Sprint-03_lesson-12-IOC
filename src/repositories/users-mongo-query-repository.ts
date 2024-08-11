@@ -5,7 +5,7 @@ import {UserDbType} from "../db/user-db-type";
 import {MeOutputType} from "../types/auth-types";
 import {UserModel} from "../domain/user.entity";
 
-export const usersMongoQueryRepository = {
+export class UsersMongoQueryRepository {
     async getUsers(inputQuery: QueryUserFilterType): Promise<Paginator<OutputUserType[]>> {
         const filter = {
             $or: [
@@ -38,25 +38,25 @@ export const usersMongoQueryRepository = {
             totalCount,
             items: items.map(this.userMapToOutput)
         }
-    },
+    }
 
     async getUserById(id: string): Promise<OutputUserType | null> {
         if (!this.checkObjectId(id)) return null
         const user = await this.findById(new ObjectId(id))
         if (!user) return null
         return this.userMapToOutput(user)
-    },
+    }
 
     async getAuthUserById(id: string): Promise<MeOutputType | null> {
         if (!this.checkObjectId(id)) return null
         const user = await this.findById(new ObjectId(id))
         if (!user) return null
         return this.authUserMapToOutput(user)
-    },
+    }
 
     async findById(id: ObjectId): Promise<UserDbType | null> {
         return UserModel.findOne({_id: id})
-    },
+    }
 
     userMapToOutput(user: UserDbType): OutputUserType {
         return {
@@ -65,7 +65,7 @@ export const usersMongoQueryRepository = {
             email: user.email,
             createdAt: user.createdAt
         }
-    },
+    }
 
     authUserMapToOutput(user: UserDbType): MeOutputType {
         return {
@@ -73,7 +73,7 @@ export const usersMongoQueryRepository = {
             login: user.login,
             email: user.email
         }
-    },
+    }
 
     checkObjectId(id: string): boolean {
         return ObjectId.isValid(id)

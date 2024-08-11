@@ -7,7 +7,7 @@ import {SortQueryFilterType} from "../common/helpers/sort-query-fields-util";
 import {PostModel} from "../domain/post.entity";
 import {BlogModel} from "../domain/blog.entity";
 
-export const postsMongoQueryRepository = {
+export class PostsMongoQueryRepository {
     async getPost(inputQuery: SortQueryFilterType): Promise<Paginator<OutputPostType[]>> {
         const filter = {}
         const items = await PostModel
@@ -25,14 +25,14 @@ export const postsMongoQueryRepository = {
             totalCount,
             items: items.map(this.postMapToOutput)
         }
-    },
+    }
 
     async getPostById(id: string): Promise<OutputPostType | null> {
         if (!this.checkObjectId(id)) return null
         const post = await this.findById(new ObjectId(id))
         if (!post) return null
         return this.postMapToOutput(post)
-    },
+    }
 
     async getPostsByBlogId(blogId: string, inputQuery: SortQueryFilterType): Promise<Paginator<OutputPostType[]> | null> {
         if (!this.checkObjectId(blogId)) return null
@@ -57,15 +57,15 @@ export const postsMongoQueryRepository = {
             totalCount,
             items: items.map(this.postMapToOutput)
         }
-    },
+    }
 
     async findById(id: ObjectId): Promise<PostDbType | null> {
         return PostModel.findOne({_id: id})
-    },
+    }
 
     async findBlogById(blogId: string): Promise<BlogDBType | null> {
         return BlogModel.findOne({_id: new ObjectId(blogId)})
-    },
+    }
 
     postMapToOutput(post: PostDbType): OutputPostType {
         return {
@@ -77,7 +77,7 @@ export const postsMongoQueryRepository = {
             blogName: post.blogName,
             createdAt: post.createdAt
         }
-    },
+    }
 
     checkObjectId(id: string): boolean {
         return ObjectId.isValid(id)
