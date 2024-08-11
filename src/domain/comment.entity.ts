@@ -10,7 +10,7 @@ const CommentatorInfoSchema = new mongoose.Schema({
 export const CommentSchema = new mongoose.Schema<CommentDbType>({
     _id: {type: Schema.Types.ObjectId, required: true},
     content: {type: String, required: true},
-    commentatorInfo: {type: CommentatorInfoSchema},
+    commentatorInfo: {type: CommentatorInfoSchema, required: true},
     createdAt: {type: String, required: true},
     postId: {type: Schema.Types.ObjectId, required: true},
 
