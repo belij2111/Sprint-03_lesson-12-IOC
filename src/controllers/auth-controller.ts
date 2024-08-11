@@ -1,14 +1,22 @@
 import {Request, Response} from "express";
-import {authService} from "../services/auth-service";
+import {AuthService} from "../services/auth-service";
 import {ResultStatus} from "../common/types/result-code";
-import {usersMongoQueryRepository} from "../repositories/users-mongo-query-repository";
+import {UsersMongoQueryRepository} from "../repositories/users-mongo-query-repository";
 import {LoginServiceOutputType} from "../types/auth-types";
 import {CustomJwtPayload} from "../common/types/custom-jwt-payload-type";
 
-export const authController = {
+class AuthController {
+    private authService: AuthService
+    private usersMongoQueryRepository: UsersMongoQueryRepository
+
+    constructor() {
+        this.authService = new AuthService()
+        this.usersMongoQueryRepository = new UsersMongoQueryRepository()
+    }
+
     async registration(req: Request, res: Response) {
         try {
-            const result = await authService.registerUser(req.body)
+            const result = await this.authService.registerUser(req.body)
             if (result.status === ResultStatus.BadRequest) {
                 res
                     .status(400)
@@ -23,11 +31,11 @@ export const authController = {
                 .status(500)
                 .json({message: 'authController.registration'})
         }
-    },
+    }
 
     async registrationConfirmation(req: Request, res: Response) {
         try {
-            const result = await authService.confirmationRegistrationUser(req.body)
+            const result = await this.authService.confirmationRegistrationUser(req.body)
             if (result.status === ResultStatus.BadRequest) {
                 res
                     .status(400)
@@ -42,11 +50,11 @@ export const authController = {
                 .status(500)
                 .json({message: 'authController.registrationConfirmation'})
         }
-    },
+    }
 
     async registrationEmailResending(req: Request, res: Response) {
         try {
-            const result = await authService.registrationEmailResending(req.body)
+            const result = await this.authService.registrationEmailResending(req.body)
             if (result.status === ResultStatus.BadRequest) {
                 res
                     .status(400)
@@ -61,11 +69,11 @@ export const authController = {
                 .status(500)
                 .json({message: 'authController.registrationEmailResending'})
         }
-    },
+    }
 
     async passwordRecovery(req: Request, res: Response) {
         try {
-            const result = await authService.passwordRecovery(req.body)
+            const result = await this.authService.passwordRecovery(req.body)
             res
                 .status(204)
                 .json({})
@@ -74,11 +82,11 @@ export const authController = {
                 .status(500)
                 .json({message: 'authController.passwordRecovery'})
         }
-    },
+    }
 
     async newPassword(req: Request, res: Response) {
         try {
-            const result = await authService.newPassword(req.body)
+            const result = await this.authService.newPassword(req.body)
             if (result.status === ResultStatus.BadRequest) {
                 res
                     .status(400)
@@ -93,7 +101,7 @@ export const authController = {
                 .status(500)
                 .json({message: 'authController.newPassword'})
         }
-    },
+    }
 
     async login(req: Request, res: Response) {
         try {
@@ -111,7 +119,7 @@ export const authController = {
             }
             const ip = req.ip
             const deviceName = req.headers['user-agent']
-            const result = await authService.loginUser(req.body, ip, deviceName)
+            const result = await this.authService.loginUser(req.body, ip, deviceName)
             if (result.status === ResultStatus.Unauthorized) {
                 res
                     .status(401)
@@ -131,7 +139,7 @@ export const authController = {
                 .status(500)
                 .json({message: 'authController.login'})
         }
-    },
+    }
 
     async get(req: Request, res: Response) {
         try {
@@ -141,7 +149,7 @@ export const authController = {
                     .json({})
                 return
             }
-            const user = await usersMongoQueryRepository.getAuthUserById(req.user.id)
+            const user = await this.usersMongoQueryRepository.getAuthUserById(req.user.id)
             if (!user) {
                 res
                     .status(401)
@@ -156,7 +164,7 @@ export const authController = {
                 .status(500)
                 .json({message: 'authController.get'})
         }
-    },
+    }
 
     async refreshToken(req: Request, res: Response) {
         try {
@@ -164,7 +172,7 @@ export const authController = {
                 userId: req.user.id,
                 deviceId: req.deviceId
             }
-            const result = await authService.refreshToken(payload)
+            const result = await this.authService.refreshToken(payload)
             if (result.status === ResultStatus.Unauthorized) {
                 res
                     .status(401)
@@ -184,12 +192,12 @@ export const authController = {
                 .status(500)
                 .json({message: 'authController.refreshToken'})
         }
-    },
+    }
 
     async logout(req: Request, res: Response) {
         try {
             const deviceId = req.deviceId
-            const result = await authService.logout(deviceId)
+            const result = await this.authService.logout(deviceId)
             if (result.status === ResultStatus.Success) {
                 res
                     .clearCookie("refreshToken")
@@ -204,3 +212,5 @@ export const authController = {
         }
     }
 }
+
+export const authController = new AuthController()

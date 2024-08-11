@@ -1,13 +1,23 @@
 import {Request, Response} from "express";
-import {commentsMongoQueryRepository} from "../repositories/comments-mongo-query-repository";
+import {
+    CommentsMongoQueryRepository
+} from "../repositories/comments-mongo-query-repository";
 import {InputCommentType} from "../types/comment-types";
-import {commentsService} from "../services/comments-service";
+import {CommentsService} from "../services/comments-service";
 import {ResultStatus} from "../common/types/result-code";
 
-export const commentsController = {
+class CommentsController {
+    private commentsMongoQueryRepository: CommentsMongoQueryRepository
+    private commentsService: CommentsService
+
+    constructor() {
+        this.commentsMongoQueryRepository = new CommentsMongoQueryRepository()
+        this.commentsService = new CommentsService()
+    }
+
     async getById(req: Request<{ id: string }>, res: Response) {
         try {
-            const getComment = await commentsMongoQueryRepository.getCommentById(req.params.id)
+            const getComment = await this.commentsMongoQueryRepository.getCommentById(req.params.id)
             if (!getComment) {
                 res
                     .status(404)
@@ -23,11 +33,11 @@ export const commentsController = {
                 .status(500)
                 .json({message: 'commentsController.getById'})
         }
-    },
+    }
 
     async update(req: Request<{ commentId: string }, {}, InputCommentType>, res: Response) {
         try {
-            const updateComment = await commentsService.updateComment(req.params.commentId, req.body, req.user.id)
+            const updateComment = await this.commentsService.updateComment(req.params.commentId, req.body, req.user.id)
             if (updateComment.status === ResultStatus.NotFound) {
                 res
                     .status(404)
@@ -48,11 +58,11 @@ export const commentsController = {
                 .status(500)
                 .json({message: 'commentController.update'})
         }
-    },
+    }
 
     async delete(req: Request<{ commentId: string }>, res: Response) {
         try {
-            const deleteComment = await commentsService.deleteCommentById(req.params.commentId, req.user.id)
+            const deleteComment = await this.commentsService.deleteCommentById(req.params.commentId, req.user.id)
             if (deleteComment.status === ResultStatus.BadRequest) {
                 res
                     .status(400)
@@ -81,3 +91,5 @@ export const commentsController = {
         }
     }
 }
+
+export const commentsController = new CommentsController()

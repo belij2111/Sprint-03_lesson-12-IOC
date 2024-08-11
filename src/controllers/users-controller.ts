@@ -8,16 +8,24 @@ import {
     SortQueryFieldsType,
     sortQueryFieldsUtil
 } from "../common/helpers/sort-query-fields-util";
-import {usersService} from "../services/users-service";
-import {usersMongoQueryRepository} from "../repositories/users-mongo-query-repository";
+import {UsersService} from "../services/users-service";
 import {OutputUserType} from "../types/user-types";
 import {ResultStatus} from "../common/types/result-code";
 import {ErrorResponse} from "../common/types/error-response";
+import {UsersMongoQueryRepository} from "../repositories/users-mongo-query-repository";
 
-export const usersController = {
+class UsersController {
+    private usersService: UsersService
+    private usersMongoQueryRepository: UsersMongoQueryRepository
+
+    constructor() {
+        this.usersService = new UsersService()
+        this.usersMongoQueryRepository = new UsersMongoQueryRepository()
+    }
+
     async create(req: Request, res: Response) {
         try {
-            const createdInfo = await usersService.createUser(req.body)
+            const createdInfo = await this.usersService.createUser(req.body)
             if (createdInfo.status === ResultStatus.BadRequest) {
                 res
                     .status(400)
@@ -25,7 +33,7 @@ export const usersController = {
                 return
             }
             if (createdInfo.data && createdInfo.status === ResultStatus.Success) {
-                const newUser = await usersMongoQueryRepository.getUserById(createdInfo.data.id)
+                const newUser = await this.usersMongoQueryRepository.getUserById(createdInfo.data.id)
                 res
                     .status(201)
                     .json(newUser)
@@ -36,7 +44,7 @@ export const usersController = {
                 .status(500)
                 .json({message: 'usersController.create'})
         }
-    },
+    }
 
     async get(req: Request<SortQueryFieldsType & SearchLoginTermFieldsType & SearchEmailTermFieldsType>, res: Response<Paginator<OutputUserType[]> | ErrorResponse>) {
         try {
@@ -45,7 +53,7 @@ export const usersController = {
                 ...searchLoginTermUtil(req.query),
                 ...searchEmailTermUtil(req.query)
             }
-            const allUsers = await usersMongoQueryRepository.getUsers(inputQuery)
+            const allUsers = await this.usersMongoQueryRepository.getUsers(inputQuery)
             res
                 .status(200)
                 .json(allUsers)
@@ -54,11 +62,11 @@ export const usersController = {
                 .status(500)
                 .json({message: 'usersController.get'})
         }
-    },
+    }
 
     async delete(req: Request<{ id: string }>, res: Response) {
         try {
-            const deleteUser = await usersService.deleteUserById(req.params.id)
+            const deleteUser = await this.usersService.deleteUserById(req.params.id)
             if (deleteUser.status === ResultStatus.NotFound) {
                 res
                     .status(404)
@@ -81,3 +89,5 @@ export const usersController = {
         }
     }
 }
+
+export const usersController = new UsersController()

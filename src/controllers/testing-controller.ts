@@ -1,9 +1,25 @@
-import {testingMongoRepository} from "../repositories/testing-mongo-repozitory";
+import {TestingMongoRepository} from "../repositories/testing-mongo-repozitory";
 import {Request, Response} from "express";
 
-export const testingController = async (req: Request, res: Response) => {
-    await testingMongoRepository.deleteAllData()
-    res
-        .status(204)
-        .json({message: 'Attention the database has been cleared'})
+class TestingController {
+    private testingMongoRepository: TestingMongoRepository
+
+    constructor() {
+        this.testingMongoRepository = new TestingMongoRepository()
+    }
+
+    async deleteAll(req: Request, res: Response) {
+        try {
+            await this.testingMongoRepository.deleteAllData()
+            res
+                .status(204)
+                .json({message: 'Attention the database has been cleared'})
+        } catch (error) {
+            res
+                .status(500)
+                .json({message: 'testingController.deleteAll'})
+        }
+    }
 }
+
+export const testingController = new TestingController()

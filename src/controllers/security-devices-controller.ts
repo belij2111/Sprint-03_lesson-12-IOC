@@ -1,12 +1,22 @@
 import {Request, Response} from "express";
-import {securityDevicesMongoQueryRepository} from "../repositories/security-devices-mongo-query-repository";
-import {securityDevicesService} from "../services/security-devices-service";
+import {
+    SecurityDevicesMongoQueryRepository
+} from "../repositories/security-devices-mongo-query-repository";
+import {SecurityDevicesService} from "../services/security-devices-service";
 import {ResultStatus} from "../common/types/result-code";
 
-export const securityDevicesController = {
+class SecurityDevicesController {
+    private securityDevicesMongoQueryRepository: SecurityDevicesMongoQueryRepository
+    private securityDevicesService: SecurityDevicesService
+
+    constructor() {
+        this.securityDevicesMongoQueryRepository = new SecurityDevicesMongoQueryRepository()
+        this.securityDevicesService = new SecurityDevicesService()
+    }
+
     async get(req: Request, res: Response) {
         try {
-            const devices = await securityDevicesMongoQueryRepository.getDevices(req.user.id)
+            const devices = await this.securityDevicesMongoQueryRepository.getDevices(req.user.id)
             if (!devices) {
                 res
                     .status(401)
@@ -21,13 +31,13 @@ export const securityDevicesController = {
                 .status(500)
                 .json({message: 'securityDevicesController.get'})
         }
-    },
+    }
 
     async delete(req: Request, res: Response) {
         try {
             const userId = req.user.id
             const currentDevice = req.deviceId
-            const deleteSessionsExceptCurrent = await securityDevicesService.deleteSessionsExceptCurrent(userId, currentDevice)
+            const deleteSessionsExceptCurrent = await this.securityDevicesService.deleteSessionsExceptCurrent(userId, currentDevice)
             res
                 .status(204)
                 .json({errorsMessages: deleteSessionsExceptCurrent.extensions || []})
@@ -36,13 +46,13 @@ export const securityDevicesController = {
                 .status(500)
                 .json({message: 'securityDevicesController.delete'})
         }
-    },
+    }
 
     async deleteByDeviceId(req: Request<{ deviceId: string }>, res: Response) {
         try {
             const userId = req.user.id
             const deviceId = req.params.deviceId
-            const deleteSession = await securityDevicesService.deleteByDeviceId(userId, deviceId)
+            const deleteSession = await this.securityDevicesService.deleteByDeviceId(userId, deviceId)
             if (deleteSession.status === ResultStatus.BadRequest) {
                 res
                     .status(400)
@@ -70,5 +80,6 @@ export const securityDevicesController = {
                 .json({message: 'securityDevicesController.deleteByDeviceId'})
         }
     }
-
 }
+
+export const securityDevicesController = new SecurityDevicesController()
