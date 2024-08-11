@@ -1,5 +1,8 @@
-export interface ApiCallDbType {
-    ip: string,
-    url: string,
-    date: Date
+export class ApiCallDbType {
+    constructor(
+        public ip: string,
+        public url: string,
+        public date: Date
+    ) {
+    }
 }

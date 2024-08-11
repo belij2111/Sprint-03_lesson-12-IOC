@@ -1,14 +1,17 @@
 import {ObjectId} from "mongodb";
 
-export interface UserDbType {
-    _id: ObjectId,
-    login: string,
-    password: string,
-    email: string,
-    createdAt: string,
-    emailConfirmation: {
-        confirmationCode: string,
-        expirationDate: Date,
-        isConfirmed: boolean
+export class UserDbType {
+    constructor(
+        public _id: ObjectId,
+        public login: string,
+        public password: string,
+        public email: string,
+        public createdAt: string,
+        public emailConfirmation: {
+            confirmationCode: string,
+            expirationDate: Date,
+            isConfirmed: boolean
+        }
+    ) {
     }
 }

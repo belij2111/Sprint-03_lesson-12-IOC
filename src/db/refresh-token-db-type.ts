@@ -1,6 +1,9 @@
 import {ObjectId} from "mongodb";
 
-export interface RefreshTokenDbType {
-    _id: ObjectId,
-    refreshToken: string
+export class RefreshTokenDbType {
+    constructor(
+        public _id: ObjectId,
+        public refreshToken: string
+    ) {
+    }
 }

@@ -1,8 +1,11 @@
-export interface DeviceSessionsDbType {
-    userId: string | null,
-    deviceId: string,
-    ip: string,
-    deviceName: string,
-    iatDate: string,
-    expDate: string
+export class DeviceSessionsDbType {
+    constructor(
+        public userId: string | null,
+        public deviceId: string,
+        public ip: string,
+        public deviceName: string,
+        public iatDate: string,
+        public expDate: string
+    ) {
+    }
 }
