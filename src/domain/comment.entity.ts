@@ -1,6 +1,7 @@
 import mongoose, {Schema} from "mongoose";
 import {SETTINGS} from "../settings";
-import {CommentDbType, LikeStatus} from "../db/comment-db-type";
+import {CommentDbType} from "../db/comment-db-type";
+import {LikeStatus} from "../db/like-db-type";
 
 const CommentatorInfoSchema = new mongoose.Schema({
     userId: {type: String, required: true},
