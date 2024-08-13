@@ -1,10 +1,5 @@
 import {ObjectId} from "mongodb";
-
-export enum LikeStatus {
-    None = "None",
-    Like = "Like",
-    Dislike = "Dislike"
-}
+import {LikeStatus} from "./like-db-type";
 
 export class CommentDbType {
     constructor(
@@ -16,7 +11,7 @@ export class CommentDbType {
         },
         public createdAt: string,
         public postId: ObjectId,
-        public likesInfo: {
+        public likesInfo?: {
             likesCount: number,
             dislikesCount: number,
             myStatus: LikeStatus
