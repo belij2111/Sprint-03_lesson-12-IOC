@@ -20,7 +20,8 @@ export const SETTINGS = {
         COMMENT: process.env.COMMENT_COLLECTION_NAME || '',
         REFRESH_TOKEN: process.env.REFRESH_TOKEN_COLLECTION_NAME || '',
         API_CALLS: process.env.API_CALLS_COLLECTION_NAME || '',
-        DEVICE_SESSIONS: process.env.DEVICE_SESSIONS_COLLECTION_NAME || ''
+        DEVICE_SESSIONS: process.env.DEVICE_SESSIONS_COLLECTION_NAME || '',
+        LIKES: process.env.LIKES_COLLECTION_NAME || '',
     },
     AUTH_SECRETS: {
         ADMIN_AUTH: process.env.ADMIN_AUTH || '',
