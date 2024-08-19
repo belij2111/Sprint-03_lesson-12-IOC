@@ -114,7 +114,7 @@ class AuthController {
             if (!req.headers['user-agent']) {
                 res
                     .status(400)
-                    .json({error: "IP address is required"})
+                    .json({error: "User-Agent is required"})
                 return
             }
             const ip = req.ip
