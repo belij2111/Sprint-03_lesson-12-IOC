@@ -211,7 +211,7 @@ export class AuthService {
             userId: userAuth.data!,
             deviceId: randomUUID()
         }
-        const accessToken = await jwtService.createToken(userAuth, SETTINGS.TOKEN.ACCESS_TOKEN_DURATION)
+        const accessToken = await jwtService.createToken(payload, SETTINGS.TOKEN.ACCESS_TOKEN_DURATION)
         const refreshToken = await jwtService.createToken(payload, SETTINGS.TOKEN.REFRESH_TOKEN_DURATION)
         const decodePayload = await jwtService.decodeToken(refreshToken) as CustomJwtPayload
         const deviceSession: DeviceSessionsDbType = {
