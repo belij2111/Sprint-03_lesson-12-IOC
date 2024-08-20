@@ -5,6 +5,7 @@ import {
 import {InputCommentType} from "../types/comment-types";
 import {CommentsService} from "../services/comments-service";
 import {ResultStatus} from "../common/types/result-code";
+import {InputLikeType} from "../types/like-types";
 
 class CommentsController {
     private commentsMongoQueryRepository: CommentsMongoQueryRepository
@@ -88,6 +89,25 @@ class CommentsController {
             res
                 .status(500)
                 .json({message: 'commentController.update'})
+        }
+    }
+
+    async updateLikeStatus(req: Request<{ commentId: string }, {}, InputLikeType>, res: Response) {
+        try {
+            const updateStatus = await this.commentsService.updateLikeStatus(req.params.commentId, req.body, req.user.id)
+            if (updateStatus.status === ResultStatus.NotFound) {
+                res
+                    .status(404)
+                    .json({errorsMessages: updateStatus.extensions || []})
+                return
+            }
+            res
+                .status(204)
+                .json({})
+        } catch (error) {
+            res
+                .status(500)
+                .json({message: 'commentController.updateLikeStatus'})
         }
     }
 }

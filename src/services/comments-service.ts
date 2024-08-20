@@ -9,16 +9,21 @@ import {UserDbType} from "../db/user-db-type";
 import {PostDbType} from "../db/post-db-type";
 import {dateTimeIsoString} from "../common/helpers/date-time-iso-string";
 import {CommentsMongoRepository} from "../repositories/comments-mongo-repository";
+import {InputLikeType} from "../types/like-types";
+import {LikesMongoRepository} from "../repositories/likes-mongo-repository";
+import {LikeDbType, LikeStatus} from "../db/like-db-type";
 
 export class CommentsService {
     private usersMongoRepository: UsersMongoRepository
     private postsMongoRepository: PostsMongoRepository
     private commentsMongoRepository: CommentsMongoRepository
+    private likesMongoRepository: LikesMongoRepository
 
     constructor() {
         this.usersMongoRepository = new UsersMongoRepository()
         this.postsMongoRepository = new PostsMongoRepository()
         this.commentsMongoRepository = new CommentsMongoRepository()
+        this.likesMongoRepository = new LikesMongoRepository()
     }
 
     async createComment(postId: string, userId: string, inputComment: InputCommentType): Promise<Result<{
@@ -48,7 +53,12 @@ export class CommentsService {
                 userLogin: existingUser.login
             },
             createdAt: dateTimeIsoString(),
-            postId: new ObjectId(postId)
+            postId: new ObjectId(postId),
+            likesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: LikeStatus.None
+            }
         }
         const result = await this.commentsMongoRepository.create(createNewComment)
         return {
@@ -111,5 +121,56 @@ export class CommentsService {
             status: ResultStatus.Success,
             data: result
         }
+    }
+
+    async updateLikeStatus(commentId: string, inputLike: InputLikeType, userId: string): Promise<Result<boolean | null>> {
+        const findComment = await this.commentsMongoRepository.findById(new ObjectId(commentId))
+        if (!findComment) {
+            return {
+                status: ResultStatus.NotFound,
+                extensions: [{field: 'findComment', message: 'Comment not found'}],
+                data: null
+            }
+        }
+        const likeDTO: LikeDbType = {
+            _id: new ObjectId(),
+            createdAt: new Date(),
+            status: inputLike.likeStatus,
+            authorId: userId,
+            parentId: commentId
+        }
+        const findLike = await this.likesMongoRepository.find(userId, commentId)
+        if (findLike) {
+            const likesInfo = await this.updateCounts(inputLike.likeStatus, findLike.status, findComment.likesInfo.likesCount, findComment.likesInfo.dislikesCount)
+            await this.commentsMongoRepository.update(findComment, likesInfo)
+            await this.likesMongoRepository.update(findLike, inputLike)
+        }
+        await this.likesMongoRepository.create(likeDTO)
+        return {
+            status: ResultStatus.Success,
+            data: true
+        }
+    }
+
+    private async updateCounts(newStatus: string, currentStatus: string, likeCount: number, dislikeCount: number) {
+        switch (newStatus) {
+            case 'Like':
+                likeCount += 1
+                dislikeCount -= 1
+                break
+            case 'Dislike':
+                likeCount -= 1
+                dislikeCount -= 1
+                break
+            case 'None':
+                if (currentStatus === 'Like') {
+                    likeCount -= 1
+                } else if (currentStatus === 'Dislike') {
+                    dislikeCount -= 1
+                }
+                break
+        }
+        const myStatus = newStatus
+        return {likeCount, dislikeCount, myStatus}
     }
 }
