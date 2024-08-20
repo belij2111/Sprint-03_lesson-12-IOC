@@ -11,7 +11,7 @@ export class CommentDbType {
         },
         public createdAt: string,
         public postId: ObjectId,
-        public likesInfo?: {
+        public likesInfo: {
             likesCount: number,
             dislikesCount: number,
             myStatus: LikeStatus
