@@ -5,6 +5,7 @@ import {CommentModel} from "../domain/comment.entity";
 import {RefreshTokenModel} from "../domain/refresh-token.entity";
 import {ApiCallsModel} from "../domain/api-calls.entity";
 import {DeviceSessionsModel} from "../domain/device-sessions.entity";
+import {LikeModel} from "../domain/like.entity";
 
 export class TestingMongoRepository {
     async deleteAllData() {
@@ -15,5 +16,6 @@ export class TestingMongoRepository {
         await RefreshTokenModel.deleteMany()
         await ApiCallsModel.deleteMany()
         await DeviceSessionsModel.deleteMany()
+        await LikeModel.deleteMany()
     }
 }
