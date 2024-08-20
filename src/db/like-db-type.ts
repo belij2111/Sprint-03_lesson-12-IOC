@@ -9,7 +9,7 @@ export enum LikeStatus {
 export class LikeDbType {
     constructor(
         public _id: ObjectId,
-        public createdAt: string,
+        public createdAt: Date,
         public status: LikeStatus,
         public authorId: string,
         public parentId: string

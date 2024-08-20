@@ -4,7 +4,7 @@ import {LikeDbType, LikeStatus} from "../db/like-db-type";
 
 const LikeSchema = new mongoose.Schema<LikeDbType>({
     _id: {type: Schema.Types.ObjectId, required: true},
-    createdAt: {type: String, required: true},
+    createdAt: {type: Date, required: true},
     status: {type: String, enum: LikeStatus, default: LikeStatus.None},
     authorId: {type: String, required: true},
     parentId: {type: String, required: true}
