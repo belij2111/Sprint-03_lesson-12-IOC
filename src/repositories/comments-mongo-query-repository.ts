@@ -53,7 +53,12 @@ export class CommentsMongoQueryRepository {
             id: comment._id.toString(),
             content: comment.content,
             commentatorInfo: comment.commentatorInfo,
-            createdAt: comment.createdAt
+            createdAt: comment.createdAt,
+            likesInfo: {
+                likesCount: comment.likesInfo.likesCount,
+                dislikesCount: comment.likesInfo.dislikesCount,
+                myStatus: comment.likesInfo.myStatus
+            }
         }
     }
 
