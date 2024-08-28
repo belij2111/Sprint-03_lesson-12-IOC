@@ -132,45 +132,62 @@ export class CommentsService {
                 data: null
             }
         }
-        const likeDTO: LikeDbType = {
-            _id: new ObjectId(),
-            createdAt: new Date(),
-            status: inputLike.likeStatus,
-            authorId: userId,
-            parentId: commentId
-        }
         const findLike = await this.likesMongoRepository.find(userId, commentId)
+        let likesInfo
         if (findLike) {
-            const likesInfo = await this.updateCounts(inputLike.likeStatus, findLike.status, findComment.likesInfo.likesCount, findComment.likesInfo.dislikesCount)
-            await this.commentsMongoRepository.update(findComment, likesInfo)
+            likesInfo = await this.updateCounts(inputLike.likeStatus, findLike.status, findComment.likesInfo.likesCount, findComment.likesInfo.dislikesCount)
+            const updateComment = {
+                likesInfo: likesInfo
+            }
+            await this.commentsMongoRepository.update(findComment, updateComment)
             await this.likesMongoRepository.update(findLike, inputLike)
+        } else {
+            const likeDTO: LikeDbType = {
+                _id: new ObjectId(),
+                createdAt: new Date(),
+                status: inputLike.likeStatus,
+                authorId: userId,
+                parentId: commentId
+            }
+            await this.likesMongoRepository.create(likeDTO)
+            likesInfo = await this.updateCounts(inputLike.likeStatus, LikeStatus.None, findComment.likesInfo.likesCount, findComment.likesInfo.dislikesCount)
+            const updateComment = {
+                likesInfo: likesInfo
+            }
+            await this.commentsMongoRepository.update(findComment, updateComment)
         }
-        await this.likesMongoRepository.create(likeDTO)
         return {
             status: ResultStatus.Success,
             data: true
         }
     }
 
-    private async updateCounts(newStatus: string, currentStatus: string, likeCount: number, dislikeCount: number) {
+    private async updateCounts(newStatus: string, currentStatus: string, likesCount: number, dislikesCount: number) {
         switch (newStatus) {
             case 'Like':
-                likeCount += 1
-                dislikeCount -= 1
+                if (currentStatus === 'None') {
+                    likesCount += 1
+                } else if (currentStatus === 'Dislike') {
+                    likesCount += 1
+                    dislikesCount -= 1
+                }
                 break
             case 'Dislike':
-                likeCount -= 1
-                dislikeCount -= 1
+                if (currentStatus === 'None') {
+                    dislikesCount += 1
+                } else if (currentStatus === 'Like') {
+                    likesCount -= 1
+                    dislikesCount += 1
+                }
                 break
             case 'None':
                 if (currentStatus === 'Like') {
-                    likeCount -= 1
+                    likesCount -= 1
                 } else if (currentStatus === 'Dislike') {
-                    dislikeCount -= 1
+                    dislikesCount -= 1
                 }
                 break
         }
-        const myStatus = newStatus
-        return {likeCount, dislikeCount, myStatus}
+        return {likesCount, dislikesCount, myStatus: newStatus}
     }
 }
