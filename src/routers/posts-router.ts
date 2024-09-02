@@ -5,6 +5,7 @@ import {inputValidationMiddleware} from "../common/middlewares/input-validation-
 import {postsInputValidationMiddleware} from "../validators/posts-input-validation-middleware";
 import {authBearerMiddleware} from "../common/middlewares/auth-bearer-middleware";
 import {commentsInputValidationMiddleware} from "../validators/comments-input-validation-middleware";
+import {userIdentificationMiddleware} from "../common/middlewares/user-identification-middleware";
 
 export const postsRouter = Router()
 
@@ -14,4 +15,4 @@ postsRouter.get('/:id', postsController.getById.bind(postsController))
 postsRouter.put('/:id', authBasicMiddleware, postsInputValidationMiddleware, inputValidationMiddleware, postsController.update.bind(postsController))
 postsRouter.delete('/:id', authBasicMiddleware, inputValidationMiddleware, postsController.deleteById.bind(postsController))
 postsRouter.post('/:postId/comments', authBearerMiddleware.checkAuth.bind(authBearerMiddleware), commentsInputValidationMiddleware, inputValidationMiddleware, postsController.createCommentByPostId.bind(postsController))
-postsRouter.get('/:postId/comments', postsController.getCommentsByPostId.bind(postsController))
+postsRouter.get('/:postId/comments', userIdentificationMiddleware.identifyUser.bind(userIdentificationMiddleware), postsController.getCommentsByPostId.bind(postsController))
