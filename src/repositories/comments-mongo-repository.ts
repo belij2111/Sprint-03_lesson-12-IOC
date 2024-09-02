@@ -9,8 +9,8 @@ export class CommentsMongoRepository {
     }
 
     async update(findComment: CommentDbType, updateComment: Object): Promise<boolean | null> {
-        await CommentModel.updateOne(findComment, {$set: updateComment})
-        return true
+        const result = await CommentModel.updateOne({_id: findComment._id}, {$set: updateComment})
+        return result.modifiedCount !== 0
     }
 
     async findById(id: ObjectId): Promise<CommentDbType | null> {
