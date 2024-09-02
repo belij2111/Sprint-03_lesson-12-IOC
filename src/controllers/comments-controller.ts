@@ -18,7 +18,8 @@ class CommentsController {
 
     async getById(req: Request<{ id: string }>, res: Response) {
         try {
-            const getComment = await this.commentsMongoQueryRepository.getCommentById(req.params.id)
+            const userId = req.user ? req.user.id : null
+            const getComment = await this.commentsMongoQueryRepository.getCommentById(req.params.id, userId)
             if (!getComment) {
                 res
                     .status(404)
@@ -94,7 +95,8 @@ class CommentsController {
 
     async updateLikeStatus(req: Request<{ commentId: string }, {}, InputLikeType>, res: Response) {
         try {
-            const updateStatus = await this.commentsService.updateLikeStatus(req.params.commentId, req.body, req.user.id)
+            const userId = req.user ? req.user.id : null
+            const updateStatus = await this.commentsService.updateLikeStatus(req.params.commentId, req.body, userId)
             if (updateStatus.status === ResultStatus.NotFound) {
                 res
                     .status(404)

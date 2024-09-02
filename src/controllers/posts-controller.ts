@@ -66,7 +66,6 @@ class PostsController {
             return
         }
         res
-
             .status(200)
             .json(post)
     }
@@ -125,7 +124,8 @@ class PostsController {
                 return
             }
             if (createdInfo.data && createdInfo.status === ResultStatus.Success) {
-                const newComment = await this.commentsMongoQueryRepository.getCommentById(createdInfo.data.id)
+                const userId = req.user ? req.user.id : null
+                const newComment = await this.commentsMongoQueryRepository.getCommentById(createdInfo.data.id, userId)
                 res
                     .status(201)
                     .json(newComment)
@@ -145,7 +145,8 @@ class PostsController {
             ...sortQueryFieldsUtil(req.query)
         }
         const postId = req.params.postId
-        const comments = await this.commentsMongoQueryRepository.getCommentsByPostId(postId, inputQuery)
+        const userId = req.user ? req.user.id : null
+        const comments = await this.commentsMongoQueryRepository.getCommentsByPostId(postId, inputQuery, userId)
         if (!comments) {
             res
                 .sendStatus(404)
