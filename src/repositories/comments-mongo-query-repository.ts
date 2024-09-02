@@ -6,9 +6,11 @@ import {Paginator} from "../common/types/paginator-types";
 import {PostDbType} from "../db/post-db-type";
 import {CommentModel} from "../domain/comment.entity";
 import {PostModel} from "../domain/post.entity";
+import {LikeStatus} from "../db/like-db-type";
+import {LikeModel} from "../domain/like.entity";
 
 export class CommentsMongoQueryRepository {
-    async getCommentsByPostId(postId: string, inputQuery: SortQueryFilterType): Promise<Paginator<OutputCommentType[]> | null> {
+    async getCommentsByPostId(postId: string, inputQuery: SortQueryFilterType, userId: string): Promise<Paginator<OutputCommentType[]> | null> {
         if (!this.checkObjectId(postId)) return null
         const post = await this.findPostById(new ObjectId(postId))
         if (!post) return null
@@ -24,20 +26,22 @@ export class CommentsMongoQueryRepository {
             .lean()
             .exec()
         const totalCount = await CommentModel.countDocuments(filter)
+        const currentsStatuses = await Promise.all(items.map(el => this.getStatus(el._id.toString(), userId)))
         return {
             pagesCount: Math.ceil(totalCount / inputQuery.pageSize),
             page: inputQuery.pageNumber,
             pageSize: inputQuery.pageSize,
             totalCount,
-            items: items.map(this.commentMapToOutput)
+            items: items.map((el, index) => this.commentMapToOutput(el, currentsStatuses[index]))
         }
     }
 
-    async getCommentById(id: string): Promise<OutputCommentType | null> {
+    async getCommentById(id: string, userId: string): Promise<OutputCommentType | null> {
         if (!this.checkObjectId(id)) return null
         const comment = await this.findById(new ObjectId(id))
         if (!comment) return null
-        return this.commentMapToOutput(comment)
+        const currentStatus = await this.getStatus(comment._id.toString(), userId)
+        return this.commentMapToOutput(comment, currentStatus)
     }
 
     async findPostById(postId: ObjectId): Promise<PostDbType | null> {
@@ -48,8 +52,14 @@ export class CommentsMongoQueryRepository {
         return CommentModel.findOne({_id: id})
     }
 
-    commentMapToOutput(comment: CommentDbType): OutputCommentType {
-        return {
+    async getStatus(commentId: string, userId: string,): Promise<LikeStatus> {
+        if (!userId) return LikeStatus.None
+        const like = await LikeModel.findOne({authorId: userId, parentId: commentId})
+        return like ? like.status : LikeStatus.None
+    }
+
+    commentMapToOutput(comment: CommentDbType, currentStatus: string): OutputCommentType {
+        return <OutputCommentType>{
             id: comment._id.toString(),
             content: comment.content,
             commentatorInfo: {
@@ -60,7 +70,7 @@ export class CommentsMongoQueryRepository {
             likesInfo: {
                 likesCount: comment.likesInfo.likesCount,
                 dislikesCount: comment.likesInfo.dislikesCount,
-                myStatus: comment.likesInfo.myStatus
+                myStatus: currentStatus
             }
         }
     }
