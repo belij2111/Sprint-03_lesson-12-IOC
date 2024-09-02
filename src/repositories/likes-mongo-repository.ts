@@ -9,7 +9,7 @@ export class LikesMongoRepository {
     }
 
     async update(findLike: LikeDbType, inputLike: InputLikeType): Promise<boolean | null> {
-        const result = await LikeModel.updateOne(findLike, {$set: {status: inputLike.likeStatus}})
+        const result = await LikeModel.updateOne({_id: findLike._id}, {$set: {status: inputLike.likeStatus}})
         return result.modifiedCount !== 0
     }
 
