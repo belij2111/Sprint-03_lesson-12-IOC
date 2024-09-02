@@ -137,10 +137,13 @@ export class CommentsService {
         if (findLike) {
             likesInfo = await this.updateCounts(inputLike.likeStatus, findLike.status, findComment.likesInfo.likesCount, findComment.likesInfo.dislikesCount)
             const updateComment = {
-                likesInfo: likesInfo
+                likesInfo: {
+                    ...likesInfo,
+                    myStatus: inputLike.likeStatus
+                }
             }
-            await this.commentsMongoRepository.update(findComment, updateComment)
             await this.likesMongoRepository.update(findLike, inputLike)
+            await this.commentsMongoRepository.update(findComment, updateComment)
         } else {
             const likeDTO: LikeDbType = {
                 _id: new ObjectId(),
@@ -152,7 +155,10 @@ export class CommentsService {
             await this.likesMongoRepository.create(likeDTO)
             likesInfo = await this.updateCounts(inputLike.likeStatus, LikeStatus.None, findComment.likesInfo.likesCount, findComment.likesInfo.dislikesCount)
             const updateComment = {
-                likesInfo: likesInfo
+                likesInfo: {
+                    ...likesInfo,
+                    myStatus: inputLike.likeStatus
+                }
             }
             await this.commentsMongoRepository.update(findComment, updateComment)
         }
@@ -163,31 +169,34 @@ export class CommentsService {
     }
 
     private async updateCounts(newStatus: string, currentStatus: string, likesCount: number, dislikesCount: number) {
+        if (newStatus === currentStatus) {
+            return {likesCount, dislikesCount}
+        }
         switch (newStatus) {
-            case 'Like':
-                if (currentStatus === 'None') {
-                    likesCount += 1
-                } else if (currentStatus === 'Dislike') {
-                    likesCount += 1
-                    dislikesCount -= 1
+            case LikeStatus.Like:
+                if (currentStatus === LikeStatus.None) {
+                    likesCount++
+                } else if (currentStatus === LikeStatus.Dislike) {
+                    likesCount++
+                    dislikesCount--
                 }
                 break
-            case 'Dislike':
-                if (currentStatus === 'None') {
-                    dislikesCount += 1
-                } else if (currentStatus === 'Like') {
-                    likesCount -= 1
-                    dislikesCount += 1
+            case LikeStatus.Dislike:
+                if (currentStatus === LikeStatus.None) {
+                    dislikesCount++
+                } else if (currentStatus === LikeStatus.Like) {
+                    likesCount--
+                    dislikesCount++
                 }
                 break
-            case 'None':
-                if (currentStatus === 'Like') {
-                    likesCount -= 1
-                } else if (currentStatus === 'Dislike') {
-                    dislikesCount -= 1
+            case LikeStatus.None:
+                if (currentStatus === LikeStatus.Like) {
+                    likesCount--
+                } else if (currentStatus === LikeStatus.Dislike) {
+                    dislikesCount--
                 }
                 break
         }
-        return {likesCount, dislikesCount, myStatus: newStatus}
+        return {likesCount, dislikesCount}
     }
 }
