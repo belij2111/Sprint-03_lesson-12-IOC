@@ -52,7 +52,7 @@ export class CommentsMongoQueryRepository {
         return CommentModel.findOne({_id: id})
     }
 
-    async getStatus(commentId: string, userId: string,): Promise<LikeStatus> {
+   private async getStatus(commentId: string, userId: string,): Promise<LikeStatus> {
         if (!userId) return LikeStatus.None
         const like = await LikeModel.findOne({authorId: userId, parentId: commentId})
         return like ? like.status : LikeStatus.None
