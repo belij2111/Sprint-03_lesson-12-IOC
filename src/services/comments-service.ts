@@ -68,15 +68,15 @@ export class CommentsService {
     }
 
     async updateComment(id: string, inputComment: InputCommentType, userId: string): Promise<Result<boolean | null>> {
-        const findComment = await this.commentsMongoRepository.findById(new ObjectId(id))
-        if (!findComment) {
+        const foundComment = await this.commentsMongoRepository.findById(new ObjectId(id))
+        if (!foundComment) {
             return {
                 status: ResultStatus.NotFound,
-                extensions: [{field: 'findComment', message: 'Comment not found'}],
+                extensions: [{field: 'foundComment', message: 'Comment not found'}],
                 data: null
             }
         }
-        if (findComment.commentatorInfo.userId !== userId) {
+        if (foundComment.commentatorInfo.userId !== userId) {
             return {
                 status: ResultStatus.Forbidden,
                 extensions: [{field: 'user', message: 'The comment is not your own'}],
@@ -86,7 +86,7 @@ export class CommentsService {
         const updateComment = {
             content: inputComment.content
         }
-        const result = await this.commentsMongoRepository.update(findComment, updateComment)
+        const result = await this.commentsMongoRepository.update(foundComment, updateComment)
         return {
             status: ResultStatus.Success,
             data: result
@@ -124,26 +124,26 @@ export class CommentsService {
     }
 
     async updateLikeStatus(commentId: string, inputLike: InputLikeType, userId: string): Promise<Result<boolean | null>> {
-        const findComment = await this.commentsMongoRepository.findById(new ObjectId(commentId))
-        if (!findComment) {
+        const foundComment = await this.commentsMongoRepository.findById(new ObjectId(commentId))
+        if (!foundComment) {
             return {
                 status: ResultStatus.NotFound,
-                extensions: [{field: 'findComment', message: 'Comment not found'}],
+                extensions: [{field: 'foundComment', message: 'Comment not found'}],
                 data: null
             }
         }
-        const findLike = await this.likesMongoRepository.find(userId, commentId)
+        const foundLike = await this.likesMongoRepository.find(userId, commentId)
         let likesInfo
-        if (findLike) {
-            likesInfo = await this.updateCounts(inputLike.likeStatus, findLike.status, findComment.likesInfo.likesCount, findComment.likesInfo.dislikesCount)
+        if (foundLike) {
+            likesInfo = await this.updateCounts(inputLike.likeStatus, foundLike.status, foundComment.likesInfo.likesCount, foundComment.likesInfo.dislikesCount)
             const updateComment = {
                 likesInfo: {
                     ...likesInfo,
                     myStatus: inputLike.likeStatus
                 }
             }
-            await this.likesMongoRepository.update(findLike, inputLike)
-            await this.commentsMongoRepository.update(findComment, updateComment)
+            await this.likesMongoRepository.update(foundLike, inputLike)
+            await this.commentsMongoRepository.update(foundComment, updateComment)
         } else {
             const likeDTO: LikeDbType = {
                 _id: new ObjectId(),
@@ -153,14 +153,14 @@ export class CommentsService {
                 parentId: commentId
             }
             await this.likesMongoRepository.create(likeDTO)
-            likesInfo = await this.updateCounts(inputLike.likeStatus, LikeStatus.None, findComment.likesInfo.likesCount, findComment.likesInfo.dislikesCount)
+            likesInfo = await this.updateCounts(inputLike.likeStatus, LikeStatus.None, foundComment.likesInfo.likesCount, foundComment.likesInfo.dislikesCount)
             const updateComment = {
                 likesInfo: {
                     ...likesInfo,
                     myStatus: inputLike.likeStatus
                 }
             }
-            await this.commentsMongoRepository.update(findComment, updateComment)
+            await this.commentsMongoRepository.update(foundComment, updateComment)
         }
         return {
             status: ResultStatus.Success,
