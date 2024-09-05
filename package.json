@@ -1,8 +1,8 @@
 {
-  "name": "Sprint-03_lesson-11",
+  "name": "Sprint-03_lesson-11_DI",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "git@github.com:belij2111/Sprint-03_lesson-11.git",
+  "repository": "git@github.com:belij2111/Sprint-03_lesson-11_DI.git",
   "author": "belij2111 <belijvalerij2111@gmail.com>",
   "license": "MIT",
   "dependencies": {
