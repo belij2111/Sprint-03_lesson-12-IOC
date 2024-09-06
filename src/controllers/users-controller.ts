@@ -13,14 +13,13 @@ import {OutputUserType} from "../types/user-types";
 import {ResultStatus} from "../common/types/result-code";
 import {ErrorResponse} from "../common/types/error-response";
 import {UsersMongoQueryRepository} from "../repositories/users-mongo-query-repository";
+import {UsersMongoRepository} from "../repositories/users-mongo-repository";
 
 class UsersController {
-    private usersService: UsersService
-    private usersMongoQueryRepository: UsersMongoQueryRepository
-
-    constructor() {
-        this.usersService = new UsersService()
-        this.usersMongoQueryRepository = new UsersMongoQueryRepository()
+    constructor(
+        private usersService: UsersService,
+        private usersMongoQueryRepository: UsersMongoQueryRepository
+    ) {
     }
 
     async create(req: Request, res: Response) {
@@ -90,4 +89,7 @@ class UsersController {
     }
 }
 
-export const usersController = new UsersController()
+const usersMongoRepository = new UsersMongoRepository()
+const usersService = new UsersService(usersMongoRepository)
+const usersMongoQueryRepository = new UsersMongoQueryRepository()
+export const usersController = new UsersController(usersService, usersMongoQueryRepository)

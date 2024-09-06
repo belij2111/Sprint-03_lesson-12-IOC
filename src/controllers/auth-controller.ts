@@ -4,14 +4,15 @@ import {ResultStatus} from "../common/types/result-code";
 import {UsersMongoQueryRepository} from "../repositories/users-mongo-query-repository";
 import {LoginServiceOutputType} from "../types/auth-types";
 import {CustomJwtPayload} from "../common/types/custom-jwt-payload-type";
+import {UsersMongoRepository} from "../repositories/users-mongo-repository";
+import {SecurityDevicesMongoRepository} from "../repositories/security-devices-mongo-repository";
+import {AuthMongoRepository} from "../repositories/auth-mongo-repository";
 
 class AuthController {
-    private authService: AuthService
-    private usersMongoQueryRepository: UsersMongoQueryRepository
-
-    constructor() {
-        this.authService = new AuthService()
-        this.usersMongoQueryRepository = new UsersMongoQueryRepository()
+    constructor(
+        private authService: AuthService,
+        private usersMongoQueryRepository: UsersMongoQueryRepository
+    ) {
     }
 
     async registration(req: Request, res: Response) {
@@ -213,4 +214,9 @@ class AuthController {
     }
 }
 
-export const authController = new AuthController()
+const usersMongoRepository = new UsersMongoRepository()
+const securityDevicesMongoRepository = new SecurityDevicesMongoRepository()
+const authMongoRepository = new AuthMongoRepository()
+const authService = new AuthService(usersMongoRepository, securityDevicesMongoRepository, authMongoRepository)
+const usersMongoQueryRepository = new UsersMongoQueryRepository()
+export const authController = new AuthController(authService, usersMongoQueryRepository)

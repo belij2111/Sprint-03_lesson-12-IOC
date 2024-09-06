@@ -5,10 +5,7 @@ import {
 import {ResultStatus} from "../common/types/result-code";
 
 export class SecurityDevicesService {
-    private securityDevicesMongoRepository: SecurityDevicesMongoRepository
-
-    constructor() {
-        this.securityDevicesMongoRepository = new SecurityDevicesMongoRepository()
+    constructor(private securityDevicesMongoRepository: SecurityDevicesMongoRepository) {
     }
 
     async deleteSessionsExceptCurrent(userId: string, currentDeviceId: string): Promise<Result<boolean | null>> {

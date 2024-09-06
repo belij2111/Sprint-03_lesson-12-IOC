@@ -6,10 +6,7 @@ import {
 } from "../../repositories/security-devices-mongo-repository";
 
 class RefreshTokenMiddleware {
-    private securityDevicesMongoRepository: SecurityDevicesMongoRepository
-
-    constructor() {
-        this.securityDevicesMongoRepository = new SecurityDevicesMongoRepository()
+    constructor(private securityDevicesMongoRepository: SecurityDevicesMongoRepository) {
     }
 
     async refreshToken(req: Request, res: Response, next: NextFunction) {
@@ -48,4 +45,5 @@ class RefreshTokenMiddleware {
     }
 }
 
-export const refreshTokenMiddleware = new RefreshTokenMiddleware()
+const securityDevicesMongoRepository = new SecurityDevicesMongoRepository()
+export const refreshTokenMiddleware = new RefreshTokenMiddleware(securityDevicesMongoRepository)

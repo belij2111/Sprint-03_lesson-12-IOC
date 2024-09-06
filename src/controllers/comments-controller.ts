@@ -6,14 +6,16 @@ import {InputCommentType} from "../types/comment-types";
 import {CommentsService} from "../services/comments-service";
 import {ResultStatus} from "../common/types/result-code";
 import {InputLikeType} from "../types/like-types";
+import {UsersMongoRepository} from "../repositories/users-mongo-repository";
+import {PostsMongoRepository} from "../repositories/posts-mongo-repository";
+import {CommentsMongoRepository} from "../repositories/comments-mongo-repository";
+import {LikesMongoRepository} from "../repositories/likes-mongo-repository";
 
 class CommentsController {
-    private commentsMongoQueryRepository: CommentsMongoQueryRepository
-    private commentsService: CommentsService
-
-    constructor() {
-        this.commentsMongoQueryRepository = new CommentsMongoQueryRepository()
-        this.commentsService = new CommentsService()
+    constructor(
+        private commentsMongoQueryRepository: CommentsMongoQueryRepository,
+        private commentsService: CommentsService
+    ) {
     }
 
     async getById(req: Request<{ id: string }>, res: Response) {
@@ -114,4 +116,15 @@ class CommentsController {
     }
 }
 
-export const commentsController = new CommentsController()
+const usersMongoRepository = new UsersMongoRepository()
+const postsMongoRepository = new PostsMongoRepository()
+const commentsMongoRepository = new CommentsMongoRepository()
+const likesMongoRepository = new LikesMongoRepository()
+const commentsMongoQueryRepository = new CommentsMongoQueryRepository()
+const commentsService = new CommentsService(
+    usersMongoRepository,
+    postsMongoRepository,
+    commentsMongoRepository,
+    likesMongoRepository
+)
+export const commentsController = new CommentsController(commentsMongoQueryRepository, commentsService)

@@ -14,18 +14,16 @@ import {BlogsService} from "../services/blogs-service";
 import {PostsService} from "../services/posts-service";
 import {ResultStatus} from "../common/types/result-code";
 import {ErrorResponse} from "../common/types/error-response";
+import {BlogMongoRepository} from "../repositories/blogs-mongo-repository";
+import {PostsMongoRepository} from "../repositories/posts-mongo-repository";
 
 class BlogsController {
-    private blogsService: BlogsService
-    private blogsMongoQueryRepository: BlogsMongoQueryRepository
-    private postsService: PostsService
-    private postsMongoQueryRepository: PostsMongoQueryRepository
-
-    constructor() {
-        this.blogsService = new BlogsService()
-        this.blogsMongoQueryRepository = new BlogsMongoQueryRepository()
-        this.postsService = new PostsService()
-        this.postsMongoQueryRepository = new PostsMongoQueryRepository()
+    constructor(
+        private blogsService: BlogsService,
+        private blogsMongoQueryRepository: BlogsMongoQueryRepository,
+        private postsService: PostsService,
+        private postsMongoQueryRepository: PostsMongoQueryRepository
+    ) {
     }
 
     async create(req: Request, res: Response) {
@@ -165,6 +163,12 @@ class BlogsController {
     }
 }
 
-export const blogsController = new BlogsController()
+const blogsMongoRepository = new BlogMongoRepository()
+const blogsService = new BlogsService(blogsMongoRepository)
+const blogsMongoQueryRepository = new BlogsMongoQueryRepository()
+const postsMongoRepository = new PostsMongoRepository()
+const postsService = new PostsService(postsMongoRepository)
+const postsMongoQueryRepository = new PostsMongoQueryRepository()
+export const blogsController = new BlogsController(blogsService, blogsMongoQueryRepository, postsService, postsMongoQueryRepository)
 
 

@@ -4,14 +4,13 @@ import {
 } from "../repositories/security-devices-mongo-query-repository";
 import {SecurityDevicesService} from "../services/security-devices-service";
 import {ResultStatus} from "../common/types/result-code";
+import {SecurityDevicesMongoRepository} from "../repositories/security-devices-mongo-repository";
 
 class SecurityDevicesController {
-    private securityDevicesMongoQueryRepository: SecurityDevicesMongoQueryRepository
-    private securityDevicesService: SecurityDevicesService
-
-    constructor() {
-        this.securityDevicesMongoQueryRepository = new SecurityDevicesMongoQueryRepository()
-        this.securityDevicesService = new SecurityDevicesService()
+    constructor(
+        private securityDevicesMongoQueryRepository: SecurityDevicesMongoQueryRepository,
+        private securityDevicesService: SecurityDevicesService
+    ) {
     }
 
     async get(req: Request, res: Response) {
@@ -82,4 +81,7 @@ class SecurityDevicesController {
     }
 }
 
-export const securityDevicesController = new SecurityDevicesController()
+const securityDevicesMongoQueryRepository = new SecurityDevicesMongoQueryRepository()
+const securityDevicesMongoRepository = new SecurityDevicesMongoRepository()
+const securityDevicesService = new SecurityDevicesService(securityDevicesMongoRepository)
+export const securityDevicesController = new SecurityDevicesController(securityDevicesMongoQueryRepository, securityDevicesService)

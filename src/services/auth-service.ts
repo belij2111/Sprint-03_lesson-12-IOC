@@ -24,14 +24,11 @@ import {CustomJwtPayload} from "../common/types/custom-jwt-payload-type";
 import {SecurityDevicesMongoRepository} from "../repositories/security-devices-mongo-repository";
 
 export class AuthService {
-    private usersMongoRepository: UsersMongoRepository
-    private securityDevicesMongoRepository: SecurityDevicesMongoRepository
-    private authMongoRepository: AuthMongoRepository
-
-    constructor() {
-        this.usersMongoRepository = new UsersMongoRepository()
-        this.securityDevicesMongoRepository = new SecurityDevicesMongoRepository()
-        this.authMongoRepository = new AuthMongoRepository()
+    constructor(
+        private usersMongoRepository: UsersMongoRepository,
+        private securityDevicesMongoRepository: SecurityDevicesMongoRepository,
+        private authMongoRepository: AuthMongoRepository
+    ) {
     }
 
     async registerUser(inputUser: InputUserType): Promise<Result> {

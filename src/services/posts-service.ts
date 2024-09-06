@@ -7,10 +7,7 @@ import {Result} from "../common/types/result-type";
 import {ResultStatus} from "../common/types/result-code";
 
 export class PostsService {
-    private postsMongoRepository: PostsMongoRepository
-
-    constructor() {
-        this.postsMongoRepository = new PostsMongoRepository()
+    constructor(private postsMongoRepository: PostsMongoRepository) {
     }
 
     async createPost(inputPost: InputPostType): Promise<Result<{ id: string } | null>> {

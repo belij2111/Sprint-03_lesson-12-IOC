@@ -14,16 +14,12 @@ import {LikesMongoRepository} from "../repositories/likes-mongo-repository";
 import {LikeDbType, LikeStatus} from "../db/like-db-type";
 
 export class CommentsService {
-    private usersMongoRepository: UsersMongoRepository
-    private postsMongoRepository: PostsMongoRepository
-    private commentsMongoRepository: CommentsMongoRepository
-    private likesMongoRepository: LikesMongoRepository
-
-    constructor() {
-        this.usersMongoRepository = new UsersMongoRepository()
-        this.postsMongoRepository = new PostsMongoRepository()
-        this.commentsMongoRepository = new CommentsMongoRepository()
-        this.likesMongoRepository = new LikesMongoRepository()
+    constructor(
+        private usersMongoRepository: UsersMongoRepository,
+        private postsMongoRepository: PostsMongoRepository,
+        private commentsMongoRepository: CommentsMongoRepository,
+        private likesMongoRepository: LikesMongoRepository
+    ) {
     }
 
     async createComment(postId: string, userId: string, inputComment: InputCommentType): Promise<Result<{

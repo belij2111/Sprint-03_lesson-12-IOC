@@ -10,10 +10,7 @@ import {randomUUID} from "node:crypto";
 import {add} from "date-fns/add"
 
 export class UsersService {
-    private usersMongoRepository: UsersMongoRepository
-
-    constructor() {
-        this.usersMongoRepository = new UsersMongoRepository()
+    constructor(private usersMongoRepository: UsersMongoRepository) {
     }
 
     async createUser(inputUser: InputUserType): Promise<Result<{ id: string } | null>> {
@@ -80,3 +77,6 @@ export class UsersService {
         }
     }
 }
+
+// const usersMongoRepository = new UsersMongoRepository()
+// export const usersService = new UsersService(usersMongoRepository)

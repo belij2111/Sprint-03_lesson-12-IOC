@@ -10,18 +10,18 @@ import {
     CommentsMongoQueryRepository
 } from "../repositories/comments-mongo-query-repository";
 import {OutputCommentType} from "../types/comment-types";
+import {PostsMongoRepository} from "../repositories/posts-mongo-repository";
+import {UsersMongoRepository} from "../repositories/users-mongo-repository";
+import {CommentsMongoRepository} from "../repositories/comments-mongo-repository";
+import {LikesMongoRepository} from "../repositories/likes-mongo-repository";
 
 class PostsController {
-    private postsService: PostsService
-    private postsMongoQueryRepository: PostsMongoQueryRepository
-    private commentsService: CommentsService
-    private commentsMongoQueryRepository: CommentsMongoQueryRepository
-
-    constructor() {
-        this.postsService = new PostsService()
-        this.postsMongoQueryRepository = new PostsMongoQueryRepository()
-        this.commentsService = new CommentsService()
-        this.commentsMongoQueryRepository = new CommentsMongoQueryRepository()
+    constructor(
+        private postsService: PostsService,
+        private postsMongoQueryRepository: PostsMongoQueryRepository,
+        private commentsService: CommentsService,
+        private commentsMongoQueryRepository: CommentsMongoQueryRepository
+    ) {
     }
 
     async create(req: Request, res: Response) {
@@ -158,4 +158,17 @@ class PostsController {
     }
 }
 
-export const postsController = new PostsController()
+const postsMongoRepository = new PostsMongoRepository()
+const postsService = new PostsService(postsMongoRepository)
+const postsMongoQueryRepository = new PostsMongoQueryRepository()
+const usersMongoRepository = new UsersMongoRepository()
+const commentsMongoRepository = new CommentsMongoRepository()
+const likesMongoRepository = new LikesMongoRepository()
+const commentsMongoQueryRepository = new CommentsMongoQueryRepository()
+const commentsService = new CommentsService(
+    usersMongoRepository,
+    postsMongoRepository,
+    commentsMongoRepository,
+    likesMongoRepository
+)
+export const postsController = new PostsController(postsService, postsMongoQueryRepository, commentsService, commentsMongoQueryRepository)

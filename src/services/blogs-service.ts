@@ -7,10 +7,7 @@ import {Result} from "../common/types/result-type";
 import {ResultStatus} from "../common/types/result-code";
 
 export class BlogsService {
-    private blogsMongoRepository: BlogMongoRepository
-
-    constructor() {
-        this.blogsMongoRepository = new BlogMongoRepository()
+    constructor(private blogsMongoRepository: BlogMongoRepository) {
     }
 
     async createBlog(inputBlog: InputBlogType): Promise<Result<{ id: string }>> {
