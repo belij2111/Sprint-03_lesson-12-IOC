@@ -97,8 +97,7 @@ class CommentsController {
 
     async updateLikeStatus(req: Request<{ commentId: string }, {}, InputLikeType>, res: Response) {
         try {
-            const userId = req.user ? req.user.id : null
-            const updateStatus = await this.commentsService.updateLikeStatus(req.params.commentId, req.body, userId)
+            const updateStatus = await this.commentsService.updateLikeStatus(req.params.commentId, req.body, req.user.id)
             if (updateStatus.status === ResultStatus.NotFound) {
                 res
                     .status(404)
