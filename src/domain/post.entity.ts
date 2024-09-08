@@ -13,7 +13,7 @@ const ExtendedLikesInfoSchema = new mongoose.Schema({
     likesCount: {type: Number, default: 0},
     dislikesCount: {type: Number, default: 0},
     myStatus: {type: String, enum: LikeStatus, default: LikeStatus.None},
-    newestLikes: ({type: NewestLikesSchema, required: true})
+    newestLikes: ({type: [NewestLikesSchema], required: true})
 })
 
 export const PostSchema = new mongoose.Schema<PostDbType>({
