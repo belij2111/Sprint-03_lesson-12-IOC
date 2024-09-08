@@ -13,7 +13,7 @@ export class LikesMongoRepository {
         return result.modifiedCount !== 0
     }
 
-    async find(userId: string, commentId: string): Promise<LikeDbType | null> {
-        return LikeModel.findOne({authorId: userId, parentId: commentId})
+    async find(userId: string, parentId: string): Promise<LikeDbType | null> {
+        return LikeModel.findOne({authorId: userId, parentId: parentId})
     }
 }
