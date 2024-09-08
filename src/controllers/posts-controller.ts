@@ -14,6 +14,7 @@ import {PostsMongoRepository} from "../repositories/posts-mongo-repository";
 import {UsersMongoRepository} from "../repositories/users-mongo-repository";
 import {CommentsMongoRepository} from "../repositories/comments-mongo-repository";
 import {LikesMongoRepository} from "../repositories/likes-mongo-repository";
+import {InputLikeType} from "../types/like-types";
 
 class PostsController {
     constructor(
@@ -34,7 +35,8 @@ class PostsController {
                 return
             }
             if (createdInfo.data && createdInfo.status === ResultStatus.Success) {
-                const newPost = await this.postsMongoQueryRepository.getPostById(createdInfo.data.id)
+                const userId = req.user ? req.user.id : null
+                const newPost = await this.postsMongoQueryRepository.getPostById(createdInfo.data.id, userId)
                 res
                     .status(201)
                     .json(newPost)
@@ -48,18 +50,20 @@ class PostsController {
     }
 
     async get(req: Request<{}, {}, {}, SortQueryFieldsType>, res: Response<Paginator<OutputPostType[]>>) {
+        const userId = req.user ? req.user.id : null
         const inputQuery = {
             ...sortQueryFieldsUtil(req.query)
         }
-        const allPosts = await this.postsMongoQueryRepository.getPost(inputQuery)
+        const allPosts = await this.postsMongoQueryRepository.getPost(inputQuery, userId)
         res
             .status(200)
             .json(allPosts)
     }
 
     async getById(req: Request, res: Response<OutputPostType>) {
+        const userId = req.user ? req.user.id : null
         const postId = req.params.id
-        const post = await this.postsMongoQueryRepository.getPostById(postId)
+        const post = await this.postsMongoQueryRepository.getPostById(postId, userId)
         if (!post) {
             res
                 .sendStatus(404)
@@ -156,14 +160,37 @@ class PostsController {
             .status(200)
             .json(comments)
     }
+
+    async updateLikeStatus(req: Request<{ postId: string }, {}, InputLikeType>, res: Response) {
+        try {
+            const updatedStatus = await this.postsService.updateLikeStatus(req.params.postId, req.body, req.user.id)
+            if (updatedStatus.status === ResultStatus.NotFound) {
+                res
+                    .status(404)
+                    .json({errorsMessages: updatedStatus.extensions || []})
+                return
+            }
+            res
+                .status(204)
+                .json({})
+        } catch (error) {
+            res
+                .status(500)
+                .json({message: 'postController.updateLikeStatus'})
+        }
+    }
 }
 
 const postsMongoRepository = new PostsMongoRepository()
-const postsService = new PostsService(postsMongoRepository)
-const postsMongoQueryRepository = new PostsMongoQueryRepository()
 const usersMongoRepository = new UsersMongoRepository()
-const commentsMongoRepository = new CommentsMongoRepository()
 const likesMongoRepository = new LikesMongoRepository()
+const postsService = new PostsService(
+    postsMongoRepository,
+    usersMongoRepository,
+    likesMongoRepository
+)
+const postsMongoQueryRepository = new PostsMongoQueryRepository()
+const commentsMongoRepository = new CommentsMongoRepository()
 const commentsMongoQueryRepository = new CommentsMongoQueryRepository()
 const commentsService = new CommentsService(
     usersMongoRepository,

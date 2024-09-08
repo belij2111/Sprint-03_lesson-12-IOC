@@ -15,8 +15,8 @@ export class PostsMongoRepository {
         return {id: result._id.toString()}
     }
 
-    async updateById(findPost: PostDbType, updatePost: Object): Promise<boolean | null> {
-        const result = await PostModel.updateOne(findPost, {$set: updatePost})
+    async updateById(foundPost: PostDbType, updatedPost: Object): Promise<boolean | null> {
+        const result = await PostModel.updateOne({_id: foundPost._id}, {$set: updatedPost})
         return result.modifiedCount !== 0
     }
 

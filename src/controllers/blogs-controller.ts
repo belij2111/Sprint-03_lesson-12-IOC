@@ -16,6 +16,8 @@ import {ResultStatus} from "../common/types/result-code";
 import {ErrorResponse} from "../common/types/error-response";
 import {BlogMongoRepository} from "../repositories/blogs-mongo-repository";
 import {PostsMongoRepository} from "../repositories/posts-mongo-repository";
+import {UsersMongoRepository} from "../repositories/users-mongo-repository";
+import {LikesMongoRepository} from "../repositories/likes-mongo-repository";
 
 class BlogsController {
     constructor(
@@ -53,7 +55,7 @@ class BlogsController {
                 return
             }
             if (createdInfo.data && createdInfo.status === ResultStatus.Success) {
-                const newPost = await this.postsMongoQueryRepository.getPostById(createdInfo.data.id)
+                const newPost = await this.postsMongoQueryRepository.getPostById(createdInfo.data.id, req.user.id)
                 res
                     .status(201)
                     .json(newPost)
@@ -104,11 +106,12 @@ class BlogsController {
 
     async getPostsByBlogId(req: Request, res: Response<Paginator<OutputPostType[]> | ErrorResponse>) {
         try {
+            const userId = req.user ? req.user.id : null
             const postBlogId = req.params.blogId
             const inputQuery = {
                 ...sortQueryFieldsUtil(req.query)
             }
-            const posts = await this.postsMongoQueryRepository.getPostsByBlogId(postBlogId, inputQuery)
+            const posts = await this.postsMongoQueryRepository.getPostsByBlogId(postBlogId, inputQuery, userId)
             if (!posts) {
                 res
                     .sendStatus(404)
@@ -167,7 +170,13 @@ const blogsMongoRepository = new BlogMongoRepository()
 const blogsService = new BlogsService(blogsMongoRepository)
 const blogsMongoQueryRepository = new BlogsMongoQueryRepository()
 const postsMongoRepository = new PostsMongoRepository()
-const postsService = new PostsService(postsMongoRepository)
+const usersMongoRepository = new UsersMongoRepository()
+const likesMongoRepository = new LikesMongoRepository()
+const postsService = new PostsService(
+    postsMongoRepository,
+    usersMongoRepository,
+    likesMongoRepository
+)
 const postsMongoQueryRepository = new PostsMongoQueryRepository()
 export const blogsController = new BlogsController(blogsService, blogsMongoQueryRepository, postsService, postsMongoQueryRepository)
 
