@@ -11,13 +11,14 @@ export interface OutputPostType {
     extendedLikesInfo: {
         likesCount: number,
         dislikesCount: number,
-        myStatus: LikeStatus
+        myStatus: LikeStatus,
+        newestLikes: {
+            addedAt: string,
+            userId: string,
+            login: string
+        }[]
     },
-    newestLikes: {
-        addedAt: string,
-        userId: string,
-        login: string
-    }
+
 }
 
 export interface InputPostType {

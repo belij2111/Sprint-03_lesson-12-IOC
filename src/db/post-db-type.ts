@@ -13,12 +13,12 @@ export class PostDbType {
         public extendedLikesInfo: {
             likesCount: number,
             dislikesCount: number,
-            myStatus: LikeStatus
-        },
-        newestLikes: {
-            addedAt: string,
-            userId: string,
-            login: string
+            myStatus: LikeStatus,
+            newestLikes: {
+                addedAt: string,
+                userId: string,
+                login: string
+            }[]
         }
     ) {
     }
