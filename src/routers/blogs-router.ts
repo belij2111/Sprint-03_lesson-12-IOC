@@ -10,6 +10,7 @@ import {
     paramsBlogIdInputValidation,
     postForBlogInputValidationMiddleware
 } from "../validators/posts-input-validation-middleware";
+import {userIdentificationMiddleware} from "../common/middlewares/user-identification-middleware";
 
 export const blogsRouter = Router()
 
@@ -22,7 +23,7 @@ blogsRouter.post('/:blogId/posts',
     paramsBlogIdInputValidation,
     notFoundValidationMiddleware,
     blogsController.createPostByBlogId.bind(blogsController))
-blogsRouter.get('/:blogId/posts', blogsController.getPostsByBlogId.bind(blogsController))
+blogsRouter.get('/:blogId/posts', userIdentificationMiddleware.identifyUser.bind(userIdentificationMiddleware), blogsController.getPostsByBlogId.bind(blogsController))
 blogsRouter.get('/:id', blogsController.getById.bind(blogsController))
 blogsRouter.put('/:id', authBasicMiddleware, blogsInputValidationMiddleware, inputValidationMiddleware, blogsController.updateById.bind(blogsController))
 blogsRouter.delete('/:id', authBasicMiddleware, inputValidationMiddleware, blogsController.deleteById.bind(blogsController))
