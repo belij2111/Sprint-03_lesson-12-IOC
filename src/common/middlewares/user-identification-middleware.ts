@@ -5,10 +5,7 @@ import {JwtPayload} from "jsonwebtoken";
 import {ObjectId} from "mongodb";
 
 class UserIdentificationMiddleware {
-    private usersMongoRepository: UsersMongoRepository;
-
-    constructor() {
-        this.usersMongoRepository = new UsersMongoRepository()
+    constructor(private usersMongoRepository: UsersMongoRepository) {
     }
 
     async identifyUser(req: Request, res: Response, next: NextFunction) {
@@ -28,4 +25,5 @@ class UserIdentificationMiddleware {
     }
 }
 
-export const userIdentificationMiddleware = new UserIdentificationMiddleware()
+const usersMongoRepository = new UsersMongoRepository()
+export const userIdentificationMiddleware = new UserIdentificationMiddleware(usersMongoRepository)
