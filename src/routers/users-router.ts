@@ -6,6 +6,6 @@ import {usersInputValidationMiddleware} from "../validators/users-input-validati
 
 export const usersRouter = Router()
 
-usersRouter.post('/', authBasicMiddleware, usersInputValidationMiddleware, inputValidationMiddleware, usersController.create.bind(usersController))
-usersRouter.get('/', authBasicMiddleware, inputValidationMiddleware, usersController.get.bind(usersController))
-usersRouter.delete('/:id', authBasicMiddleware, inputValidationMiddleware, usersController.delete.bind(usersController))
+usersRouter.post('/', authBasicMiddleware.checkAuth.bind(authBasicMiddleware), usersInputValidationMiddleware, inputValidationMiddleware, usersController.create.bind(usersController))
+usersRouter.get('/', authBasicMiddleware.checkAuth.bind(authBasicMiddleware), inputValidationMiddleware, usersController.get.bind(usersController))
+usersRouter.delete('/:id', authBasicMiddleware.checkAuth.bind(authBasicMiddleware), inputValidationMiddleware, usersController.delete.bind(usersController))

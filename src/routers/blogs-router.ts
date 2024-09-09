@@ -14,10 +14,10 @@ import {userIdentificationMiddleware} from "../common/middlewares/user-identific
 
 export const blogsRouter = Router()
 
-blogsRouter.post('/', authBasicMiddleware, blogsInputValidationMiddleware, inputValidationMiddleware, blogsController.create.bind(blogsController))
+blogsRouter.post('/', authBasicMiddleware.checkAuth.bind(authBasicMiddleware), blogsInputValidationMiddleware, inputValidationMiddleware, blogsController.create.bind(blogsController))
 blogsRouter.get('/', blogsController.get.bind(blogsController))
 blogsRouter.post('/:blogId/posts',
-    authBasicMiddleware,
+    authBasicMiddleware.checkAuth.bind(authBasicMiddleware),
     postForBlogInputValidationMiddleware,
     inputValidationMiddleware,
     paramsBlogIdInputValidation,
@@ -25,5 +25,5 @@ blogsRouter.post('/:blogId/posts',
     blogsController.createPostByBlogId.bind(blogsController))
 blogsRouter.get('/:blogId/posts', userIdentificationMiddleware.identifyUser.bind(userIdentificationMiddleware), blogsController.getPostsByBlogId.bind(blogsController))
 blogsRouter.get('/:id', blogsController.getById.bind(blogsController))
-blogsRouter.put('/:id', authBasicMiddleware, blogsInputValidationMiddleware, inputValidationMiddleware, blogsController.updateById.bind(blogsController))
-blogsRouter.delete('/:id', authBasicMiddleware, inputValidationMiddleware, blogsController.deleteById.bind(blogsController))
+blogsRouter.put('/:id', authBasicMiddleware.checkAuth.bind(authBasicMiddleware), blogsInputValidationMiddleware, inputValidationMiddleware, blogsController.updateById.bind(blogsController))
+blogsRouter.delete('/:id', authBasicMiddleware.checkAuth.bind(authBasicMiddleware), inputValidationMiddleware, blogsController.deleteById.bind(blogsController))

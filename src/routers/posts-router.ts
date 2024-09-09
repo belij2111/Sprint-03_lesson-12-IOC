@@ -10,11 +10,11 @@ import {likeStatusInputValidationMiddleware} from "../validators/like-status-inp
 
 export const postsRouter = Router()
 
-postsRouter.post('/', authBasicMiddleware, postsInputValidationMiddleware, inputValidationMiddleware, postsController.create.bind(postsController))
+postsRouter.post('/', authBasicMiddleware.checkAuth.bind(authBasicMiddleware), postsInputValidationMiddleware, inputValidationMiddleware, postsController.create.bind(postsController))
 postsRouter.get('/', userIdentificationMiddleware.identifyUser.bind(userIdentificationMiddleware), postsController.get.bind(postsController))
 postsRouter.get('/:id', userIdentificationMiddleware.identifyUser.bind(userIdentificationMiddleware), postsController.getById.bind(postsController))
-postsRouter.put('/:id', authBasicMiddleware, postsInputValidationMiddleware, inputValidationMiddleware, postsController.update.bind(postsController))
-postsRouter.delete('/:id', authBasicMiddleware, inputValidationMiddleware, postsController.deleteById.bind(postsController))
+postsRouter.put('/:id', authBasicMiddleware.checkAuth.bind(authBasicMiddleware), postsInputValidationMiddleware, inputValidationMiddleware, postsController.update.bind(postsController))
+postsRouter.delete('/:id', authBasicMiddleware.checkAuth.bind(authBasicMiddleware), inputValidationMiddleware, postsController.deleteById.bind(postsController))
 postsRouter.post('/:postId/comments', authBearerMiddleware.checkAuth.bind(authBearerMiddleware), commentsInputValidationMiddleware, inputValidationMiddleware, postsController.createCommentByPostId.bind(postsController))
 postsRouter.get('/:postId/comments', userIdentificationMiddleware.identifyUser.bind(userIdentificationMiddleware), postsController.getCommentsByPostId.bind(postsController))
 postsRouter.put('/:postId/like-status', authBearerMiddleware.checkAuth.bind(authBearerMiddleware), likeStatusInputValidationMiddleware, inputValidationMiddleware, postsController.updateLikeStatus.bind(postsController))
