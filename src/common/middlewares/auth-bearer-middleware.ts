@@ -5,10 +5,7 @@ import {JwtPayload} from "jsonwebtoken";
 import {ObjectId} from "mongodb";
 
 class AuthBearerMiddleware {
-    private usersMongoRepository: UsersMongoRepository
-
-    constructor() {
-        this.usersMongoRepository = new UsersMongoRepository()
+    constructor(private usersMongoRepository: UsersMongoRepository) {
     }
 
     async checkAuth(req: Request, res: Response, next: NextFunction) {
@@ -40,4 +37,5 @@ class AuthBearerMiddleware {
     }
 }
 
-export const authBearerMiddleware = new AuthBearerMiddleware()
+const usersMongoRepository = new UsersMongoRepository()
+export const authBearerMiddleware = new AuthBearerMiddleware(usersMongoRepository)
