@@ -47,6 +47,7 @@ class BlogsController {
 
     async createPostByBlogId(req: Request, res: Response) {
         try {
+            const userId = req.user ? req.user.id : null
             const createdInfo = await this.postsService.createPostByBlogId(req.params.blogId, req.body)
             if (createdInfo.status === ResultStatus.NotFound) {
                 res
@@ -55,7 +56,7 @@ class BlogsController {
                 return
             }
             if (createdInfo.data && createdInfo.status === ResultStatus.Success) {
-                const newPost = await this.postsMongoQueryRepository.getPostById(createdInfo.data.id, req.user.id)
+                const newPost = await this.postsMongoQueryRepository.getPostById(createdInfo.data.id, userId)
                 res
                     .status(201)
                     .json(newPost)
