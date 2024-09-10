@@ -19,3 +19,8 @@ export interface InputCommentType {
     content: string
 }
 
+export interface LikesInfoType {
+    currentStatus: LikeStatus,
+    likesCount: number,
+    dislikesCount: number
+}
