@@ -79,6 +79,11 @@ export class PostsMongoQueryRepository {
     }
 
     postMapToOutput(post: PostDbType, currentStatus: string): OutputPostType {
+        const newestLikes = post.extendedLikesInfo.newestLikes.map(el => ({
+            addedAt: el.addedAt,
+            userId: el.userId,
+            login: el.login
+        }))
         return <OutputPostType>{
             id: post._id.toString(),
             title: post.title,
@@ -91,7 +96,7 @@ export class PostsMongoQueryRepository {
                 likesCount: post.extendedLikesInfo.likesCount,
                 dislikesCount: post.extendedLikesInfo.dislikesCount,
                 myStatus: currentStatus,
-                newestLikes: []
+                newestLikes: newestLikes
             }
         }
     }
