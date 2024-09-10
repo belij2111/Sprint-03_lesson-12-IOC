@@ -27,3 +27,9 @@ export interface InputPostType {
     content: string,
     blogId: string
 }
+
+export interface NewestLikes {
+    addedAt: Date,
+    userId: string,
+    login: string
+}
