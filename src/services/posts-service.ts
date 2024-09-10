@@ -123,7 +123,7 @@ export class PostsService {
         const foundLike = await this.likesMongoRepository.find(userId, postId)
         let likesInfo
         if (foundLike) {
-            likesInfo = await this.updateCounts(inputLike.likeStatus, foundLike.status, foundPost.extendedLikesInfo.likesCount, foundPost.extendedLikesInfo.dislikesCount)
+            likesInfo = this.updateCounts(inputLike.likeStatus, foundLike.status, foundPost.extendedLikesInfo.likesCount, foundPost.extendedLikesInfo.dislikesCount)
             const updatedNewestLikes = this.updateNewestLikes(foundPost, userId, foundUser, inputLike)
             const sortedNewestLikes = this.sortNewestLikes(updatedNewestLikes)
             const postDTO = {
@@ -144,7 +144,7 @@ export class PostsService {
                 parentId: postId
             }
             await this.likesMongoRepository.create(likeDTO)
-            likesInfo = await this.updateCounts(inputLike.likeStatus, LikeStatus.None, foundPost.extendedLikesInfo.likesCount, foundPost.extendedLikesInfo.dislikesCount)
+            likesInfo = this.updateCounts(inputLike.likeStatus, LikeStatus.None, foundPost.extendedLikesInfo.likesCount, foundPost.extendedLikesInfo.dislikesCount)
             const updatedNewestLikes = this.updateNewestLikes(foundPost, userId, foundUser, inputLike)
             const sortedNewestLikes = this.sortNewestLikes(updatedNewestLikes)
             const postDTO = {
@@ -162,7 +162,7 @@ export class PostsService {
         }
     }
 
-    private async updateCounts(newStatus: string, currentStatus: string, likesCount: number, dislikesCount: number) {
+    private updateCounts(newStatus: string, currentStatus: string, likesCount: number, dislikesCount: number) {
         if (newStatus === currentStatus) {
             return {likesCount, dislikesCount}
         }

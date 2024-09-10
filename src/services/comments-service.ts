@@ -131,7 +131,7 @@ export class CommentsService {
         const foundLike = await this.likesMongoRepository.find(userId, commentId)
         let likesInfo
         if (foundLike) {
-            likesInfo = await this.updateCounts(inputLike.likeStatus, foundLike.status, foundComment.likesInfo.likesCount, foundComment.likesInfo.dislikesCount)
+            likesInfo = this.updateCounts(inputLike.likeStatus, foundLike.status, foundComment.likesInfo.likesCount, foundComment.likesInfo.dislikesCount)
             const updateComment = {
                 likesInfo: {
                     ...likesInfo,
@@ -149,7 +149,7 @@ export class CommentsService {
                 parentId: commentId
             }
             await this.likesMongoRepository.create(likeDTO)
-            likesInfo = await this.updateCounts(inputLike.likeStatus, LikeStatus.None, foundComment.likesInfo.likesCount, foundComment.likesInfo.dislikesCount)
+            likesInfo = this.updateCounts(inputLike.likeStatus, LikeStatus.None, foundComment.likesInfo.likesCount, foundComment.likesInfo.dislikesCount)
             const updateComment = {
                 likesInfo: {
                     ...likesInfo,
@@ -164,7 +164,7 @@ export class CommentsService {
         }
     }
 
-    private async updateCounts(newStatus: string, currentStatus: string, likesCount: number, dislikesCount: number) {
+    private updateCounts(newStatus: string, currentStatus: string, likesCount: number, dislikesCount: number) {
         if (newStatus === currentStatus) {
             return {likesCount, dislikesCount}
         }
