@@ -10,6 +10,7 @@ import {LikesMongoRepository} from "../repositories/likes-mongo-repository";
 import {InputLikeType} from "../types/like-types";
 import {UsersMongoRepository} from "../repositories/users-mongo-repository";
 import {UserDbType} from "../db/user-db-type";
+import {LikesInfoType} from "../types/comment-types";
 
 export class PostsService {
     constructor(
@@ -123,7 +124,12 @@ export class PostsService {
         const foundLike = await this.likesMongoRepository.find(userId, postId)
         let likesInfo
         if (foundLike) {
-            likesInfo = this.updateCounts(inputLike.likeStatus, foundLike.status, foundPost.extendedLikesInfo.likesCount, foundPost.extendedLikesInfo.dislikesCount)
+            const likeInfoDTO = {
+                currentStatus: foundLike.status,
+                likesCount: foundPost.extendedLikesInfo.likesCount,
+                dislikesCount: foundPost.extendedLikesInfo.dislikesCount
+            }
+            likesInfo = this.updateCounts(inputLike.likeStatus, likeInfoDTO)
             const updatedNewestLikes = this.updateNewestLikes(foundPost, userId, foundUser, inputLike)
             const sortedNewestLikes = this.sortNewestLikes(updatedNewestLikes)
             const postDTO = {
@@ -144,7 +150,12 @@ export class PostsService {
                 parentId: postId
             }
             await this.likesMongoRepository.create(likeDTO)
-            likesInfo = this.updateCounts(inputLike.likeStatus, LikeStatus.None, foundPost.extendedLikesInfo.likesCount, foundPost.extendedLikesInfo.dislikesCount)
+            const likeInfoDTO: LikesInfoType = {
+                currentStatus: LikeStatus.None,
+                likesCount: foundPost.extendedLikesInfo.likesCount,
+                dislikesCount: foundPost.extendedLikesInfo.dislikesCount
+            }
+            likesInfo = this.updateCounts(inputLike.likeStatus, likeInfoDTO)
             const updatedNewestLikes = this.updateNewestLikes(foundPost, userId, foundUser, inputLike)
             const sortedNewestLikes = this.sortNewestLikes(updatedNewestLikes)
             const postDTO = {
@@ -162,7 +173,8 @@ export class PostsService {
         }
     }
 
-    private updateCounts(newStatus: string, currentStatus: string, likesCount: number, dislikesCount: number) {
+    private updateCounts(newStatus: string, likeInfoDTO: LikesInfoType) {
+        let {currentStatus, likesCount, dislikesCount} = likeInfoDTO
         if (newStatus === currentStatus) {
             return {likesCount, dislikesCount}
         }
