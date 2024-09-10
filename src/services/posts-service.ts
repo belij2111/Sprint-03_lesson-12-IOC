@@ -123,15 +123,18 @@ export class PostsService {
         let likesInfo
         if (foundLike) {
             likesInfo = await this.updateCounts(inputLike.likeStatus, foundLike.status, foundPost.extendedLikesInfo.likesCount, foundPost.extendedLikesInfo.dislikesCount)
+            const updatedNewestLikes = foundPost.extendedLikesInfo.newestLikes.filter(el => el.userId !== userId && foundPost.extendedLikesInfo.myStatus === LikeStatus.Like)
+            updatedNewestLikes.push({
+                addedAt: new Date(),
+                userId: userId,
+                login: foundUser!.login
+            })
+            const sortedNewestLikes = updatedNewestLikes.sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime()).slice(0, 3)
             const postDTO = {
                 extendedLikesInfo: {
                     ...likesInfo,
                     myStatus: inputLike.likeStatus,
-                    newestLikes: {
-                        addedAt: new Date(),
-                        userId: userId,
-                        login: foundUser!.login
-                    }
+                    newestLikes: sortedNewestLikes
                 }
             }
             await this.likesMongoRepository.update(foundLike, inputLike)
@@ -146,15 +149,18 @@ export class PostsService {
             }
             await this.likesMongoRepository.create(likeDTO)
             likesInfo = await this.updateCounts(inputLike.likeStatus, LikeStatus.None, foundPost.extendedLikesInfo.likesCount, foundPost.extendedLikesInfo.dislikesCount)
+            const updatedNewestLikes = foundPost.extendedLikesInfo.newestLikes.filter(el => el.userId !== userId && foundPost.extendedLikesInfo.myStatus === LikeStatus.Like)
+            updatedNewestLikes.push({
+                addedAt: new Date(),
+                userId: userId,
+                login: foundUser!.login
+            })
+            const sortedNewestLikes = updatedNewestLikes.sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime()).slice(0, 3)
             const postDTO = {
                 extendedLikesInfo: {
                     ...likesInfo,
                     myStatus: inputLike.likeStatus,
-                    newestLikes: {
-                        addedAt: new Date(),
-                        userId: userId,
-                        login: foundUser!.login
-                    }
+                    newestLikes: sortedNewestLikes
                 }
             }
             await this.postsMongoRepository.updateById(foundPost, postDTO)
