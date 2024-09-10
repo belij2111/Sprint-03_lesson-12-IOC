@@ -1,4 +1,4 @@
-import {InputPostType} from "../types/post-types";
+import {InputPostType, NewestLikes} from "../types/post-types";
 import {PostDbType} from "../db/post-db-type";
 import {ObjectId} from "mongodb";
 import {dateTimeIsoString} from "../common/helpers/date-time-iso-string";
@@ -9,6 +9,7 @@ import {LikeDbType, LikeStatus} from "../db/like-db-type";
 import {LikesMongoRepository} from "../repositories/likes-mongo-repository";
 import {InputLikeType} from "../types/like-types";
 import {UsersMongoRepository} from "../repositories/users-mongo-repository";
+import {UserDbType} from "../db/user-db-type";
 
 export class PostsService {
     constructor(
@@ -123,13 +124,8 @@ export class PostsService {
         let likesInfo
         if (foundLike) {
             likesInfo = await this.updateCounts(inputLike.likeStatus, foundLike.status, foundPost.extendedLikesInfo.likesCount, foundPost.extendedLikesInfo.dislikesCount)
-            const updatedNewestLikes = foundPost.extendedLikesInfo.newestLikes.filter(el => el.userId !== userId && foundPost.extendedLikesInfo.myStatus === LikeStatus.Like)
-            updatedNewestLikes.push({
-                addedAt: new Date(),
-                userId: userId,
-                login: foundUser!.login
-            })
-            const sortedNewestLikes = updatedNewestLikes.sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime()).slice(0, 3)
+            const updatedNewestLikes = this.updateNewestLikes(foundPost, userId, foundUser, inputLike)
+            const sortedNewestLikes = this.sortNewestLikes(updatedNewestLikes)
             const postDTO = {
                 extendedLikesInfo: {
                     ...likesInfo,
@@ -149,13 +145,8 @@ export class PostsService {
             }
             await this.likesMongoRepository.create(likeDTO)
             likesInfo = await this.updateCounts(inputLike.likeStatus, LikeStatus.None, foundPost.extendedLikesInfo.likesCount, foundPost.extendedLikesInfo.dislikesCount)
-            const updatedNewestLikes = foundPost.extendedLikesInfo.newestLikes.filter(el => el.userId !== userId && foundPost.extendedLikesInfo.myStatus === LikeStatus.Like)
-            updatedNewestLikes.push({
-                addedAt: new Date(),
-                userId: userId,
-                login: foundUser!.login
-            })
-            const sortedNewestLikes = updatedNewestLikes.sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime()).slice(0, 3)
+            const updatedNewestLikes = this.updateNewestLikes(foundPost, userId, foundUser, inputLike)
+            const sortedNewestLikes = this.sortNewestLikes(updatedNewestLikes)
             const postDTO = {
                 extendedLikesInfo: {
                     ...likesInfo,
@@ -201,5 +192,21 @@ export class PostsService {
                 break
         }
         return {likesCount, dislikesCount}
+    }
+
+    private updateNewestLikes(foundPost: PostDbType, userId: string, foundUser: UserDbType | null, inputLike: InputLikeType) {
+        const updatedNewestLikes: NewestLikes[] = foundPost.extendedLikesInfo.newestLikes.filter(el => el.userId !== userId)
+        if (inputLike.likeStatus === LikeStatus.Like) {
+            updatedNewestLikes.push({
+                addedAt: new Date(),
+                userId: userId,
+                login: foundUser!.login
+            })
+        }
+        return updatedNewestLikes
+    }
+
+    private sortNewestLikes(updatedNewestLikes: NewestLikes[]) {
+        return updatedNewestLikes.sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime()).slice(0, 3)
     }
 }
