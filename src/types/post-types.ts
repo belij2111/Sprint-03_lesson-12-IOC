@@ -13,7 +13,7 @@ export interface OutputPostType {
         dislikesCount: number,
         myStatus: LikeStatus,
         newestLikes: {
-            addedAt: string,
+            addedAt: Date,
             userId: string,
             login: string
         }[]

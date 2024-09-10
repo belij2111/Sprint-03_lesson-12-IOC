@@ -15,7 +15,7 @@ export class PostDbType {
             dislikesCount: number,
             myStatus: LikeStatus,
             newestLikes: {
-                addedAt: string,
+                addedAt: Date,
                 userId: string,
                 login: string
             }[]

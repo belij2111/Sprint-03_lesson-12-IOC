@@ -4,7 +4,7 @@ import {PostDbType} from "../db/post-db-type";
 import {LikeStatus} from "../db/like-db-type";
 
 const NewestLikesSchema = new mongoose.Schema({
-    addedAt: {type: String, required: true},
+    addedAt: {type: Date, required: true},
     userId: {type: String, required: true},
     login: {type: String, required: true}
 })
