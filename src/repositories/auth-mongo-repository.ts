@@ -1,7 +1,9 @@
 import {ApiCallDataInputType} from "../types/auth-types";
 import {ApiCallDbType} from "../db/api-call-db-type";
 import {ApiCallsModel} from "../domain/api-calls.entity";
+import {injectable} from "inversify";
 
+@injectable()
 export class AuthMongoRepository {
     async addApiCall(apiCall: ApiCallDbType) {
         await ApiCallsModel.create(apiCall)

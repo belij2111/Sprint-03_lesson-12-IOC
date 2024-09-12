@@ -22,12 +22,14 @@ import {AuthMongoRepository} from "../repositories/auth-mongo-repository";
 import {DeviceSessionsDbType} from "../db/device-sessions-db-type";
 import {CustomJwtPayload} from "../common/types/custom-jwt-payload-type";
 import {SecurityDevicesMongoRepository} from "../repositories/security-devices-mongo-repository";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class AuthService {
     constructor(
-        private usersMongoRepository: UsersMongoRepository,
-        private securityDevicesMongoRepository: SecurityDevicesMongoRepository,
-        private authMongoRepository: AuthMongoRepository
+        @inject(UsersMongoRepository) private usersMongoRepository: UsersMongoRepository,
+        @inject(SecurityDevicesMongoRepository) private securityDevicesMongoRepository: SecurityDevicesMongoRepository,
+        @inject(AuthMongoRepository) private authMongoRepository: AuthMongoRepository
     ) {
     }
 

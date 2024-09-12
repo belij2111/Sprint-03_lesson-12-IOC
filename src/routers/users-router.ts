@@ -1,9 +1,12 @@
 import {Router} from "express"
-import {usersController} from "../controllers/users-controller";
-import {authBasicMiddleware} from "../common/middlewares/auth-basic-middleware";
+import {UsersController} from "../controllers/users-controller";
+import {AuthBasicMiddleware} from "../common/middlewares/auth-basic-middleware";
 import {inputValidationMiddleware} from "../common/middlewares/input-validation-middlware";
 import {usersInputValidationMiddleware} from "../validators/users-input-validation-middleware";
+import {container} from "../composition-root";
 
+const usersController = container.resolve(UsersController)
+const authBasicMiddleware = container.resolve(AuthBasicMiddleware)
 export const usersRouter = Router()
 
 usersRouter.post('/', authBasicMiddleware.checkAuth.bind(authBasicMiddleware), usersInputValidationMiddleware, inputValidationMiddleware, usersController.create.bind(usersController))

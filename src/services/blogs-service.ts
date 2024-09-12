@@ -5,9 +5,11 @@ import {dateTimeIsoString} from "../common/helpers/date-time-iso-string";
 import {BlogMongoRepository} from "../repositories/blogs-mongo-repository";
 import {Result} from "../common/types/result-type";
 import {ResultStatus} from "../common/types/result-code";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class BlogsService {
-    constructor(private blogsMongoRepository: BlogMongoRepository) {
+    constructor(@inject(BlogMongoRepository) private blogsMongoRepository: BlogMongoRepository) {
     }
 
     async createBlog(inputBlog: InputBlogType): Promise<Result<{ id: string }>> {

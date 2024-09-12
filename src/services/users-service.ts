@@ -8,9 +8,11 @@ import {Result} from "../common/types/result-type";
 import {ResultStatus} from "../common/types/result-code";
 import {randomUUID} from "node:crypto";
 import {add} from "date-fns/add"
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class UsersService {
-    constructor(private usersMongoRepository: UsersMongoRepository) {
+    constructor(@inject(UsersMongoRepository) private usersMongoRepository: UsersMongoRepository) {
     }
 
     async createUser(inputUser: InputUserType): Promise<Result<{ id: string } | null>> {
@@ -77,6 +79,3 @@ export class UsersService {
         }
     }
 }
-
-// const usersMongoRepository = new UsersMongoRepository()
-// export const usersService = new UsersService(usersMongoRepository)

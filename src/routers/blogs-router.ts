@@ -1,6 +1,5 @@
 import {Router} from "express"
-import {blogsController} from "../controllers/blogs-controller"
-import {authBasicMiddleware} from "../common/middlewares/auth-basic-middleware";
+import {AuthBasicMiddleware} from "../common/middlewares/auth-basic-middleware";
 import {
     inputValidationMiddleware,
     notFoundValidationMiddleware
@@ -10,8 +9,15 @@ import {
     paramsBlogIdInputValidation,
     postForBlogInputValidationMiddleware
 } from "../validators/posts-input-validation-middleware";
-import {userIdentificationMiddleware} from "../common/middlewares/user-identification-middleware";
+import {
+    UserIdentificationMiddleware
+} from "../common/middlewares/user-identification-middleware";
+import {container} from "../composition-root";
+import {BlogsController} from "../controllers/blogs-controller";
 
+const authBasicMiddleware = container.resolve(AuthBasicMiddleware)
+const userIdentificationMiddleware = container.resolve(UserIdentificationMiddleware)
+const blogsController = container.resolve(BlogsController)
 export const blogsRouter = Router()
 
 blogsRouter.post('/', authBasicMiddleware.checkAuth.bind(authBasicMiddleware), blogsInputValidationMiddleware, inputValidationMiddleware, blogsController.create.bind(blogsController))

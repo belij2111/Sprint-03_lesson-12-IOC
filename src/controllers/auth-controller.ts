@@ -4,14 +4,13 @@ import {ResultStatus} from "../common/types/result-code";
 import {UsersMongoQueryRepository} from "../repositories/users-mongo-query-repository";
 import {LoginServiceOutputType} from "../types/auth-types";
 import {CustomJwtPayload} from "../common/types/custom-jwt-payload-type";
-import {UsersMongoRepository} from "../repositories/users-mongo-repository";
-import {SecurityDevicesMongoRepository} from "../repositories/security-devices-mongo-repository";
-import {AuthMongoRepository} from "../repositories/auth-mongo-repository";
+import {inject, injectable} from "inversify";
 
-class AuthController {
+@injectable()
+export class AuthController {
     constructor(
-        private authService: AuthService,
-        private usersMongoQueryRepository: UsersMongoQueryRepository
+        @inject(AuthService) private authService: AuthService,
+        @inject(UsersMongoQueryRepository) private usersMongoQueryRepository: UsersMongoQueryRepository
     ) {
     }
 
@@ -213,10 +212,3 @@ class AuthController {
         }
     }
 }
-
-const usersMongoRepository = new UsersMongoRepository()
-const securityDevicesMongoRepository = new SecurityDevicesMongoRepository()
-const authMongoRepository = new AuthMongoRepository()
-const authService = new AuthService(usersMongoRepository, securityDevicesMongoRepository, authMongoRepository)
-const usersMongoQueryRepository = new UsersMongoQueryRepository()
-export const authController = new AuthController(authService, usersMongoQueryRepository)

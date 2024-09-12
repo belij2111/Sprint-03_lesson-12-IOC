@@ -6,15 +6,13 @@ import {InputCommentType} from "../types/comment-types";
 import {CommentsService} from "../services/comments-service";
 import {ResultStatus} from "../common/types/result-code";
 import {InputLikeType} from "../types/like-types";
-import {UsersMongoRepository} from "../repositories/users-mongo-repository";
-import {PostsMongoRepository} from "../repositories/posts-mongo-repository";
-import {CommentsMongoRepository} from "../repositories/comments-mongo-repository";
-import {LikesMongoRepository} from "../repositories/likes-mongo-repository";
+import {inject, injectable} from "inversify";
 
-class CommentsController {
+@injectable()
+export class CommentsController {
     constructor(
-        private commentsMongoQueryRepository: CommentsMongoQueryRepository,
-        private commentsService: CommentsService
+        @inject(CommentsMongoQueryRepository) private commentsMongoQueryRepository: CommentsMongoQueryRepository,
+        @inject(CommentsService) private commentsService: CommentsService
     ) {
     }
 
@@ -114,16 +112,3 @@ class CommentsController {
         }
     }
 }
-
-const usersMongoRepository = new UsersMongoRepository()
-const postsMongoRepository = new PostsMongoRepository()
-const commentsMongoRepository = new CommentsMongoRepository()
-const likesMongoRepository = new LikesMongoRepository()
-const commentsMongoQueryRepository = new CommentsMongoQueryRepository()
-const commentsService = new CommentsService(
-    usersMongoRepository,
-    postsMongoRepository,
-    commentsMongoRepository,
-    likesMongoRepository
-)
-export const commentsController = new CommentsController(commentsMongoQueryRepository, commentsService)

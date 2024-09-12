@@ -1,8 +1,10 @@
 import {TestingMongoRepository} from "../repositories/testing-mongo-repozitory";
 import {Request, Response} from "express";
+import {inject, injectable} from "inversify";
 
-class TestingController {
-    constructor(private testingMongoRepository: TestingMongoRepository) {
+@injectable()
+export class TestingController {
+    constructor(@inject(TestingMongoRepository) private testingMongoRepository: TestingMongoRepository) {
     }
 
     async deleteAll(req: Request, res: Response) {
@@ -18,6 +20,3 @@ class TestingController {
         }
     }
 }
-
-const testingMongoRepository = new TestingMongoRepository()
-export const testingController = new TestingController(testingMongoRepository)

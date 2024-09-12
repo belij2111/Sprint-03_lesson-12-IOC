@@ -10,18 +10,16 @@ import {
     CommentsMongoQueryRepository
 } from "../repositories/comments-mongo-query-repository";
 import {OutputCommentType} from "../types/comment-types";
-import {PostsMongoRepository} from "../repositories/posts-mongo-repository";
-import {UsersMongoRepository} from "../repositories/users-mongo-repository";
-import {CommentsMongoRepository} from "../repositories/comments-mongo-repository";
-import {LikesMongoRepository} from "../repositories/likes-mongo-repository";
 import {InputLikeType} from "../types/like-types";
+import {inject, injectable} from "inversify";
 
-class PostsController {
+@injectable()
+export class PostsController {
     constructor(
-        private postsService: PostsService,
-        private postsMongoQueryRepository: PostsMongoQueryRepository,
-        private commentsService: CommentsService,
-        private commentsMongoQueryRepository: CommentsMongoQueryRepository
+        @inject(PostsService) private postsService: PostsService,
+        @inject(PostsMongoQueryRepository) private postsMongoQueryRepository: PostsMongoQueryRepository,
+        @inject(CommentsService) private commentsService: CommentsService,
+        @inject(CommentsMongoQueryRepository) private commentsMongoQueryRepository: CommentsMongoQueryRepository
     ) {
     }
 
@@ -180,22 +178,3 @@ class PostsController {
         }
     }
 }
-
-const postsMongoRepository = new PostsMongoRepository()
-const usersMongoRepository = new UsersMongoRepository()
-const likesMongoRepository = new LikesMongoRepository()
-const postsService = new PostsService(
-    postsMongoRepository,
-    usersMongoRepository,
-    likesMongoRepository
-)
-const postsMongoQueryRepository = new PostsMongoQueryRepository()
-const commentsMongoRepository = new CommentsMongoRepository()
-const commentsMongoQueryRepository = new CommentsMongoQueryRepository()
-const commentsService = new CommentsService(
-    usersMongoRepository,
-    postsMongoRepository,
-    commentsMongoRepository,
-    likesMongoRepository
-)
-export const postsController = new PostsController(postsService, postsMongoQueryRepository, commentsService, commentsMongoQueryRepository)

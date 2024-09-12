@@ -1,7 +1,9 @@
 import {DeviceSessionsDbType} from "../db/device-sessions-db-type";
 import {ObjectId} from "mongodb";
 import {DeviceSessionsModel} from "../domain/device-sessions.entity";
+import {injectable} from "inversify";
 
+@injectable()
 export class SecurityDevicesMongoRepository {
     async create(deviceSessionData: DeviceSessionsDbType) {
         const result = await DeviceSessionsModel.create(deviceSessionData)

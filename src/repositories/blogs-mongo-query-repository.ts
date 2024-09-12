@@ -3,7 +3,9 @@ import {BlogDBType} from "../db/blog-db-type";
 import {ObjectId} from "mongodb";
 import {Paginator} from "../common/types/paginator-types";
 import {BlogModel} from "../domain/blog.entity";
+import {injectable} from "inversify";
 
+@injectable()
 export class BlogsMongoQueryRepository {
     async getBlogs(inputQuery: QueryBlogFilterType): Promise<Paginator<OutputBlogType[]>> {
         const search = inputQuery.searchNameTerm

@@ -2,7 +2,9 @@ import {ObjectId} from "mongodb";
 import {OutputDeviseSessionsType} from "../types/device-sessions-types";
 import {DeviceSessionsDbType} from "../db/device-sessions-db-type";
 import {DeviceSessionsModel} from "../domain/device-sessions.entity";
+import {injectable} from "inversify";
 
+@injectable()
 export class SecurityDevicesMongoQueryRepository {
     async getDevices(userId: string): Promise<OutputDeviseSessionsType[] | null> {
         if (!this.checkObjectId(userId)) return null

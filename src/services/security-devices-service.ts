@@ -3,9 +3,11 @@ import {
     SecurityDevicesMongoRepository
 } from "../repositories/security-devices-mongo-repository";
 import {ResultStatus} from "../common/types/result-code";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class SecurityDevicesService {
-    constructor(private securityDevicesMongoRepository: SecurityDevicesMongoRepository) {
+    constructor(@inject(SecurityDevicesMongoRepository) private securityDevicesMongoRepository: SecurityDevicesMongoRepository) {
     }
 
     async deleteSessionsExceptCurrent(userId: string, currentDeviceId: string): Promise<Result<boolean | null>> {

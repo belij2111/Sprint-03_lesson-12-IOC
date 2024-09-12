@@ -12,13 +12,15 @@ import {CommentsMongoRepository} from "../repositories/comments-mongo-repository
 import {InputLikeType} from "../types/like-types";
 import {LikesMongoRepository} from "../repositories/likes-mongo-repository";
 import {LikeDbType, LikeStatus} from "../db/like-db-type";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class CommentsService {
     constructor(
-        private usersMongoRepository: UsersMongoRepository,
-        private postsMongoRepository: PostsMongoRepository,
-        private commentsMongoRepository: CommentsMongoRepository,
-        private likesMongoRepository: LikesMongoRepository
+        @inject(UsersMongoRepository) private usersMongoRepository: UsersMongoRepository,
+        @inject(PostsMongoRepository) private postsMongoRepository: PostsMongoRepository,
+        @inject(CommentsMongoRepository) private commentsMongoRepository: CommentsMongoRepository,
+        @inject(LikesMongoRepository) private likesMongoRepository: LikesMongoRepository
     ) {
     }
 

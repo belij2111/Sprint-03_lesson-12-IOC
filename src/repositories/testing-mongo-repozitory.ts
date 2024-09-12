@@ -6,7 +6,9 @@ import {RefreshTokenModel} from "../domain/refresh-token.entity";
 import {ApiCallsModel} from "../domain/api-calls.entity";
 import {DeviceSessionsModel} from "../domain/device-sessions.entity";
 import {LikeModel} from "../domain/like.entity";
+import {injectable} from "inversify";
 
+@injectable()
 export class TestingMongoRepository {
     async deleteAllData() {
         await BlogModel.deleteMany()

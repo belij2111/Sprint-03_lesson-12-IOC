@@ -13,12 +13,13 @@ import {OutputUserType} from "../types/user-types";
 import {ResultStatus} from "../common/types/result-code";
 import {ErrorResponse} from "../common/types/error-response";
 import {UsersMongoQueryRepository} from "../repositories/users-mongo-query-repository";
-import {UsersMongoRepository} from "../repositories/users-mongo-repository";
+import {inject, injectable} from "inversify";
 
-class UsersController {
+@injectable()
+export class UsersController {
     constructor(
-        private usersService: UsersService,
-        private usersMongoQueryRepository: UsersMongoQueryRepository
+        @inject(UsersService) private usersService: UsersService,
+        @inject(UsersMongoQueryRepository) private usersMongoQueryRepository: UsersMongoQueryRepository
     ) {
     }
 
@@ -88,8 +89,3 @@ class UsersController {
         }
     }
 }
-
-const usersMongoRepository = new UsersMongoRepository()
-const usersService = new UsersService(usersMongoRepository)
-const usersMongoQueryRepository = new UsersMongoQueryRepository()
-export const usersController = new UsersController(usersService, usersMongoQueryRepository)

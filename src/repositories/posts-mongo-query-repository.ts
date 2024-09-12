@@ -8,7 +8,9 @@ import {PostModel} from "../domain/post.entity";
 import {BlogModel} from "../domain/blog.entity";
 import {LikeStatus} from "../db/like-db-type";
 import {LikeModel} from "../domain/like.entity";
+import {injectable} from "inversify";
 
+@injectable()
 export class PostsMongoQueryRepository {
     async getPost(inputQuery: SortQueryFilterType, userId: string): Promise<Paginator<OutputPostType[]>> {
         const filter = {}

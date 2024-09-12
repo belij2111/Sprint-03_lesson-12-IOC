@@ -1,13 +1,20 @@
 import {Router} from "express";
-import {postsController} from "../controllers/posts-controller";
-import {authBasicMiddleware} from "../common/middlewares/auth-basic-middleware";
+import {PostsController} from "../controllers/posts-controller";
+import {AuthBasicMiddleware} from "../common/middlewares/auth-basic-middleware";
 import {inputValidationMiddleware} from "../common/middlewares/input-validation-middlware";
 import {postsInputValidationMiddleware} from "../validators/posts-input-validation-middleware";
-import {authBearerMiddleware} from "../common/middlewares/auth-bearer-middleware";
+import {AuthBearerMiddleware} from "../common/middlewares/auth-bearer-middleware";
 import {commentsInputValidationMiddleware} from "../validators/comments-input-validation-middleware";
-import {userIdentificationMiddleware} from "../common/middlewares/user-identification-middleware";
+import {
+    UserIdentificationMiddleware
+} from "../common/middlewares/user-identification-middleware";
 import {likeStatusInputValidationMiddleware} from "../validators/like-status-input-validation-middleware";
+import {container} from "../composition-root";
 
+const postsController = container.resolve(PostsController)
+const authBasicMiddleware = container.resolve(AuthBasicMiddleware)
+const userIdentificationMiddleware = container.resolve(UserIdentificationMiddleware)
+const authBearerMiddleware = container.resolve(AuthBearerMiddleware)
 export const postsRouter = Router()
 
 postsRouter.post('/', authBasicMiddleware.checkAuth.bind(authBasicMiddleware), postsInputValidationMiddleware, inputValidationMiddleware, postsController.create.bind(postsController))

@@ -4,7 +4,9 @@ import {OutputUserType, QueryUserFilterType} from "../types/user-types";
 import {UserDbType} from "../db/user-db-type";
 import {MeOutputType} from "../types/auth-types";
 import {UserModel} from "../domain/user.entity";
+import {injectable} from "inversify";
 
+@injectable()
 export class UsersMongoQueryRepository {
     async getUsers(inputQuery: QueryUserFilterType): Promise<Paginator<OutputUserType[]>> {
         const filter = {

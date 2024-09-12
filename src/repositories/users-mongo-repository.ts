@@ -6,7 +6,9 @@ import {
     RegistrationEmailResendingInputType
 } from "../types/auth-types";
 import {UserModel} from "../domain/user.entity";
+import {injectable} from "inversify";
 
+@injectable()
 export class UsersMongoRepository {
     async create(inputUser: UserDbType): Promise<{ id: string }> {
         const result = await UserModel.create(inputUser)

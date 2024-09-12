@@ -8,7 +8,9 @@ import {CommentModel} from "../domain/comment.entity";
 import {PostModel} from "../domain/post.entity";
 import {LikeStatus} from "../db/like-db-type";
 import {LikeModel} from "../domain/like.entity";
+import {injectable} from "inversify";
 
+@injectable()
 export class CommentsMongoQueryRepository {
     async getCommentsByPostId(postId: string, inputQuery: SortQueryFilterType, userId: string): Promise<Paginator<OutputCommentType[]> | null> {
         if (!this.checkObjectId(postId)) return null
@@ -52,7 +54,7 @@ export class CommentsMongoQueryRepository {
         return CommentModel.findOne({_id: id})
     }
 
-   private async getStatus(commentId: string, userId: string,): Promise<LikeStatus> {
+    private async getStatus(commentId: string, userId: string,): Promise<LikeStatus> {
         if (!userId) return LikeStatus.None
         const like = await LikeModel.findOne({authorId: userId, parentId: commentId})
         return like ? like.status : LikeStatus.None

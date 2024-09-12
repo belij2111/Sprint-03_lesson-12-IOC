@@ -1,11 +1,17 @@
 import {Router} from "express"
-import {commentsController} from "../controllers/comments-controller";
-import {authBearerMiddleware} from "../common/middlewares/auth-bearer-middleware";
+import {CommentsController} from "../controllers/comments-controller";
+import {AuthBearerMiddleware} from "../common/middlewares/auth-bearer-middleware";
 import {commentsInputValidationMiddleware} from "../validators/comments-input-validation-middleware";
 import {inputValidationMiddleware} from "../common/middlewares/input-validation-middlware";
 import {likeStatusInputValidationMiddleware} from "../validators/like-status-input-validation-middleware";
-import {userIdentificationMiddleware} from "../common/middlewares/user-identification-middleware";
+import {
+    UserIdentificationMiddleware
+} from "../common/middlewares/user-identification-middleware";
+import {container} from "../composition-root";
 
+const commentsController = container.resolve(CommentsController)
+const userIdentificationMiddleware = container.resolve(UserIdentificationMiddleware)
+const authBearerMiddleware = container.resolve(AuthBearerMiddleware)
 export const commentsRouter = Router()
 
 commentsRouter.get('/:id', userIdentificationMiddleware.identifyUser.bind(userIdentificationMiddleware), commentsController.getById.bind(commentsController))

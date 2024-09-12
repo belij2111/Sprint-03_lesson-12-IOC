@@ -11,12 +11,14 @@ import {InputLikeType} from "../types/like-types";
 import {UsersMongoRepository} from "../repositories/users-mongo-repository";
 import {UserDbType} from "../db/user-db-type";
 import {LikesInfoType} from "../types/comment-types";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class PostsService {
     constructor(
-        private postsMongoRepository: PostsMongoRepository,
-        private usersMongoRepository: UsersMongoRepository,
-        private likesMongoRepository: LikesMongoRepository
+        @inject(PostsMongoRepository) private postsMongoRepository: PostsMongoRepository,
+        @inject(UsersMongoRepository) private usersMongoRepository: UsersMongoRepository,
+        @inject(LikesMongoRepository) private likesMongoRepository: LikesMongoRepository
     ) {
     }
 

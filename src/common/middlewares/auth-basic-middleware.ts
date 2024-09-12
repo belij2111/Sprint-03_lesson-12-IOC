@@ -1,7 +1,9 @@
 import {NextFunction, Request, Response} from "express";
 import {SETTINGS} from "../../settings";
+import {injectable} from "inversify";
 
-class AuthBasicMiddleware {
+@injectable()
+export class AuthBasicMiddleware {
     constructor() {
     }
 
@@ -24,5 +26,3 @@ class AuthBasicMiddleware {
         next()
     }
 }
-
-export const authBasicMiddleware = new AuthBasicMiddleware()

@@ -3,7 +3,9 @@ import {BlogDBType} from "../db/blog-db-type";
 import {ObjectId} from "mongodb";
 import {PostModel} from "../domain/post.entity";
 import {BlogModel} from "../domain/blog.entity";
+import {injectable} from "inversify";
 
+@injectable()
 export class PostsMongoRepository {
     async create(inputPost: PostDbType): Promise<{ id: string } | null> {
         const result = await PostModel.create(inputPost)

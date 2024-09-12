@@ -1,7 +1,9 @@
 import {LikeModel} from "../domain/like.entity";
 import {LikeDbType} from "../db/like-db-type";
 import {InputLikeType} from "../types/like-types";
+import {injectable} from "inversify";
 
+@injectable()
 export class LikesMongoRepository {
     async create(inputLike: LikeDbType): Promise<{ id: string }> {
         const result = await LikeModel.create(inputLike)

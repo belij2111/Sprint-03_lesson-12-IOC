@@ -4,9 +4,11 @@ import {JwtPayload} from "jsonwebtoken";
 import {
     SecurityDevicesMongoRepository
 } from "../../repositories/security-devices-mongo-repository";
+import {inject, injectable} from "inversify";
 
-class RefreshTokenMiddleware {
-    constructor(private securityDevicesMongoRepository: SecurityDevicesMongoRepository) {
+@injectable()
+export class RefreshTokenMiddleware {
+    constructor(@inject(SecurityDevicesMongoRepository) private securityDevicesMongoRepository: SecurityDevicesMongoRepository) {
     }
 
     async refreshToken(req: Request, res: Response, next: NextFunction) {
@@ -44,6 +46,3 @@ class RefreshTokenMiddleware {
         next()
     }
 }
-
-const securityDevicesMongoRepository = new SecurityDevicesMongoRepository()
-export const refreshTokenMiddleware = new RefreshTokenMiddleware(securityDevicesMongoRepository)

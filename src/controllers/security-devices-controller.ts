@@ -4,12 +4,13 @@ import {
 } from "../repositories/security-devices-mongo-query-repository";
 import {SecurityDevicesService} from "../services/security-devices-service";
 import {ResultStatus} from "../common/types/result-code";
-import {SecurityDevicesMongoRepository} from "../repositories/security-devices-mongo-repository";
+import {inject, injectable} from "inversify";
 
-class SecurityDevicesController {
+@injectable()
+export class SecurityDevicesController {
     constructor(
-        private securityDevicesMongoQueryRepository: SecurityDevicesMongoQueryRepository,
-        private securityDevicesService: SecurityDevicesService
+        @inject(SecurityDevicesMongoQueryRepository) private securityDevicesMongoQueryRepository: SecurityDevicesMongoQueryRepository,
+        @inject(SecurityDevicesService) private securityDevicesService: SecurityDevicesService
     ) {
     }
 
@@ -80,8 +81,3 @@ class SecurityDevicesController {
         }
     }
 }
-
-const securityDevicesMongoQueryRepository = new SecurityDevicesMongoQueryRepository()
-const securityDevicesMongoRepository = new SecurityDevicesMongoRepository()
-const securityDevicesService = new SecurityDevicesService(securityDevicesMongoRepository)
-export const securityDevicesController = new SecurityDevicesController(securityDevicesMongoQueryRepository, securityDevicesService)

@@ -14,17 +14,15 @@ import {BlogsService} from "../services/blogs-service";
 import {PostsService} from "../services/posts-service";
 import {ResultStatus} from "../common/types/result-code";
 import {ErrorResponse} from "../common/types/error-response";
-import {BlogMongoRepository} from "../repositories/blogs-mongo-repository";
-import {PostsMongoRepository} from "../repositories/posts-mongo-repository";
-import {UsersMongoRepository} from "../repositories/users-mongo-repository";
-import {LikesMongoRepository} from "../repositories/likes-mongo-repository";
+import {inject, injectable} from "inversify";
 
-class BlogsController {
+@injectable()
+export class BlogsController {
     constructor(
-        private blogsService: BlogsService,
-        private blogsMongoQueryRepository: BlogsMongoQueryRepository,
-        private postsService: PostsService,
-        private postsMongoQueryRepository: PostsMongoQueryRepository
+        @inject(BlogsService) private blogsService: BlogsService,
+        @inject(BlogsMongoQueryRepository) private blogsMongoQueryRepository: BlogsMongoQueryRepository,
+        @inject(PostsService) private postsService: PostsService,
+        @inject(PostsMongoQueryRepository) private postsMongoQueryRepository: PostsMongoQueryRepository
     ) {
     }
 
@@ -166,19 +164,4 @@ class BlogsController {
         }
     }
 }
-
-const blogsMongoRepository = new BlogMongoRepository()
-const blogsService = new BlogsService(blogsMongoRepository)
-const blogsMongoQueryRepository = new BlogsMongoQueryRepository()
-const postsMongoRepository = new PostsMongoRepository()
-const usersMongoRepository = new UsersMongoRepository()
-const likesMongoRepository = new LikesMongoRepository()
-const postsService = new PostsService(
-    postsMongoRepository,
-    usersMongoRepository,
-    likesMongoRepository
-)
-const postsMongoQueryRepository = new PostsMongoQueryRepository()
-export const blogsController = new BlogsController(blogsService, blogsMongoQueryRepository, postsService, postsMongoQueryRepository)
-
 

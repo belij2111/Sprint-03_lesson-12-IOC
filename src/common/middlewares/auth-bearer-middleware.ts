@@ -3,9 +3,11 @@ import {jwtService} from "../adapters/jwt-service";
 import {UsersMongoRepository} from "../../repositories/users-mongo-repository";
 import {JwtPayload} from "jsonwebtoken";
 import {ObjectId} from "mongodb";
+import {inject, injectable} from "inversify";
 
-class AuthBearerMiddleware {
-    constructor(private usersMongoRepository: UsersMongoRepository) {
+@injectable()
+export class AuthBearerMiddleware {
+    constructor(@inject(UsersMongoRepository) private usersMongoRepository: UsersMongoRepository) {
     }
 
     async checkAuth(req: Request, res: Response, next: NextFunction) {
@@ -36,6 +38,3 @@ class AuthBearerMiddleware {
         return
     }
 }
-
-const usersMongoRepository = new UsersMongoRepository()
-export const authBearerMiddleware = new AuthBearerMiddleware(usersMongoRepository)

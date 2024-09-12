@@ -1,3 +1,4 @@
+import 'reflect-metadata'
 import cors from "cors"
 import express from "express"
 import {Request, Response} from 'express';

@@ -1,15 +1,20 @@
 import {Router} from "express"
-import {authController} from "../controllers/auth-controller";
-import {authBearerMiddleware} from "../common/middlewares/auth-bearer-middleware";
+import {AuthController} from "../controllers/auth-controller";
+import {AuthBearerMiddleware} from "../common/middlewares/auth-bearer-middleware";
 import {
     emailInputValidation,
     passwordInputValidation,
     usersInputValidationMiddleware
 } from "../validators/users-input-validation-middleware";
 import {inputValidationMiddleware} from "../common/middlewares/input-validation-middlware";
-import {refreshTokenMiddleware} from "../common/middlewares/refresh-token-middleware";
-import {logApiCallsMiddleware} from "../common/middlewares/log-api-calls-middleware";
+import {RefreshTokenMiddleware} from "../common/middlewares/refresh-token-middleware";
+import {LogApiCallsMiddleware} from "../common/middlewares/log-api-calls-middleware";
+import {container} from "../composition-root";
 
+const authController = container.resolve(AuthController)
+const logApiCallsMiddleware = container.resolve(LogApiCallsMiddleware)
+const authBearerMiddleware = container.resolve(AuthBearerMiddleware)
+const refreshTokenMiddleware = container.resolve(RefreshTokenMiddleware)
 export const authRouter = Router()
 
 authRouter.post('/login', logApiCallsMiddleware.logApiCall.bind(logApiCallsMiddleware), inputValidationMiddleware, authController.login.bind(authController))
