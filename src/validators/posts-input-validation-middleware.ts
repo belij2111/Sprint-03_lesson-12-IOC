@@ -61,4 +61,3 @@ export const postForBlogInputValidationMiddleware = [
     shortDescriptionInputValidation,
     contentInputValidation
 ]
-
